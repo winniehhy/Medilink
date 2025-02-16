@@ -12,16 +12,20 @@
 
     <h1 class="text-center text-primary">IRIS Database Frontend</h1>
 
-    <div class="text-center my-4">
+    <!-- Retrieve Data Section -->
+    <h2 class="text-secondary">Retrieve Data</h2>
+    <div class="mb-3">
+        <input type="text" id="fetchKey" class="form-control mb-2" placeholder="Enter key to retrieve">
         <button class="btn btn-primary" onclick="fetchData()">Get Data</button>
-        <p id="output" class="mt-3"></p>
+        <p id="output" class="mt-3 text-info"></p>
     </div>
 
-    <h2 class="text-secondary">Store Data</h2>
+    <!-- Store Data Section -->
+    <h2 class="text-secondary">Store Patient Data</h2>
     <div class="mb-3">
-        <input type="text" id="key" class="form-control mb-2" placeholder="Enter key">
-        <input type="text" id="value" class="form-control mb-2" placeholder="Enter value">
-        <button class="btn btn-success" onclick="storeData()">Store Data</button>
+        <input type="text" id="key" class="form-control mb-2" placeholder="Enter name">
+        <input type="text" id="value" class="form-control mb-2" placeholder="Enter IC">
+        <button class="btn btn-success" onclick="storeData()">Enter Patient Data</button>
     </div>
 
     <!-- Bootstrap JS (Optional for some features) -->
@@ -29,10 +33,16 @@
 
     <script>
         function fetchData() {
-            fetch("http://localhost:5000/api/data")
+            const key = document.getElementById("fetchKey").value; // Fetch key input
+            if (!key) {
+                alert("Please enter a key to retrieve data.");
+                return;
+            }
+
+            fetch(`http://localhost:5000/api/data?key=${key}`)
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById("output").innerText = data.message;
+                    document.getElementById("output").innerText = data.message || data.error;
                 })
                 .catch(error => console.error("Error fetching data:", error));
         }
@@ -40,6 +50,11 @@
         function storeData() {
             const key = document.getElementById("key").value;
             const value = document.getElementById("value").value;
+
+            if (!key || !value) {
+                alert("Please enter both key and value.");
+                return;
+            }
 
             fetch("http://localhost:5000/api/data", {
                 method: "POST",
