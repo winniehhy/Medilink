@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Iter+Tools&display=swap" rel="stylesheet">
+    <title>Sign Up Page</title>
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+            height: 100vh;
+        }
+        .top-rectangle {
+            width: 100%;
+            height: 300px;
+            background-color: #34a69f;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .middle-rectangle {
+            width: 60%;
+            height: 450px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 15px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .top-left-text {
+            position: absolute;
+            top: 65px;
+            left: 200px;
+            font-size: 46px;
+            font-weight: bold;
+            font-family: 'Iter', sans-serif;
+        }
+		.middle-rectangle-text {
+			position: absolute;
+			top: 230px;
+			left: 33%;
+			transform: translateX(-50%);
+			font-size: 30px;
+			/* font-style: italic; */
+			font-family: 'Iter', sans-serif;
+		}
+        .button-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            flex-direction: column;
+            gap: 50px;
+        }
+        .button {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: #08212b;
+            color: white;
+            font-size: 32px;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .circle {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background-color: white;
+            margin-right: 15px;
+        }
+        .button:hover {
+            background-color:#154a5f;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-rectangle"></div>
+    <div class="top-left-text">Create Your Profile</div>
+    <div class="middle-rectangle"></div>
+    <div class="middle-rectangle-text">Where are you from?</div>
+
+    <div class="button-container">
+        <button class="button">
+            <div class="circle"></div>
+            Hospital
+        </button>
+        <button class="button">
+            <div class="circle"></div>
+            Nursing Home
+        </button>
+    </div>
+</body>
+</html>
