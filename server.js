@@ -58,7 +58,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files (HTML, CSS, JS)
-app.use(express.static("frontend"));
+app.use(express.static("frontend/"));
 
 // Database credentials
 const dbConfig = {
@@ -75,7 +75,7 @@ const irisNative = connection.createIris();
 
 // Serve the HTML page
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend/", "nursing_homepage.html"));
 });
 
 // API endpoint to retrieve data from IRIS

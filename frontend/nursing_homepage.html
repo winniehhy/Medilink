@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+	<title>Nursing Home Page</title>
+	<style>
+		body {
+			background-color: white;
+			color: black;
+			text-align: center;
+			padding: 0;
+			margin: 0;
+			font-family: 'Lato', sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			flex-direction: column;
+		}
+
+		.top-rectangle {
+			width: 100%;
+			height: 50%;
+			background-color: #34a69f;
+			position: absolute;
+			top: 0;
+			left: 0;
+			z-index: -1;
+		}
+
+		.middle-rectangle {
+			width: 90%;
+			max-width: 500px;
+			background-color: white;
+			border-radius: 15px;
+			padding: 50px;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+			text-align: center;
+			position: relative;
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			width: 100%;
+		}
+
+		.back-arrow {
+			font-size: 22px;
+			cursor: pointer;
+			position: absolute;
+			left: 10px;
+		}
+
+		.title {
+			font-size: 22px;
+			margin: 0;
+			flex-grow: 1;
+			text-align: center;
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: column;
+			gap: 25px;
+			margin-top: 50px;
+		}
+
+		.button {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			background-color: #08212b;
+			color: white;
+			font-size: 18px;
+			padding: 15px;
+			border: none;
+			border-radius: 30px;
+			cursor: pointer;
+			width: 100%;
+			max-width: 300px;
+			margin: 0 auto;
+			text-align: left;
+		}
+
+		.circle {
+			width: 20px;
+			height: 20px;
+			border-radius: 50%;
+			background-color: white;
+			margin-right: 10px;
+		}
+
+		.button:hover {
+			background-color: #154a5f;
+		}
+
+		.back-arrow:hover {
+			color: aquamarine;
+		}
+	</style>
+</head>
+<body>
+	<div class="top-rectangle"></div>
+	<div class="middle-rectangle">
+		<div class="header">
+			<div class="back-arrow">&#8592;</div>
+			<div class="title">Is he/she a ?</div>
+		</div>
+		<div class="button-container">
+			<button class="button">
+				<div class="circle"></div>
+				New Patient
+			</button>
+			<button class="button">
+				<div class="circle"></div>
+				Existing Patient
+			</button>
+			<button class="button">
+				<div class="circle"></div>
+				Track Progress
+			</button>
+		</div>
+	</div>
+</body>
+</html>
