@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Homepage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="top-rectangle"></div>
+    <div class="middle-rectangle">
+        <div class="header">
+            <button class="back-arrow" onclick="prevPage()">&#8592;</button>
+        </div>
+        <div class="fillingcontainer">
+            <div class="title">Patient ID: <span id="patient-id"></span></div>
+        </div>
+        <div class="fillingcontainer">
+            <div class="title">Patient Name: <span id="patient-name"></span></div>
+        </div>        
+        <div class="button-container">
+			<button class="button">
+				<div class="circle"></div>
+				Preview Form
+			</button>
+			<button class="button">
+				<div class="circle"></div>
+				Update Status
+			</button>
+		</div>
+    </div>
+    <div class="bottom-rectangle"></div>
+    <script>
+        function prevPage() {
+            window.history.back();
+        }
+
+    //     document.addEventListener("DOMContentLoaded", function () {
+    //     const patientId = localStorage.getItem("patientId");
+    //     const patientName = localStorage.getItem("patientName");
+
+    //     if (patientId) {
+    //         document.getElementById("patient-id").value = patientId;
+    //     }
+    //     if (patientName) {
+    //         document.getElementById("patient-name").value = patientName;
+    //     }
+    // });
+
+    </script>
+</body>
+</html>
