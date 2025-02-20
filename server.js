@@ -1,115 +1,61 @@
-
-
-// const express = require("express");
-// const cors = require("cors");
-// const irisnative = require("intersystems-iris-native");
-
-// const app = express();
-// const PORT = 5000;
-
-// // Enable CORS and JSON parsing
-// app.use(cors());
-// app.use(express.json());
-
-// // Database credentials
-// const dbConfig = {
-//     host: "localhost",
-//     port: 1972,
-//     ns: "USER",
-//     user: "_SYSTEM",
-//     pwd: "121314",
-// };
-
-// // Connect to InterSystems IRIS
-// let connection;
-// let irisNative;
-
-// try {
-//     connection = irisnative.createConnection(dbConfig);
-//     irisNative = connection.createIris();
-//     console.log("Hello World! You have successfully connected to InterSystems IRIS.");
-// } catch (error) {
-//     console.error("Failed to connect to IRIS:", error.message);
-// }
-
-// // API endpoint
-// app.get("/", (req, res) => {
-//     res.send("Hello World! You have successfully connected to InterSystems IRIS.");
-// });
-
-// // Start server
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://localhost:${PORT}`);
-// });
-
-
-/*------------------ database testing----------------*/
-
 const express = require("express");
-const cors = require("cors");
-const irisnative = require("intersystems-iris-native");
-const path = require("path");
+const bodyParser = require("body-parser");
+const irisDB = require("./iris");
+const path = require("path");  // ✅ Import path module
 
 const app = express();
-const PORT = 5000;
+app.use(bodyParser.json());
 
-// Enable CORS and JSON parsing
-app.use(cors());
-app.use(express.json());
+// Serve static files from "frontend" folder
+app.use(express.static(path.join(__dirname, "frontend")));
 
-// Serve static files (HTML, CSS, JS)
-app.use(express.static("frontend"));
-
-// Database credentials
-const dbConfig = {
-    host: "localhost",
-    port: 1972,
-    ns: "USER",
-    user: "_SYSTEM",
-    pwd: "121314",
-};
-
-// Connect to InterSystems IRIS
-const connection = irisnative.createConnection(dbConfig);
-const irisNative = connection.createIris();
-
-// Serve the HTML page
+// Redirect to homepage.html when the server starts
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "frontend", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend", "homepage.html"));
 });
 
-// API endpoint to retrieve data from IRIS
-app.get("/api/data", (req, res) => {
-    try {
-        const key = req.query.key; // Get key from query parameters
-        if (!key) {
-            return res.status(400).json({ error: "Please provide a key." });
-        }
-        
-        const value = irisNative.get("^testglobal", key); // Fetch based on key
-        if (value === undefined) {
-            return res.status(404).json({ error: `No value found for key: ${key}` });
-        }
+// Serve signup.html when /signup is accessed
+app.get("/signup", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "signup.html"));
+});
 
-        res.json({ message: `Value for ${key}: ${value}` });
+// **GET API: Fetch Data**
+app.get("/api/data", async (req, res) => {
+    try {
+        const data = irisDB.getData();
+        res.json(data);
     } catch (error) {
-        res.status(500).json({ error: "Failed to retrieve data from IRIS" });
+        console.error("❌ Error fetching data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-
-// API endpoint to store data in IRIS
-app.post("/api/data", (req, res) => {
+// **POST API: Insert Data**
+app.post("/api/data", async (req, res) => {
     try {
         const { key, value } = req.body;
-        irisNative.set(value, "^testglobal", key);
-        res.json({ message: `Stored ${value} at ^testglobal(${key})` });
+        if (!key || !value) return res.status(400).json({ error: "Missing key or value" });
+
+        const success = irisDB.insertData(key, value);
+        if (!success) return res.status(500).json({ error: "Failed to insert data" });
+
+        res.json({ message: "Data inserted successfully!" });
     } catch (error) {
-        res.status(500).json({ error: "Failed to store data in IRIS" });
+        console.error("❌ Error inserting data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// **Check Database Connection**
+app.get("/api/check-connection", (req, res) => {
+    const db = irisDB.connectToDB();
+    if (db) {
+        res.json({ message: "Database connected successfully!" });
+    } else {
+        res.status(500).json({ error: "Database connection failed" });
+    }
 });
+
+// **Start Server**
+const PORT = 4000;
+app.listen(PORT, () => console.log(`🚀 REST API running on http://localhost:${PORT}`));
