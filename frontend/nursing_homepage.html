@@ -118,7 +118,7 @@
 	<div class="top-rectangle"></div>
 	<div class="middle-rectangle">
 		<div class="header">
-			<div class="back-arrow">&#8592;</div>
+			<div class="back-arrow" onclick="goBack()">&#8592;</div>
 			<div class="title">Is he/she a ?</div>
 		</div>
 		<div class="button-container">
@@ -137,5 +137,11 @@
 		</div>
 	</div>
 	<div class="bottom-rectangle"></div>
+
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
 </body>
 </html>
