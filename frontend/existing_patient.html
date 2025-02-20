@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
+	<title>Nursing Home Page</title>
+	<style>
+		body {
+			background-color: #34a69f;
+			color: black;
+			text-align: center;
+			padding: 0;
+			margin: 0;
+			font-family: 'Lato', sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			flex-direction: column;
+		}
+
+		.middle-rectangle {
+			width: 90%;
+			max-width: 500px;
+			background-color: white;
+			border-radius: 15px;
+			padding: 40px;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+			text-align: center;
+			position: relative;
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			width: 100%;
+		}
+
+		.back-arrow {
+			font-size: 22px;
+			cursor: pointer;
+			position: absolute;
+			left: 10px;
+			color: #333;
+			font-weight: bold;
+			background: none;
+			border: none;
+			outline: none;
+			padding: 5px;
+			display: flex;
+			align-items: center;
+			transition: color 0.2s ease;
+		}
+
+		.back-arrow:hover {
+			color: #267d74;
+		}
+
+		.title {
+			font-size: 26px;
+			font-weight: 600;
+			margin: 10px 0 15px 0;
+			text-align: center;
+			color: #333;
+			letter-spacing: 0.5px;
+		}
+
+		.fillingcontainer {
+			width: 100%;
+			margin-top: 20px;
+		}
+
+		.fillarea {
+			position: relative;
+			height: 60px;
+			margin: 10px auto;
+			width: 80%;
+		}
+
+		input {
+			width: 100%;
+			outline: none;
+			font-size: 1.2em;
+			padding: 12px 15px;
+			border-radius: 8px;
+			border: 2px solid #34a69f;
+			background: white;
+			transition: 0.2s ease;
+			color: #333;
+		}
+
+		input:focus,
+		input:valid {
+			border-color: #267d74;
+			box-shadow: 0 0 5px rgba(52, 166, 159, 0.5);
+		}
+
+		.labelline {
+			position: absolute;
+			left: 15px;
+			top: 18px;
+			font-size: 0.9em;
+			color: #34a69f;
+			background: white;
+			padding: 0 8px;
+			transition: 0.2s ease;
+			pointer-events: none;
+		}
+
+		input:focus + .labelline,
+		input:valid + .labelline {
+			top: -10px;
+			left: 10px;
+			font-size: 0.8em;
+			color: #267d74;
+			transform: translateY(0);
+		}
+	</style>
+</head>
+<body>
+	<div class="middle-rectangle">
+		<div class="header">
+			<button class="back-arrow" onclick="goBack()">&#8592;</button>
+			<div class="title">Existing Patient</div>
+		</div>
+		<div class="fillingcontainer">
+			<div class="fillarea">
+				<input type="text" required>
+				<label class="labelline">Enter Patient Name</label>
+			</div>
+		</div>
+		<div class="fillingcontainer">
+			<div class="fillarea">
+				<input type="text" required>
+				<label class="labelline">Enter Patient IC</label>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
+</body>
+</html>
