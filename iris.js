@@ -12,8 +12,8 @@ function connectToDB() {
             host: "localhost", 
             port: 1972,         
             ns: "USER",         
-            user: "medilink",   
-            pwd: "121314"       
+            user: "demo",   
+            pwd: "demo"       
         });
 
         console.log("✅ Connected to InterSystems IRIS via Native API!");
