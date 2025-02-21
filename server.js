@@ -19,6 +19,10 @@ app.get("/signup", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "signup.html"));
 });
 
+app.get("/logIn", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "logIn.html"));
+});
+
 // **GET API: Fetch Data**
 app.get("/api/data", async (req, res) => {
     try {
