@@ -54,10 +54,11 @@ body {
 }
 
 .back-arrow {
-    font-size: 22px;
+    border-radius: 40%;
     cursor: pointer;
     position: absolute;
-    left: 10px;
+    top: 0.1px;
+    left: 5px;
     color: #333;
     font-weight: bold;
     background: none;
@@ -69,8 +70,10 @@ body {
     transition: color 0.2s ease;
 }
 
-.back-arrow:hover {
-    color: #267d74;
+.back-arrow:active {
+    background-color: #d3d3d3; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+    transform: scale(0.95); 
 }
 
 .fillingcontainer {
