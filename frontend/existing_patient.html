@@ -39,25 +39,6 @@
 			width: 100%;
 		}
 
-		.back-arrow {
-			font-size: 22px;
-			cursor: pointer;
-			position: absolute;
-			left: 10px;
-			color: #333;
-			font-weight: bold;
-			background: none;
-			border: none;
-			outline: none;
-			padding: 5px;
-			display: flex;
-			align-items: center;
-			transition: color 0.2s ease;
-		}
-
-		.back-arrow:hover {
-			color: #267d74;
-		}
 
 		.title {
 			font-size: 26px;
@@ -206,7 +187,6 @@
 
 	<div class="middle-rectangle">
 		<div class="header">
-			<button class="back-arrow" onclick="goBack()">&#8592;</button>
 			<img src="src/sidebar/existing_patient.png" class="title-icon">
 			<div class="title">Existing Patient</div>
 		</div>
@@ -224,10 +204,5 @@
 		</div>
 	</div>
 
-	<script>
-		function goBack() {
-			window.history.back();
-		}
-	</script>
 </body>
 </html>
