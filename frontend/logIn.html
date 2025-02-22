@@ -1,93 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Homepage</title>
-	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
 
-	<style>
-		body {
-			background-image: url('src/LoginPage.png');
-			background-size: cover;
-			background-position: center;
-			background-attachment: fixed;
-			color: black;
-			text-align: center;
-			padding: 0;
-			margin: 0;
-			font-family: 'Lato', sans-serif;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			flex-direction: column;
-		}
+    <style>
+        body {
+            background-image: url('src/LoginPage.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: black;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
 
-		.middle-rectangle {
-			width: 90%; 
-			max-width: 600px;
-			background-color: #34a69f;
-			padding: 50px;
-			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-			text-align: center;
-			position: relative;
-		}
+        .middle-rectangle {
+            width: 90%; 
+            max-width: 600px;
+            background-color: #34a69f;
+            padding: 50px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+        }
 
-		.header {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			position: relative;
-			width: 100%;
-		}
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
 
-		.title {
-			position: relative;
-			font-size: 3.0rem;
-			font-family: 'Lato', sans-serif;
-			color: white;
-			padding: 5px 10px;
-			border-radius: 5px;
-			font-weight: bold;
-			text-align: center;
-			width: 100%;
-			margin-top: 20px;
-			margin-bottom: 50px;
-		}
+        .title {
+            position: relative;
+            font-size: 3.0rem;
+            font-family: 'Lato', sans-serif;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
 
-		.container {
-			display: flex;
-			align-items: center;
-			justify-content: flex-start;
-			background-color: white;
-			color: black;
-			font-size: 18px;
-			padding: 15px;
-			border: none;
-			border-radius: 10px;
-			cursor: pointer;
-			width: 100%;
-			max-width: 400px;
-			margin: 0 auto;
-			margin-bottom: 20px;
-			text-align: center;
-		}
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            background-color: white;
+            color: black;
+            font-size: 18px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            margin-bottom: 20px;
+            text-align: center;
+        }
 
-		.input-field {
-			width: 100%;
-    		max-width: 400px;
-    		padding: 10px;
-			font-size: 18px;
-			border: none;
-			border-bottom: 2px solid #34a69f;
-			outline: none;
-			background: transparent;
-			text-align: left;
-			color: black;
-		}
+        .input-field {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 18px;
+            border: none;
+            border-bottom: 2px solid #34a69f;
+            outline: none;
+            background: transparent;
+            text-align: left;
+            color: black;
+        }
 
-		.btn {
+        .btn {
             padding: 1vh 3vw;
             font-size: 20px;
             border: none;
@@ -109,19 +109,103 @@
             border: 2px solid #08212b;
         }
 
-	</style>
+        .error-message {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px auto;
+            max-width: 400px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-	<div class="middle-rectangle">
-		<div class="header">
-			<div class="title"> Welcome Back !</div>
-		</div>
-		<div class="container">
-			<input type="text" placeholder="Username" class="input-field">
-		</div>
-		<div class="container">
-			<input type="text" placeholder="Password" class="input-field">
-		</div>
-	</div>
-	<button class="btn btn-custom">Log In</button>
+    <div class="middle-rectangle">
+        <div class="header">
+            <div class="title">Welcome Back!</div>
+        </div>
+        <div class="container">
+            <input type="text" placeholder="Username" class="input-field" id="username">
+        </div>
+        <div class="container">
+            <input type="password" placeholder="Password" class="input-field" id="password">
+        </div>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="loading" id="loading">Logging in...</div>
+    </div>
+    <button class="btn btn-custom" id="loginButton">Log In</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginButton = document.getElementById('loginButton');
+            const errorMessage = document.getElementById('errorMessage');
+            const loading = document.getElementById('loading');
+
+            loginButton.addEventListener('click', async () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                // Basic validation
+                if (!username || !password) {
+                    showError('Please enter both username and password');
+                    return;
+                }
+
+                // Show loading state
+                loading.style.display = 'block';
+                errorMessage.style.display = 'none';
+                loginButton.disabled = true;
+
+                try {
+                    const response = await fetch('/api/hospital-login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            username,
+                            password
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        // Successful login
+                        window.location.href = '/hospital_homepage'; // Redirect to hospital homepage
+                    } else {
+                        // Show error message
+                        showError(data.error || 'Login failed. Please try again.');
+                    }
+                } catch (error) {
+                    showError('Connection error. Please try again.');
+                } finally {
+                    // Hide loading state
+                    loading.style.display = 'none';
+                    loginButton.disabled = false;
+                }
+            });
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+            }
+
+            // Allow Enter key to trigger login
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    loginButton.click();
+                }
+            });
+        });
+    </script>
 </body>
+</html>

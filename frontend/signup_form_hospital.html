@@ -177,51 +177,100 @@
 </head>
 <body>
 	<div class="middle-rectangle">
-		<div class="header">
-			<button class="back-arrow" onclick="goBack()">&#8592;</button>
-			<div class="title">Create Profile (Hospital)</div>
+	  <div class="header">
+		<button class="back-arrow" onclick="goBack()">&#8592;</button>
+		<div class="title">Create Profile (Hospital)</div>
+	  </div>
+  
+	  <div class="fillingcontainer">
+		<div class="fillarea">
+		  <!-- Add id="username" -->
+		  <input type="text" id="username" required>
+		  <label class="labelline">Create username</label>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Create username</label>
-			</div>
+	  </div>
+  
+	  <div class="fillingcontainer">
+		<div class="fillarea">
+		  <!-- Add id="password" -->
+		  <input type="text" id="password" required>
+		  <label class="labelline">Create password</label>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Create password</label>
-			</div>
+	  </div>
+  
+	  <div class="fillingcontainer">
+		<div class="fillarea">
+		  <!-- Add id="hospitalName" -->
+		  <input type="text" id="hospitalName" required>
+		  <label class="labelline">Enter hospital name</label>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Enter hospital name</label>
-			</div>
+	  </div>
+  
+	  <div class="fillingcontainer">
+		<div class="fillarea">
+		  <!-- Add id="hospitalAddress" -->
+		  <input type="text" id="hospitalAddress" required>
+		  <label class="labelline">Enter hospital address</label>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Enter hospital address</label>
-			</div>
+	  </div>
+  
+	  <div class="fillingcontainer">
+		<div class="fillarea">
+		  <!-- Add id="hospitalPhone" -->
+		  <input type="text" id="hospitalPhone" required>
+		  <label class="labelline">Enter hospital contact number</label>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Enter hospital contact number</label>
-			</div>
-		</div>
-		<div class="button-container">
-			<button class="button">
-				Done
-			</button>
-		</div>
+	  </div>
+  
+	  <div class="button-container">
+		<!-- Keep the button id="doneButton" so the script finds it -->
+		<button class="button" id="doneButton">Done</button>
+	  </div>
 	</div>
-
+  
 	<script>
-		function goBack() {
-			window.history.back();
-		}
+	  function goBack() {
+		window.history.back();
+	  }
+  
+	  // Attach event listener AFTER the DOM loads
+	  document.addEventListener("DOMContentLoaded", () => {
+		document.getElementById("doneButton").addEventListener("click", async () => {
+		  // 1) Get values
+		  const username = document.getElementById("username").value;
+		  const password = document.getElementById("password").value;
+		  const hospitalName = document.getElementById("hospitalName").value;
+		  const hospitalAddress = document.getElementById("hospitalAddress").value;
+		  const hospitalPhone = document.getElementById("hospitalPhone").value;
+  
+		  try {
+			// 2) Send POST to Node.js route
+			const response = await fetch("/api/hospital-signup", {
+			  method: "POST",
+			  headers: { "Content-Type": "application/json" },
+			  body: JSON.stringify({
+				username,
+				password,
+				hospitalName,
+				hospitalAddress,
+				hospitalPhone
+			  })
+			});
+  
+			// 3) Handle response
+			const data = await response.json();
+			if (response.ok) {
+			  alert("Hospital account created successfully!");
+			  console.log("Server response:", data);
+			} else {
+			  alert("Error: " + (data.error || "Unknown error"));
+			}
+		  } catch (error) {
+			console.error("Fetch error:", error);
+			alert("Something went wrong. Check console for details.");
+		  }
+		});
+	  });
 	</script>
-</body>
+  </body>
 </html>
