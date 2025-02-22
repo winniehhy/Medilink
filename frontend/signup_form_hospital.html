@@ -262,6 +262,7 @@
 			if (response.ok) {
 			  alert("Hospital account created successfully!");
 			  console.log("Server response:", data);
+			  window.location.href = '/logIn';
 			} else {
 			  alert("Error: " + (data.error || "Unknown error"));
 			}
