@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const irisDB = require("./iris");
+const { insertHospitalData , validateHospitalLogin } = require("./iris");
 const path = require("path");  // ✅ Import path module
 
 const app = express();
@@ -23,32 +23,73 @@ app.get("/logIn", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "logIn.html"));
 });
 
-// **GET API: Fetch Data**
-app.get("/api/data", async (req, res) => {
-    try {
-        const data = irisDB.getData();
-        res.json(data);
-    } catch (error) {
-        console.error("❌ Error fetching data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+app.get("/signup_form_hospital", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "signup_form_hospital.html"));
 });
 
-// **POST API: Insert Data**
-app.post("/api/data", async (req, res) => {
+app.get("/signup_form_nursing", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing.html"));
+});
+
+/*--------------------------------------- SIGN UP ------------------------------------------------------- */
+
+// HOSPITAL SIGNUP ROUTE
+app.post("/api/hospital-signup", (req, res) => {
+    const { username, password, hospitalName, hospitalAddress, hospitalPhone } = req.body;
+  
+    // Basic validation for required fields
+    if (!username || !password) {
+      return res.status(400).json({ error: "Missing username or password" });
+    }
+  
+    // Call the function to insert hospital data
+    const success = insertHospitalData(username, password, hospitalName, hospitalAddress, hospitalPhone);
+  
+    if (!success) {
+      return res.status(500).json({ error: "Failed to insert hospital account" });
+    }
+  
+    // Send success response back to the frontend
+    res.status(201).json({ message: "Hospital account created successfully!" });
+  });
+
+  /*--------------------------------------- Log In ------------------------------------------------------- */
+
+  app.post("/api/hospital-login", async (req, res) => {
+    console.log("Received login request:", req.body); // Add logging
+
+    const { username, password } = req.body;
+    
+    // Basic validation
+    if (!username || !password) {
+        console.log("Missing credentials");
+        return res.status(400).json({ 
+            error: "Please provide both username and password" 
+        });
+    }
+
     try {
-        const { key, value } = req.body;
-        if (!key || !value) return res.status(400).json({ error: "Missing key or value" });
+        // Call the validation function
+        const loginResult = validateHospitalLogin(username, password);
+        console.log("Login result:", loginResult); // Add logging
 
-        const success = irisDB.insertData(key, value);
-        if (!success) return res.status(500).json({ error: "Failed to insert data" });
-
-        res.json({ message: "Data inserted successfully!" });
+        if (loginResult.success) {
+            res.json({ 
+                message: "Login successful"
+            });
+        } else {
+            res.status(401).json({ 
+                error: loginResult.error || "Invalid username or password"
+            });
+        }
     } catch (error) {
-        console.error("❌ Error inserting data:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error("Login error:", error); // Add logging
+        res.status(500).json({ 
+            error: "Internal server error. Please try again." 
+        });
     }
 });
+  
 
 // **Check Database Connection**
 app.get("/api/check-connection", (req, res) => {
