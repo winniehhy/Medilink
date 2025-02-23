@@ -24,6 +24,16 @@ body {
     z-index: -1;
 }
 
+.bg-colour {
+    width: 100%;
+    height: 100%;
+    background-color: #34a69f;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
 .bottom-rectangle {
     width: 100%;
     height: 50%;
@@ -124,4 +134,129 @@ body {
 
 .button:hover {
     background-color: #154a5f;
+}
+
+.sidebar {
+    width: 70px;
+    background-color: #34a69f;
+    height: 100vh;
+    overflow: hidden;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 15px 10px;
+}
+
+.sidebar:hover {
+    width: 220px;
+    background-color: #46c1b9;
+}
+
+/* Sidebar Links */
+.sidebar a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    padding: 15px 15px;
+    width: 100%;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.sidebar a:hover {
+    background: #267d74;
+}
+
+.icon {
+    font-size: 24px;
+    width: 35px;
+    text-align: center;
+}
+
+/* Label (hidden by default) */
+.label {
+    opacity: 0;
+    margin-left: 15px;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar:hover .label {
+    opacity: 1;
+}
+
+.labelline {
+    position: absolute;
+    left: 15px;
+    top: 18px;
+    font-size: 0.9em;
+    color: #34a69f;
+    background: white;
+    padding: 0 8px;
+    transition: 0.2s ease;
+    pointer-events: none;
+}
+
+input:focus + .labelline,
+input:valid + .labelline {
+    top: -10px;
+    left: 10px;
+    font-size: 0.8em;
+    color: #267d74;
+    transform: translateY(0);
+}
+
+.poll-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.poll-form label {
+    font-size: 20px;
+    margin: 0 50px;
+}
+
+.text-container {
+    width: 100%;
+    margin-top: 50px;
+}
+
+.fillarea {
+    position: relative;
+    height: 100px;
+    margin: 10px auto;
+    width: 100%;
+    max-width: 80%;
+}
+
+.fill-text-input {
+    width: 100%;
+    height: 80px;
+    outline: none;
+    font-size: 1.2em;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: 2px solid #34a69f;
+    background: white;
+    transition: 0.2s ease;
+    color: #333;
+}
+
+.fill-text-input:focus,
+.fill-text-input:valid {
+    border-color: #267d74;
+    box-shadow: 0 0 5px rgba(52, 166, 159, 0.5);
+}
+
+.save-button {
+    justify-content: center;
+    width: 30%;
+    margin-left: auto;
 }
