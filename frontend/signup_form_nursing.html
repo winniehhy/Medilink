@@ -183,36 +183,36 @@
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="username" required>
 				<label class="labelline">Create username</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="password" required>
 				<label class="labelline">Create password</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomeName" required>
 				<label class="labelline">Enter nursing home name</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomeAddress" required>
 				<label class="labelline">Enter nursing home address</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomePhone" required>
 				<label class="labelline">Enter nursing home contact number</label>
 			</div>
 		</div>
 		<div class="button-container">
-			<button class="button">
+			<button class="button" id="nextButton">
 				Next
 			</button>
 		</div>
@@ -222,6 +222,94 @@
 		function goBack() {
 			window.history.back();
 		}
+
+		// Attach event listener AFTER the DOM loads
+	// 	document.addEventListener("DOMContentLoaded", () => {
+	// 	document.getElementById("nextButton").addEventListener("click", async () => {
+	// 	  // 1) Get values
+	// 	  const username = document.getElementById("username").value;
+	// 	  const password = document.getElementById("password").value;
+	// 	  const nursingHomeName = document.getElementById("nursingHomeName").value;
+	// 	  const nursingHomeAddress = document.getElementById("nursingHomeAddress").value;
+	// 	  const nursingHomePhone = document.getElementById("nursingHomePhone").value;
+  
+	// 	  try {
+	// 		// 2) Send POST to Node.js route
+	// 		const response = await fetch("/api/nursinghome-signup-temp", {
+	// 		  method: "POST",
+	// 		  headers: { "Content-Type": "application/json" },
+	// 		  body: JSON.stringify({
+	// 			username,
+	// 			password,
+	// 			nursingHomeName,
+	// 			nursingHomeAddress,
+	// 			nursingHomePhone
+	// 		  })
+	// 		});
+  
+	// 		// 3) Handle response
+	// 		const data = await response.json();
+	// 		if (response.ok) {
+	// 		  window.location.href = '/signup_form_nursing_criteria';
+	// 		} else {
+	// 		  alert("Error: " + (data.error || "Unknown error"));
+	// 		}
+	// 	  } catch (error) {
+	// 		console.error("Fetch error:", error);
+	// 		alert("Something went wrong. Check console for details.");
+	// 	  }
+	// 	});
+	//   });
+	document.addEventListener("DOMContentLoaded", () => {
+		document.getElementById("nextButton").addEventListener("click", async () => {
+			// 1) Get values
+			const username = document.getElementById("username").value.trim();
+			const password = document.getElementById("password").value.trim();
+			const nursingHomeName = document.getElementById("nursingHomeName").value.trim();
+			const nursingHomeAddress = document.getElementById("nursingHomeAddress").value.trim();
+			const nursingHomePhone = document.getElementById("nursingHomePhone").value.trim();
+
+			// 2) Validate fields
+			let errorMessage = "";
+			if (!username) errorMessage += "Username is required.\n";
+			if (!password) errorMessage += "Password is required.\n";
+			if (!nursingHomeName) errorMessage += "Nursing home name is required.\n";
+			if (!nursingHomeAddress) errorMessage += "Nursing home address is required.\n";
+			if (!nursingHomePhone) errorMessage += "Nursing home phone number is required.\n";
+
+			if (errorMessage) {
+				alert(errorMessage);
+				return; // Stop execution if validation fails
+			}
+
+			try {
+				// 3) Send POST to Node.js route
+				const response = await fetch("/api/nursinghome-signup-temp", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						username,
+						password,
+						nursingHomeName,
+						nursingHomeAddress,
+						nursingHomePhone
+					})
+				});
+
+				// 4) Handle response
+				const data = await response.json();
+				if (response.ok) {
+					window.location.href = '/signup_form_nursing_criteria';
+				} else {
+					alert("Error: " + (data.error || "Unknown error"));
+				}
+			} catch (error) {
+				console.error("Fetch error:", error);
+				alert("Something went wrong. Check console for details.");
+			}
+		});
+	});
+
 	</script>
 </body>
 </html>
