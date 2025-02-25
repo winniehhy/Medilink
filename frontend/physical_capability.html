@@ -132,7 +132,22 @@
 		color: white;
 		font-weight: bold;
 		font-size: 18px;
+		padding: 0 10px; 
+		text-align: center;
+		transition: box-shadow 0.3s ease, transform 0.3s ease;
+		word-wrap: break-word; 
 	}
+
+	.section-progress-fill:hover {
+		box-shadow: 0 0 15px rgba(52, 166, 159, 0.8); /* glow effect */
+		transform: scale(1.05); /* Zoom effect */
+		cursor: pointer;
+	}
+
+	.section-link {
+		text-decoration: none;
+	}
+
 
 	.active-section {
 		background-color: #34a69f;
@@ -215,19 +230,19 @@
 </head>
 <body>
 	<div class="sidebar">
-		<a href="#">
+		<a href="javascript:history.back()">
 			<img src="src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
-		<a href="#">
+		<a href="existing_patient.html">
 			<img src="src/sidebar/existing_patient.png" width="25px" height="25px">
 			<span class="label">Existing Patient</span>
 		</a>
-		<a href="#">
+		<a href="track_progress.html">
 			<img src="src/sidebar/track_progress.png" width="30px" height="30px">
 			<span class="label">Track Progress</span>
 		</a>
-		<a href="#">
+		<a href="nursing_homepage.html">
 			<img src="src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
@@ -236,10 +251,18 @@
 	<div class="main-content">
 		<h1>Patient Information</h1>
 		<div class="section-progress">
-			<div class="section-progress-fill" style="flex-basis: 25%; background-color: #a0d6d6;">Basic Information</div>
-			<div class="section-progress-fill active-section" style="flex-basis: 25%;">Physical Capability</div>
-			<div class="section-progress-fill" style="flex-basis: 25%; background-color: #a0d6d6;">Cognitive & Mental Health</div>
-			<div class="section-progress-fill" style="flex-basis: 25%; background-color: #a0d6d6;">Document Needed</div>
+			<a href="basic_information.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+				<div class="section-progress-fill">Basic Information</div>
+			</a>
+			<a href="physical_capability.html" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
+				<div class="section-progress-fill">Physical Capability</div>
+			</a>
+			<a href="cognitive_mental_health.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+				<div class="section-progress-fill">Cognitive & Mental Health</div>
+			</a>
+			<a href="documents_needed.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+				<div class="section-progress-fill">Document Needed</div>
+			</a>
 		</div>
 
 		<form>
