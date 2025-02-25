@@ -112,7 +112,56 @@ function validateHospitalLogin(username, password) {
     }
 }
 
+function insertNursingHomeData(finalData) {
+	const db = connectToDB();
+	if (!db) return false;
+  
+	// Log original parameter types and values
+	console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
+	console.log("Original parameter values:", finalData);
+  
+	// Process selected_treatments
+	let filteredTreatments = [];
+	if (finalData.treatments === "Some" && Array.isArray(finalData.selected_treatments)) {
+	  filteredTreatments = finalData.selected_treatments.filter(t => t !== "Others").map(t => t.startsWith("Others:") ? t.replace("Others: ", "") : t);
+	}
+  
+	// Convert each parameter using JSON.stringify
+	const args = [
+	  JSON.stringify(finalData.username),
+	  JSON.stringify(finalData.password),
+	  JSON.stringify(finalData.nursingHomeName || ""),
+	  JSON.stringify(finalData.nursingHomeAddress || ""),
+	  JSON.stringify(finalData.nursingHomePhone || ""),
+	  JSON.stringify(finalData.party_responsibility || ""),
+	  JSON.stringify(finalData.available_days || []),
+	  JSON.stringify(finalData.time_slot || {}),
+	  JSON.stringify(finalData.treatments || ""),
+	  JSON.stringify(filteredTreatments)
+	];
+  
+	// Log converted parameters and their types
+	console.log("Converted parameters:", args);
+	args.forEach((arg, index) => {
+	  console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
+	});
+  
+	try {
+	  db.classMethodVoid(
+		"Medilink.NursingHomeAccount",
+		"InsertNursingHomeData",
+		...args
+	  );
+	  console.log(`✅ Inserted nursing home account for: ${finalData.username}`);
+	  return true;
+	} catch (error) {
+	  console.error("❌ Error calling class method:", error);
+	  return false;
+	}
+  }
+
 module.exports = {
   insertHospitalData,
-  validateHospitalLogin
+  validateHospitalLogin,
+  insertNursingHomeData
 };
