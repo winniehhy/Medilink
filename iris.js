@@ -160,8 +160,31 @@ function insertNursingHomeData(finalData) {
 	}
   }
 
+  function getHospitalAccounts() {
+    const db = connectToDB();
+    if (!db) {
+        console.error("❌ Database connection failed");
+        return null;
+    }
+
+    try {
+        // Call ObjectScript method and get JSON
+        let jsonResult = db.classMethodValue("Medilink.HospitalAccount", "GetAllHospitals");
+
+        // Convert JSON string to JavaScript array
+        let results = JSON.parse(jsonResult);
+
+        console.log("🔍 Query Result:", results);
+        return results;
+    } catch (error) {
+        console.error("❌ Error fetching hospital data:", error.message);
+        return [];
+    }
+}
+
 module.exports = {
   insertHospitalData,
   validateHospitalLogin,
-  insertNursingHomeData
+  insertNursingHomeData,
+  getHospitalAccounts
 };
