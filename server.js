@@ -141,6 +141,19 @@ app.post("/api/nursinghome-signup", (req, res) => {
     }
 });
   
+/*--------------------------------------- Patient Search Bar ------------------------------------------------------- */
+app.get('/api/hospital-search', async (req, res) => {
+    try {
+        const hospitals = getHospitalAccounts();
+        if (!hospitals) {
+            return res.status(500).json({ success: false, error: "Failed to fetch hospital data" });
+        }
+        res.json({ success: true, data: hospitals });
+    } catch (error) {
+        console.error("Error fetching hospital data:", error.message);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
 
 // **Check Database Connection**
 app.get("/api/check-connection", (req, res) => {
