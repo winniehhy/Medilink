@@ -1,0 +1,479 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+	<title>Nursing Home Readmission Criteria</title>
+	<style>
+		body {
+			background-color: #34a69f;
+			color: black;
+			/* text-align: center; */
+			padding: 0;
+			margin: 0;
+			font-family: 'Lato', sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			width: 100%;
+			flex-direction: column;
+		}
+
+		.middle-rectangle {
+			width: 100%;
+			max-width: 900px;
+			/* background-color: #D9D9D93A; */
+			background-color: white;
+			border-radius: 15px;
+			padding: 30px;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+			justify-content: left;
+			text-justify: left;
+			/* text-align: center; */
+			position: relative;
+			/* text-align: left; */
+		}
+
+		.question-rectangle {
+			width: 100%;
+			max-width: 800px;
+			background-color: white;
+			border-radius: 15px;
+			padding: 5px;
+			display: flex;
+			text-align: left;
+			position: relative;
+			justify-content: left;
+			align-items: left;
+			margin: auto;
+			top: 5%;
+			border-color: #34a69f;
+			border: 2px solid #34a69f;
+		}
+
+		.header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: relative;
+			width: 100%;
+		}
+
+		.subtitle {
+			font-size: 32px;
+			margin: 0;
+			flex-grow: 1;
+			text-align: center;
+			font-weight: bold;
+		}
+
+		.criteria {
+			font-size: 18px;
+			margin: 0%;
+			text-align: left;
+			text-justify: left;
+			width: 100%;
+		}
+
+		.button-container {
+			display: flex;
+			flex-direction: column;
+			margin-top: 50px;
+			text-align: right;
+			align-items: flex-end;
+		}
+
+		.button {
+			display: flex;
+			align-items: right;
+			/* justify-content: flex-start; */
+			justify-content: center;
+			background-color: #08212b;
+			color: white;
+			font-size: 18px;
+			font-weight: bold;
+			padding: 15px;
+			border: none;
+			border-radius: 30px;
+			cursor: pointer;
+			width: 100%;
+			max-width: 100px;
+			margin-left: auto;
+			/* margin: inherit; */
+			text-align: center;
+		}
+
+		.button:hover {
+			background-color: #154a5f;
+		}
+
+		.back-arrow {
+			font-size: 22px;
+			cursor: pointer;
+			position: absolute;
+			left: 10px;
+			color: #333;
+			font-weight: bold;
+			background: none;
+			border: none;
+			outline: none;
+			padding: 5px;
+			display: flex;
+			align-items: left;
+			transition: color 0.2s ease;
+		}
+
+		.back-arrow:hover {
+			color: #267d74;
+		}
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.3s;
+			width: 100%;
+			flex-shrink: 0;
+			margin: 0; /* Remove default margin */
+			padding-left: 0;
+        }
+		.option:hover {
+            background: #f0f0f0;
+        }
+        input[type="radio"] {
+			margin: 0; /* Remove default margin */
+			padding: 0;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+		.custom-border {
+        border: 2px solid #34a69f; /* Change color here */
+        border-radius: 8px; /* Optional: Adds rounded corners */
+        padding: 10px;
+        margin-bottom: 15px;
+		width: 90%;
+    }
+
+    legend {
+        font-weight: bold;
+        color: #34a69f; /* Matches border color */
+    }
+
+	</style>
+</head>
+<body>
+	<!-- <div class="top-rectangle"></div> -->
+	<div class="middle-rectangle">
+		<div class="header">
+			<button class="back-arrow" onclick="goBack()">&#8592;</button>
+			<div class="subtitle">Nursing Home Readmission Criteria</div>
+		</div>
+	
+		<div class="question-rectangle">
+			<div class="criteria">
+				<ol>
+					<li>
+						<p><b>Who is responsible for providing ambulance transport for patient transfers?</b></p>
+						<form>
+							<input type="radio" id="hospital" name="party" value="Hospital">
+                			<label for="hospital">Hospital</label><br>
+
+							<input type="radio" id="nursing_home" name="party" value="Nursing Home (You)">
+                			<label for="nursing_home">Nursing Home (You)</label><br>
+						</form>
+					</li><br>
+
+					<li>
+						<p><b>What days and time slots are available for accepting discharged patients?</b></p>
+						<form>
+							<fieldset class="custom-border">
+								<legend>Select Day(s):</legend>
+								<div>
+									<label><input type="checkbox" name="days" value="Monday"> Monday</label>
+									<label><input type="checkbox" name="days" value="Tuesday"> Tuesday</label>
+									<label><input type="checkbox" name="days" value="Wednesday"> Wednesday</label>
+									<label><input type="checkbox" name="days" value="Thursday"> Thursday</label>
+									<label><input type="checkbox" name="days" value="Friday"> Friday</label>
+									<label><input type="checkbox" name="days" value="Saturday"> Saturday</label>
+									<label><input type="checkbox" name="days" value="Sunday"> Sunday</label>
+								</div>
+							</fieldset>
+					
+							<fieldset class="custom-border">
+								<legend>Select Time Slot:</legend>
+								<label for="time_start">From:&nbsp;</label>
+								<select id="time_start" name="time_start">
+									<option value="10:00">10:00</option>
+									<option value="11:00">11:00</option>
+									<option value="12:00">12:00</option>
+									<option value="13:00">13:00</option>
+									<option value="14:00">14:00</option>
+									<option value="15:00">15:00</option>
+									<option value="16:00">16:00</option>
+								</select>
+					
+								<label for="time_end">&nbsp;&nbsp;&nbsp;To:&nbsp;</label>
+								<select id="time_end" name="time_end">
+									<option value="11:00">11:00</option>
+									<option value="12:00">12:00</option>
+									<option value="13:00">13:00</option>
+									<option value="14:00">14:00</option>
+									<option value="15:00">15:00</option>
+									<option value="16:00">16:00</option>
+									<option value="17:00">17:00</option>
+								</select>
+							</fieldset>
+						</form>
+					</li>					
+
+					<li>
+						<p><b>Do you accept patients upon discharge if they require invasive treatments?</b></p>
+						<form>
+							<input type="radio" id="none" name="treatments" value="None" onclick="toggleCheckboxes()">
+							<label for="none">No, no treatments accepted</label><br>
+
+							<input type="radio" id="all" name="treatments" value="All" onclick="toggleCheckboxes()">
+							<label for="all">Yes, all treatments accepted</label><br>
+
+							<input type="radio" id="some" name="treatments" value="Some" onclick="toggleCheckboxes()">
+							<label for="some">Yes, some treatments accepted (select all that apply):</label><br>
+
+							<!-- Checkboxes (Initially Hidden) -->
+							<div id="checkbox-options" style="display: none; margin-left: 20px;">
+								<input type="checkbox" id="feeding_tube" name="treatments" value="Feeding tube">
+								<label for="feeding_tube">Feeding Tube (e.g., PEG tube, NG tube)</label><br>
+
+								<input type="checkbox" id="invasive_line" name="treatments" value="Invasive line">
+								<label for="invasive_line">Invasive Line</label><br>
+
+								<input type="checkbox" id="urinary_catheter" name="treatments" value="Urinary Catheter">
+								<label for="urinary_catheter">Urinary Catheter</label><br>
+
+								<input type="checkbox" id="others" name="treatments" value="Others">
+								<label for="others">Others:</label>
+								<input type="text" id="other_treatments" name="other_treatments" placeholder="Please specify" oninput="toggleOthersCheckbox()">
+							</div>
+						</form>
+					</li>
+				</ol>
+			</div>
+		</div>
+		<div class="button-container">
+			<button class="button" id="submitButton">
+				Submit
+			</button>
+		</div>
+	</div>
+	<!-- <div class="bottom-rectangle"></div> -->
+
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+		function selectOption(selected) {
+            // Remove 'selected' class from all options
+            document.querySelectorAll('.option').forEach(option => option.classList.remove('selected'));
+            
+            // Add 'selected' class to the clicked option
+            selected.classList.add('selected');
+        }
+		function toggleOthersCheckbox() {
+			var othersCheckbox = document.getElementById("others");
+			var othersInput = document.getElementById("other_treatments");
+
+			if (othersInput.value.trim() !== "") {
+				othersCheckbox.checked = true;
+			} else {
+				othersCheckbox.checked = false;
+			}
+		}
+		function toggleCheckboxes() {
+			var someSelected = document.getElementById("some").checked;
+			var checkboxesDiv = document.getElementById("checkbox-options");
+
+			if (someSelected) {
+				checkboxesDiv.style.display = "block";
+			} else {
+				checkboxesDiv.style.display = "none";
+			}
+		}
+
+	// 	document.addEventListener("DOMContentLoaded", function () {
+	// 	function collectFormData() {
+	// 		let formData = {};
+
+	// 		// 1. Extract selected radio button for ambulance transport responsibility
+	// 		const party = document.querySelector('input[name="party"]:checked');
+	// 		formData.party_responsibility = party ? party.value : null;
+
+	// 		// 2. Extract selected checkboxes for available days
+	// 		const selectedDays = [];
+	// 		document.querySelectorAll('input[name="days"]:checked').forEach(checkbox => {
+	// 			selectedDays.push(checkbox.value);
+	// 		});
+	// 		formData.available_days = selectedDays;
+
+	// 		// 3. Extract selected time slots
+	// 		formData.time_slot = {
+	// 			from: document.getElementById("time_start").value,
+	// 			to: document.getElementById("time_end").value
+	// 		};
+
+	// 		// 4. Extract treatment acceptance response
+	// 		const treatmentSelection = document.querySelector('input[name="treatments"]:checked');
+	// 		formData.treatments = treatmentSelection ? treatmentSelection.value : null;
+
+	// 		// 5. Extract specific treatment checkboxes if "some" treatments are accepted
+	// 		if (formData.treatments === "Some") {
+	// 			let selectedTreatments = [];
+	// 			document.querySelectorAll('#checkbox-options input[type="checkbox"]:checked').forEach(checkbox => {
+	// 				selectedTreatments.push(checkbox.value);
+	// 			});
+
+	// 			// Check if "Others" has input
+	// 			const otherTreatmentText = document.getElementById("other_treatments").value.trim();
+	// 			if (otherTreatmentText) {
+	// 				selectedTreatments.push(`Others: ${otherTreatmentText}`);
+	// 			}
+
+	// 			formData.selected_treatments = selectedTreatments;
+	// 		}
+
+	// 		return formData;
+	// 	}
+
+	// document.getElementById("submitButton").addEventListener("click", async (event) => {
+    // event.preventDefault(); // Prevent default form submission
+    // const formData = collectFormData(); // Collect form data
+
+    // try {
+    //     const response = await fetch("/api/nursinghome-signup", {
+    //         method: "POST",
+    //         headers: { "Content-Type": "application/json" },
+    //         body: JSON.stringify(formData)
+    //     });
+
+    //     console.log("Response Status:", response.status); // Log HTTP status
+
+    //     if (!response.ok) {
+    //         throw new Error("Network response was not ok");
+    //     }
+
+    //     const data = await response.json(); // Read the response body as JSON
+    //     console.log("Server Response:", data); // Log response data
+
+    //     window.location.href = "/logIn";
+    // } catch (error) {
+    //     console.error("Error submitting form:", error);
+    // }
+	// });
+	// });
+	document.addEventListener("DOMContentLoaded", function () {
+		function collectFormData() {
+			let formData = {};
+			let isValid = true;
+			let errorMessage = "";
+
+			// 1. Extract selected radio button for ambulance transport responsibility
+			const party = document.querySelector('input[name="party"]:checked');
+			if (!party) {
+				isValid = false;
+				errorMessage += "Please select who is responsible for ambulance transport.\n";
+			}
+			formData.party_responsibility = party ? party.value : null;
+
+			// 2. Extract selected checkboxes for available days
+			const selectedDays = [];
+			document.querySelectorAll('input[name="days"]:checked').forEach(checkbox => {
+				selectedDays.push(checkbox.value);
+			});
+			if (selectedDays.length === 0) {
+				isValid = false;
+				errorMessage += "Please select at least one available day.\n";
+			}
+			formData.available_days = selectedDays;
+
+			// 3. Extract selected time slots
+			const timeStart = document.getElementById("time_start").value;
+			const timeEnd = document.getElementById("time_end").value;
+			if (!timeStart || !timeEnd) {
+				isValid = false;
+				errorMessage += "Please select a time slot.\n";
+			}
+			formData.time_slot = { from: timeStart, to: timeEnd };
+
+			// 4. Extract treatment acceptance response
+			const treatmentSelection = document.querySelector('input[name="treatments"]:checked');
+			if (!treatmentSelection) {
+				isValid = false;
+				errorMessage += "Please select a treatment acceptance response.\n";
+			}
+			formData.treatments = treatmentSelection ? treatmentSelection.value : null;
+
+			// 5. Extract specific treatment checkboxes if "Some" treatments are accepted
+			if (formData.treatments === "Some") {
+				let selectedTreatments = [];
+				document.querySelectorAll('#checkbox-options input[type="checkbox"]:checked').forEach(checkbox => {
+					selectedTreatments.push(checkbox.value);
+				});
+
+				// Check if "Others" has input
+				const otherTreatmentText = document.getElementById("other_treatments").value.trim();
+				if (otherTreatmentText) {
+					selectedTreatments.push(`Others: ${otherTreatmentText}`);
+				}
+
+				if (selectedTreatments.length === 0) {
+					isValid = false;
+					errorMessage += "Please select at least one specific treatment.\n";
+				}
+
+				formData.selected_treatments = selectedTreatments;
+			}
+
+			if (!isValid) {
+				alert(errorMessage);
+				return null; // Prevent form submission
+			}
+
+			return formData;
+		}
+
+		document.getElementById("submitButton").addEventListener("click", async (event) => {
+			event.preventDefault(); // Prevent default form submission
+			const formData = collectFormData(); // Collect form data
+
+			if (!formData) return; // Stop if validation failed
+
+			try {
+				const response = await fetch("/api/nursinghome-signup", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(formData)
+				});
+
+				console.log("Response Status:", response.status); // Log HTTP status
+
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+
+				const data = await response.json(); // Read the response body as JSON
+				console.log("Server Response:", data); // Log response data
+
+				window.location.href = "/logIn";
+			} catch (error) {
+				console.error("Error submitting form:", error);
+			}
+		});
+	});
+
+	</script>
+
+</body>
+</html>

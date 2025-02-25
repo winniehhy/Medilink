@@ -1,10 +1,19 @@
 const express = require("express");
+const session = require("express-session");
 const bodyParser = require("body-parser");
-const { insertHospitalData , validateHospitalLogin } = require("./iris");
+const { insertHospitalData , insertNursingHomeData, validateHospitalLogin, getHospitalAccounts } = require("./iris");
 const path = require("path");  // ✅ Import path module
+const cors = require('cors');
 
 const app = express();
+app.use(cors()); // double check
 app.use(bodyParser.json());
+
+app.use(session({
+	secret: "mySuperSecretKey", // save to .env later
+	resave: false,
+	saveUninitialized: true
+  }));
 
 // Serve static files from "frontend" folder
 app.use(express.static(path.join(__dirname, "frontend")));
@@ -31,6 +40,10 @@ app.get("/signup_form_nursing", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing.html"));
 });
 
+app.get("/signup_form_nursing_criteria", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing_criteria.html"));
+});
+
 /*--------------------------------------- SIGN UP ------------------------------------------------------- */
 
 // HOSPITAL SIGNUP ROUTE
@@ -51,6 +64,44 @@ app.post("/api/hospital-signup", (req, res) => {
   
     // Send success response back to the frontend
     res.status(201).json({ message: "Hospital account created successfully!" });
+  });
+
+// NURSING HOME SIGNUP ROUTE: FIRST PAGE
+app.post("/api/nursinghome-signup-temp", (req, res) => {
+    const { username, password, nursingHomeName, nursingHomeAddress, nursingHomePhone } = req.body;
+
+    if (!username || !password || !nursingHomeName || !nursingHomeAddress || !nursingHomePhone) {
+        return res.status(400).json({ error: "All fields are required." });
+    }
+
+    if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long." });
+    }
+
+    req.session.signupData = { // store data in session
+        username,
+        nursingHomeName,
+        nursingHomeAddress,
+        nursingHomePhone,
+        password // Placeholder, need to hash it later and remove from session
+    };
+
+    res.status(200).json({ message: "Data stored in session successfully" });
+});
+
+	
+// NURSING HOME SIGNUP ROUTE: SECOND PAGE
+app.post("/api/nursinghome-signup", (req, res) => {
+	if (!req.session.signupData) {
+	  return res.status(400).send("First step data missing.");
+	}
+  
+	const finalData = { ...req.session.signupData, ...req.body };
+	console.log("final data", finalData);
+	const success = insertNursingHomeData(finalData);
+  
+	req.session.destroy(); // Clear session after storing
+	res.status(200).json({message: "Signup completed"});
   });
 
   /*--------------------------------------- Log In ------------------------------------------------------- */
