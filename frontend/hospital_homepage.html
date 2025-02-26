@@ -8,7 +8,7 @@
 
 	<style>
 		body {
-			background-color: white;
+			background-color: #34A69F;
 			color: black;
 			text-align: center;
 			padding: 0;
@@ -21,86 +21,35 @@
 			flex-direction: column;
 		}
 
-		.top-rectangle {
-			width: 100%;
-			height: 50%;
-			background-color: #34a69f;
+		.search-container {
 			position: absolute;
-			top: 0;
-			left: 0;
-			z-index: -1;
-		}
-
-		.bottom-rectangle {
-			width: 100%;
-			height: 50%;
-			background-color: white;
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			z-index: -1;
-		}
-
-		.middle-rectangle {
-			width: 90%;
-			max-width: 500px;
-			background-color: white;
-			border-radius: 15px;
-			padding: 50px;
-			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-			text-align: center;
-			position: relative;
-		}
-
-		.header {
+			top: 20px;
+			left: 50%;
+			transform: translateX(-50%);
 			display: flex;
 			align-items: center;
-			justify-content: center;
-			position: relative;
-			width: 100%;
+			background: white;
+			padding: 5px 10px;
+			border-radius: 20px;
+			box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 		}
-
-		.subtitle {
-			font-size: 22px;
-			margin-bottom: 20px;
-			flex-grow: 1;
-			text-align: left;
-			font-weight: bold;
-		}
-
-		.input-field {
-			width: 100%;
-    		max-width: 400px;
-    		padding: 10px;
-			font-size: 18px;
+		
+		.search-bar {
 			border: none;
-			border-bottom: 2px solid #34a69f;
 			outline: none;
-			background: transparent;
-			text-align: left;
-			color: black;
+			padding: 8px;
+			width: 400px;
+			border-radius: 15px;
+			font-size: 16px;
 		}
-
-		.btn {
-            padding: 2vh 4vw;
-            font-size: 20px;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-            margin-top: 30px;
-        }
-
-		.btn-custom {
-            background-color: #08212b;
-            color: white;
-        }
-
-		.btn-custom:hover {
-            background-color: white;
-            color: #08212b;
-            border: 2px solid #08212b;
-        }
+		
+		.search-button {
+			border: none;
+			background: none;
+			cursor: pointer;
+			font-size: 18px;
+			padding-left: 8px;
+		}		
 
 		.sidebar {
 		width: 70px;
@@ -116,6 +65,11 @@
 		align-items: flex-start;
 		justify-content: center;
 		padding: 15px 10px;
+	}
+
+	.search-icon {
+		width:	20px;
+		height: 20px;
 	}
 
 	.sidebar:hover {
@@ -148,6 +102,44 @@
 	.sidebar:hover .label {
 		opacity: 1;
 	}
+
+	.patient-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+		gap: 20px;
+		padding: 20px;
+		margin-top: 80px;
+		min-height: 300px;
+		max-width: 1200px;
+	}
+
+	.patient-card {
+		background: white;
+		padding: 15px;
+		border-radius: 15px;
+		box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+		text-align: left;
+		position: relative;
+		min-height: 180px;
+	}
+
+	.patient-button {
+		position: absolute;
+		bottom: 10px;
+		right: 10px;
+		background-color: #08212B;
+		color: white;
+		border: none;
+		padding: 8px 12px;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 14px;
+	}
+	
+	.patient-button:hover {
+		background-color: #A9A9A9;
+	}
+
 	</style>
 </head>
 <body>
@@ -161,17 +153,64 @@
 			<span class="label">Back to Home</span>
 		</a>
 	</div>
-	<div class="top-rectangle"></div>
-	<div class="middle-rectangle">
-		<div class="header">
-			<div class="subtitle">Enter Patient's IC</div>
-		</div>
-		<input type="text" class="input-field">
-		<button class="btn btn-custom">SEARCH</button>
+	<div class="search-container">
+		<input type="text" id="searchInput" class="search-bar" placeholder="Patient’s IC">
+    	<button class="search-button" onclick="searchPatient()">
+        	<img src="src/sidebar/search.png" alt="Search" class="search-icon">
+    	</button>
 	</div>
+	<div id="patientList" class="patient-grid"></div>
+</body>
 
 	<script>
 		function goBack() {
 			window.history.back();
 		}
+    
+		// Sample patient data for testing n will be fetching data from the db
+		const patients = [
+        { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+        { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+        { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+		    { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+		    { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+        { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+        { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+		    { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+		    { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+        { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+        { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+		    { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+		    { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+        { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+        { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" }
+    	];
+
+		function displayPatients(patients) {
+			const grid = document.getElementById("patientList");
+			grid.innerHTML = "";
+
+			patients.forEach(patient => {
+				const card = document.createElement("div");
+				card.className = "patient-card";
+				card.innerHTML = `
+                	<p><strong>Name:</strong> ${patient.name}</p>
+                	<p><strong>IC:</strong> ${patient.ic}</p>
+                	<p><strong>Nursing Home:</strong> ${patient.nursingHome}</p>
+                	<p><strong>Admission Date:</strong> ${patient.admissionDate}</p>
+					<button class="patient-button">Ready to Discharge</button>
+            	`;
+				grid.appendChild(card);
+			});
+		}
+
+		function searchPatient() {
+			const searchValue = document.getElementById("searchInput").value;
+			const filteredPatients = patients.filter(patient => 
+				patient.ic.includes(searchValue)
+			);
+			displayPatients(filteredPatients);
+		}
+
+		displayPatients(patients);
 	</script>
