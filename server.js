@@ -1,10 +1,20 @@
 const express = require("express");
+const session = require("express-session");
 const bodyParser = require("body-parser");
-const { insertHospitalData , validateHospitalLogin } = require("./iris");
+const { insertHospitalData , insertNursingHomeData, validateHospitalLogin, getHospitalAccounts } = require("./iris");
 const path = require("path");  // ✅ Import path module
+const cors = require('cors');
+const bcrypt = require("bcryptjs");
 
 const app = express();
+app.use(cors()); // double check
 app.use(bodyParser.json());
+
+app.use(session({
+	secret: "mySuperSecretKey", // save to .env later
+	resave: false,
+	saveUninitialized: true
+  }));
 
 // Serve static files from "frontend" folder
 app.use(express.static(path.join(__dirname, "frontend")));
@@ -31,26 +41,97 @@ app.get("/signup_form_nursing", (req, res) => {
     res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing.html"));
 });
 
+app.get("/signup_form_nursing_criteria", (req, res) => {
+    res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing_criteria.html"));
+});
+
 /*--------------------------------------- SIGN UP ------------------------------------------------------- */
 
 // HOSPITAL SIGNUP ROUTE
-app.post("/api/hospital-signup", (req, res) => {
+app.post("/api/hospital-signup", async (req, res) => {
     const { username, password, hospitalName, hospitalAddress, hospitalPhone } = req.body;
   
-    // Basic validation for required fields
-    if (!username || !password) {
-      return res.status(400).json({ error: "Missing username or password" });
+    if (!username || !password || !hospitalName || !hospitalAddress || !hospitalPhone) {
+        return res.status(400).json({ error: "Missing fields!" });
     }
-  
-    // Call the function to insert hospital data
-    const success = insertHospitalData(username, password, hospitalName, hospitalAddress, hospitalPhone);
-  
-    if (!success) {
-      return res.status(500).json({ error: "Failed to insert hospital account" });
+
+	if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long." });
     }
+
+    try {
+        const salt =  await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const success = await insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone);
+        
+        if (!success) {
+            return res.status(500).json({ error: "Failed to insert hospital account" });
+        }
+
+        res.status(201).json({ message: "Hospital account created successfully!" });
+
+    } catch (error) {
+        console.error("Error during hospital signup:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// NURSING HOME SIGNUP ROUTE: FIRST PAGE
+app.post("/api/nursinghome-signup-temp", async (req, res) => {
+    const { username, password, nursingHomeName, nursingHomeAddress, nursingHomePhone } = req.body;
+
+    if (!username || !password || !nursingHomeName || !nursingHomeAddress || !nursingHomePhone) {
+        return res.status(400).json({ error: "All fields are required." });
+    }
+
+    if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long." });
+    }
+
+	try {
+		const salt =  await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
+
+		req.session.signupData = { // store data in session
+			username,
+			nursingHomeName,
+			nursingHomeAddress,
+			nursingHomePhone,
+			hashedPassword
+		};
+
+		res.status(200).json({ message: "Data stored in session successfully" });
+
+	} catch (error) {
+		console.error("Error during nursing home signup:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
+});
+
+	
+// NURSING HOME SIGNUP ROUTE: SECOND PAGE
+app.post("/api/nursinghome-signup", async (req, res) => {
+	if (!req.session.signupData) {
+	  return res.status(400).send("First step data missing.");
+	}
   
-    // Send success response back to the frontend
-    res.status(201).json({ message: "Hospital account created successfully!" });
+	const finalData = { ...req.session.signupData, ...req.body };
+	console.log("final data", finalData);
+	try {
+		const success = await insertNursingHomeData(finalData);
+
+		if (!success) {
+			req.session.destroy(); // Clear session after storing
+            return res.status(500).json({ error: "Failed to insert nursing home account" });
+        }
+		res.status(200).json({message: "Signup completed"});
+		
+	} catch (error) {
+		req.session.destroy(); // Clear session after storing
+        console.error("Error during nursing home signup:", error);
+        res.status(500).json({ error: "Internal server error" });
+	}
   });
 
   /*--------------------------------------- Log In ------------------------------------------------------- */
@@ -90,6 +171,19 @@ app.post("/api/hospital-signup", (req, res) => {
     }
 });
   
+/*--------------------------------------- Patient Search Bar ------------------------------------------------------- */
+app.get('/api/hospital-search', async (req, res) => {
+    try {
+        const hospitals = getHospitalAccounts();
+        if (!hospitals) {
+            return res.status(500).json({ success: false, error: "Failed to fetch hospital data" });
+        }
+        res.json({ success: true, data: hospitals });
+    } catch (error) {
+        console.error("Error fetching hospital data:", error.message);
+        res.status(500).json({ success: false, error: "Internal Server Error" });
+    }
+});
 
 // **Check Database Connection**
 app.get("/api/check-connection", (req, res) => {
