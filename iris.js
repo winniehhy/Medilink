@@ -22,47 +22,26 @@ function connectToDB() {
   }
 }
 
-function insertHospitalData(username, password, hospitalName, hospitalAddress, hospitalPhone) {
-  const db = connectToDB();
-  if (!db) return false;
+function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone) {
+    return new Promise((resolve, reject) => {
+        const db = connectToDB();
+        if (!db) return reject("Database connection failed");
 
-  // Log original parameter types and values
-  console.log("Original parameter types:", {
-    username: typeof username,
-    password: typeof password,
-    hospitalName: typeof hospitalName,
-    hospitalAddress: typeof hospitalAddress,
-    hospitalPhone: typeof hospitalPhone
-  });
-  console.log("Original parameter values:", { username, password, hospitalName, hospitalAddress, hospitalPhone });
-
-  // Convert each parameter using JSON.stringify
-  const args = [
-    JSON.stringify(username),
-    JSON.stringify(password),
-    JSON.stringify(hospitalName || ""),
-    JSON.stringify(hospitalAddress || ""),
-    JSON.stringify(hospitalPhone || "")
-  ];
-  
-  // Log converted parameters and their types
-  console.log("Converted parameters:", args);
-  args.forEach((arg, index) => {
-    console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
-  });
-
-  try {
-    db.classMethodVoid(
-      "Medilink.HospitalAccount",
-      "InsertHospitalData",
-      ...args
-    );
-    console.log(`✅ Inserted hospital account for: ${username}`);
-    return true;
-  } catch (error) {
-    console.error("❌ Error calling class method:", error);
-    return false;
-  }
+		const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
+		console.log("Prepared parameters:", args);
+        try {
+            db.classMethodVoid(
+                "Medilink.HospitalAccount",
+                "InsertHospitalData",
+                ...args
+            );
+            console.log(`✅ Inserted hospital account for: ${username}`);
+            resolve(true);
+        } catch (error) {
+            console.error("❌ Error calling class method:", error);
+            reject(false);
+        }
+    });
 }
 
 function validateHospitalLogin(username, password) {
