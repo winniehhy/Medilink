@@ -85,6 +85,8 @@
 			height: 60px;
 			margin: 10px auto;
 			width: 80%;
+			display: flex;
+    		align-items: center;
 		}
 
 		input {
@@ -97,6 +99,7 @@
 			background: white;
 			transition: 0.2s ease;
 			color: #333;
+			padding-right: 30px;
 		}
 
 		input:focus,
@@ -173,6 +176,33 @@
 			max-width: 100px;
 			margin: 0;
 		}
+
+		.eye-icon {
+			position: absolute;
+			right: 20px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.eye-icon svg {
+			width: 24px;
+			height: 24px;
+			stroke: #666;
+			transition: stroke 0.2s ease-in-out;
+		}
+
+		.eye-icon svg:hover {
+			stroke: #333;
+		}
+
+		input[type="password"]::-ms-reveal, 
+		input[type="password"]::-ms-clear,
+		input[type="password"]::-webkit-contacts-auto-fill-button,
+		input[type="password"]::-webkit-credentials-auto-fill-button {
+			display: none;
+		}
 	</style>
 </head>
 <body>
@@ -183,36 +213,48 @@
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="username" required>
 				<label class="labelline">Create username</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Create password</label>
+			  <input type="password" id="password" required>
+			  <label class="labelline">Create password</label>
+			  <span id="togglePassword" class="eye-icon">
+				<svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+				  <circle cx="12" cy="12" r="3"></circle>
+				</svg>
+				<svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+				  <path d="M17.94 17.94A10.88 10.88 0 0 1 12 20c-7 0-11-8-11-8a18.74 18.74 0 0 1 4.17-5.56"></path>
+				  <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12"></path>
+				  <path d="M21 21L3 3"></path>
+				  <path d="M10 4.24A10.88 10.88 0 0 1 12 4c7 0 11 8 11 8a18.74 18.74 0 0 1-2.5 3.5"></path>
+				</svg>
+			  </span>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomeName" required>
 				<label class="labelline">Enter nursing home name</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomeAddress" required>
 				<label class="labelline">Enter nursing home address</label>
 			</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
+				<input type="text" id="nursingHomePhone" required>
 				<label class="labelline">Enter nursing home contact number</label>
 			</div>
 		</div>
 		<div class="button-container">
-			<button class="button">
+			<button class="button" id="nextButton">
 				Next
 			</button>
 		</div>
@@ -222,6 +264,73 @@
 		function goBack() {
 			window.history.back();
 		}
+
+		document.getElementById("togglePassword").addEventListener("click", function () {
+			let passwordField = document.getElementById("password");
+			let eyeOpen = document.getElementById("eyeOpen");
+			let eyeClosed = document.getElementById("eyeClosed");
+
+			if (passwordField.type === "password") {
+			passwordField.type = "text";
+			eyeOpen.style.display = "none";
+			eyeClosed.style.display = "inline";
+			} else {
+			passwordField.type = "password";
+			eyeOpen.style.display = "inline";
+			eyeClosed.style.display = "none";
+			}
+		});
+
+		document.addEventListener("DOMContentLoaded", () => {
+			document.getElementById("nextButton").addEventListener("click", async () => {
+				// 1) Get values
+				const username = document.getElementById("username").value.trim();
+				const password = document.getElementById("password").value.trim();
+				const nursingHomeName = document.getElementById("nursingHomeName").value.trim();
+				const nursingHomeAddress = document.getElementById("nursingHomeAddress").value.trim();
+				const nursingHomePhone = document.getElementById("nursingHomePhone").value.trim();
+
+				// 2) Validate fields
+				let errorMessage = "";
+				if (!username) errorMessage += "Username is required.\n";
+				if (!password) errorMessage += "Password is required.\n";
+				if (!nursingHomeName) errorMessage += "Nursing home name is required.\n";
+				if (!nursingHomeAddress) errorMessage += "Nursing home address is required.\n";
+				if (!nursingHomePhone) errorMessage += "Nursing home phone number is required.\n";
+
+				if (errorMessage) {
+					alert(errorMessage);
+					return; // Stop execution if validation fails
+				}
+
+				try {
+					// 3) Send POST to Node.js route
+					const response = await fetch("/api/nursinghome-signup-temp", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							username,
+							password,
+							nursingHomeName,
+							nursingHomeAddress,
+							nursingHomePhone
+						})
+					});
+
+					// 4) Handle response
+					const data = await response.json();
+					if (response.ok) {
+						window.location.href = '/signup_form_nursing_criteria';
+					} else {
+						alert("Error: " + (data.error || "Unknown error"));
+					}
+				} catch (error) {
+					console.error("Fetch error:", error);
+					alert("Something went wrong. Check console for details.");
+				}
+			});
+		});
+
 	</script>
 </body>
 </html>

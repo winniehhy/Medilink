@@ -22,47 +22,26 @@ function connectToDB() {
   }
 }
 
-function insertHospitalData(username, password, hospitalName, hospitalAddress, hospitalPhone) {
-  const db = connectToDB();
-  if (!db) return false;
+function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone) {
+    return new Promise((resolve, reject) => {
+        const db = connectToDB();
+        if (!db) return reject("Database connection failed");
 
-  // Log original parameter types and values
-  console.log("Original parameter types:", {
-    username: typeof username,
-    password: typeof password,
-    hospitalName: typeof hospitalName,
-    hospitalAddress: typeof hospitalAddress,
-    hospitalPhone: typeof hospitalPhone
-  });
-  console.log("Original parameter values:", { username, password, hospitalName, hospitalAddress, hospitalPhone });
-
-  // Convert each parameter using JSON.stringify
-  const args = [
-    JSON.stringify(username),
-    JSON.stringify(password),
-    JSON.stringify(hospitalName || ""),
-    JSON.stringify(hospitalAddress || ""),
-    JSON.stringify(hospitalPhone || "")
-  ];
-  
-  // Log converted parameters and their types
-  console.log("Converted parameters:", args);
-  args.forEach((arg, index) => {
-    console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
-  });
-
-  try {
-    db.classMethodVoid(
-      "Medilink.HospitalAccount",
-      "InsertHospitalData",
-      ...args
-    );
-    console.log(`✅ Inserted hospital account for: ${username}`);
-    return true;
-  } catch (error) {
-    console.error("❌ Error calling class method:", error);
-    return false;
-  }
+		const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
+		console.log("Prepared parameters:", args);
+        try {
+            db.classMethodVoid(
+                "Medilink.HospitalAccount",
+                "InsertHospitalData",
+                ...args
+            );
+            console.log(`✅ Inserted hospital account for: ${username}`);
+            resolve(true);
+        } catch (error) {
+            console.error("❌ Error calling class method:", error);
+            reject(false);
+        }
+    });
 }
 
 function validateHospitalLogin(username, password) {
@@ -112,7 +91,80 @@ function validateHospitalLogin(username, password) {
     }
 }
 
+function insertNursingHomeData(finalData) {
+	return new Promise((resolve, reject) => {
+		const db = connectToDB();
+		if (!db) return reject("Database connection failed");
+
+		// Log original parameter types and values
+		console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
+		console.log("Original parameter values:", finalData);
+
+		// Process selected_treatments
+		let filteredTreatments = [];
+		if (finalData.treatments === "Some" && Array.isArray(finalData.selected_treatments)) {
+		filteredTreatments = finalData.selected_treatments.filter(t => t !== "Others").map(t => t.startsWith("Others:") ? t.replace("Others: ", "") : t);
+		}
+
+		const args = [
+			finalData.username,
+			finalData.hashedPassword,
+			finalData.nursingHomeName,
+			finalData.nursingHomeAddress,
+			finalData.nursingHomePhone,
+			finalData.party_responsibility,
+			finalData.available_days.join(","),
+			finalData.time_slot.from,
+			finalData.time_slot.to,
+			finalData.treatments,
+			filteredTreatments.join(",")
+		];
+		console.log("Converted parameters:", args);
+		args.forEach((arg, index) => {
+			console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
+		  });
+
+		try {
+			db.classMethodVoid(
+				"Medilink.NursingHomeAccount",
+				"InsertNursingHomeData",
+				...args
+			);
+			console.log(`✅ Inserted nursing home account for: ${finalData.username}`);
+			resolve(true);
+			
+		} catch (error) {
+			console.error("❌ Error calling class method:", error);
+			reject(false);
+		}
+	});
+}
+
+function getHospitalAccounts() {
+const db = connectToDB();
+if (!db) {
+	console.error("❌ Database connection failed");
+	return null;
+}
+
+try {
+		// Call ObjectScript method and get JSON
+		let jsonResult = db.classMethodValue("Medilink.HospitalAccount", "GetAllHospitals");
+
+		// Convert JSON string to JavaScript array
+		let results = JSON.parse(jsonResult);
+
+		console.log("🔍 Query Result:", results);
+		return results;
+	} catch (error) {
+		console.error("❌ Error fetching hospital data:", error.message);
+		return [];
+	}
+}
+
 module.exports = {
   insertHospitalData,
-  validateHospitalLogin
+  validateHospitalLogin,
+  insertNursingHomeData,
+  getHospitalAccounts
 };
