@@ -55,6 +55,10 @@ app.post("/api/hospital-signup", async (req, res) => {
         return res.status(400).json({ error: "Missing fields!" });
     }
 
+	if (password.length < 6) {
+        return res.status(400).json({ error: "Password must be at least 6 characters long." });
+    }
+
     try {
         const salt =  await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -68,13 +72,13 @@ app.post("/api/hospital-signup", async (req, res) => {
         res.status(201).json({ message: "Hospital account created successfully!" });
 
     } catch (error) {
-        console.error("Error during signup:", error);
+        console.error("Error during hospital signup:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
 
 // NURSING HOME SIGNUP ROUTE: FIRST PAGE
-app.post("/api/nursinghome-signup-temp", (req, res) => {
+app.post("/api/nursinghome-signup-temp", async (req, res) => {
     const { username, password, nursingHomeName, nursingHomeAddress, nursingHomePhone } = req.body;
 
     if (!username || !password || !nursingHomeName || !nursingHomeAddress || !nursingHomePhone) {
@@ -85,30 +89,49 @@ app.post("/api/nursinghome-signup-temp", (req, res) => {
         return res.status(400).json({ error: "Password must be at least 6 characters long." });
     }
 
-    req.session.signupData = { // store data in session
-        username,
-        nursingHomeName,
-        nursingHomeAddress,
-        nursingHomePhone,
-        password // Placeholder, need to hash it later and remove from session
-    };
+	try {
+		const salt =  await bcrypt.genSalt(10);
+		const hashedPassword = await bcrypt.hash(password, salt);
 
-    res.status(200).json({ message: "Data stored in session successfully" });
+		req.session.signupData = { // store data in session
+			username,
+			nursingHomeName,
+			nursingHomeAddress,
+			nursingHomePhone,
+			hashedPassword
+		};
+
+		res.status(200).json({ message: "Data stored in session successfully" });
+
+	} catch (error) {
+		console.error("Error during nursing home signup:", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
 });
 
 	
 // NURSING HOME SIGNUP ROUTE: SECOND PAGE
-app.post("/api/nursinghome-signup", (req, res) => {
+app.post("/api/nursinghome-signup", async (req, res) => {
 	if (!req.session.signupData) {
 	  return res.status(400).send("First step data missing.");
 	}
   
 	const finalData = { ...req.session.signupData, ...req.body };
 	console.log("final data", finalData);
-	const success = insertNursingHomeData(finalData);
-  
-	req.session.destroy(); // Clear session after storing
-	res.status(200).json({message: "Signup completed"});
+	try {
+		const success = await insertNursingHomeData(finalData);
+
+		if (!success) {
+			req.session.destroy(); // Clear session after storing
+            return res.status(500).json({ error: "Failed to insert nursing home account" });
+        }
+		res.status(200).json({message: "Signup completed"});
+		
+	} catch (error) {
+		req.session.destroy(); // Clear session after storing
+        console.error("Error during nursing home signup:", error);
+        res.status(500).json({ error: "Internal server error" });
+	}
   });
 
   /*--------------------------------------- Log In ------------------------------------------------------- */
