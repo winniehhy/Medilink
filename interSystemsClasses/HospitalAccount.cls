@@ -3,7 +3,7 @@ Class Medilink.HospitalAccount Extends %Persistent
 
 Property Username As %String;
 
-Property PasswordHash As %String;
+Property PasswordHash As %String(MAXLEN = 100);
 
 Property HospitalName As %String;
 
