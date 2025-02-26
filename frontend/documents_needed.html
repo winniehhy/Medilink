@@ -114,16 +114,18 @@
 
 	/* Section progress bar */
 	.section-progress {
-		width: 80%;
-		height: 50px;
+		width: 90%;
+		height: 8vh;
 		background-color: #a0d6d6;
 		border-radius: 25px;
 		overflow: hidden;
-		margin-bottom: 60px;
+		margin-bottom: 30px;
 		display: flex;
+		flex-direction: row;
 	}
 
 	.section-progress-fill {
+		overflow: hidden;
 		flex-grow: 1;
 		height: 100%;
 		display: flex;
@@ -131,16 +133,16 @@
 		justify-content: center;
 		color: white;
 		font-weight: bold;
-		font-size: 18px;
-		padding: 0 10px; 
+		font-size: 2vh;
+		padding: 0 10px;
 		text-align: center;
 		transition: box-shadow 0.3s ease, transform 0.3s ease;
-		word-wrap: break-word; 
+		word-wrap: break-word;
 	}
 
 	.section-progress-fill:hover {
-		box-shadow: 0 0 15px rgba(52, 166, 159, 0.8); /* Glow effect */
-		transform: scale(1.05); /* Zoom effect */
+		box-shadow: 0 0 15px rgba(52, 166, 159, 0.8);
+		transform: scale(1.05);
 		cursor: pointer;
 	}
 
@@ -237,6 +239,10 @@
 		<a href="javascript:history.back()">
 			<img src="src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
+		</a>
+		<a href="basic_information.html">
+			<img src="src/sidebar/new-patient.png" width="30px" height="30px">
+			<span class="label">New Patient</span>
 		</a>
 		<a href="existing_patient.html">
 			<img src="src/sidebar/existing_patient.png" width="25px" height="25px">
