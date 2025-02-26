@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const { insertHospitalData , insertNursingHomeData, validateHospitalLogin, getHospitalAccounts } = require("./iris");
 const path = require("path");  // ✅ Import path module
 const cors = require('cors');
+const bcrypt = require("bcryptjs");
 
 const app = express();
 app.use(cors()); // double check
@@ -47,24 +48,30 @@ app.get("/signup_form_nursing_criteria", (req, res) => {
 /*--------------------------------------- SIGN UP ------------------------------------------------------- */
 
 // HOSPITAL SIGNUP ROUTE
-app.post("/api/hospital-signup", (req, res) => {
+app.post("/api/hospital-signup", async (req, res) => {
     const { username, password, hospitalName, hospitalAddress, hospitalPhone } = req.body;
   
-    // Basic validation for required fields
-    if (!username || !password) {
-      return res.status(400).json({ error: "Missing username or password" });
+    if (!username || !password || !hospitalName || !hospitalAddress || !hospitalPhone) {
+        return res.status(400).json({ error: "Missing fields!" });
     }
-  
-    // Call the function to insert hospital data
-    const success = insertHospitalData(username, password, hospitalName, hospitalAddress, hospitalPhone);
-  
-    if (!success) {
-      return res.status(500).json({ error: "Failed to insert hospital account" });
+
+    try {
+        const salt =  await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const success = await insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone);
+        
+        if (!success) {
+            return res.status(500).json({ error: "Failed to insert hospital account" });
+        }
+
+        res.status(201).json({ message: "Hospital account created successfully!" });
+
+    } catch (error) {
+        console.error("Error during signup:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
-  
-    // Send success response back to the frontend
-    res.status(201).json({ message: "Hospital account created successfully!" });
-  });
+});
 
 // NURSING HOME SIGNUP ROUTE: FIRST PAGE
 app.post("/api/nursinghome-signup-temp", (req, res) => {
