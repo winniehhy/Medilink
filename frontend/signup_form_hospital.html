@@ -85,6 +85,8 @@
 			height: 60px;
 			margin: 10px auto;
 			width: 80%;
+			display: flex;
+    		align-items: center;
 		}
 
 		input {
@@ -97,6 +99,27 @@
 			background: white;
 			transition: 0.2s ease;
 			color: #333;
+			padding-right: 30px;
+		}
+
+		.eye-icon {
+			position: absolute;
+			right: 20px;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.eye-icon svg {
+			width: 24px;
+			height: 24px;
+			stroke: #666;
+			transition: stroke 0.2s ease-in-out;
+		}
+
+		.eye-icon svg:hover {
+			stroke: #333;
 		}
 
 		input:focus,
@@ -173,6 +196,15 @@
 			max-width: 100px;
 			margin: 0;
 		}
+
+		/* Hide default password toggle icon */
+		input[type="password"]::-ms-reveal, 
+		input[type="password"]::-ms-clear,
+		input[type="password"]::-webkit-contacts-auto-fill-button,
+		input[type="password"]::-webkit-credentials-auto-fill-button {
+			display: none;
+		}
+
 	</style>
 </head>
 <body>
@@ -192,11 +224,23 @@
   
 	  <div class="fillingcontainer">
 		<div class="fillarea">
-		  <!-- Add id="password" -->
-		  <input type="text" id="password" required>
+		  <input type="password" id="password" required>
 		  <label class="labelline">Create password</label>
+		  <span id="togglePassword" class="eye-icon">
+			<svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+			  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+			  <circle cx="12" cy="12" r="3"></circle>
+			</svg>
+			<svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+			  <path d="M17.94 17.94A10.88 10.88 0 0 1 12 20c-7 0-11-8-11-8a18.74 18.74 0 0 1 4.17-5.56"></path>
+			  <path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-5.12"></path>
+			  <path d="M21 21L3 3"></path>
+			  <path d="M10 4.24A10.88 10.88 0 0 1 12 4c7 0 11 8 11 8a18.74 18.74 0 0 1-2.5 3.5"></path>
+			</svg>
+		  </span>
 		</div>
 	  </div>
+	  
   
 	  <div class="fillingcontainer">
 		<div class="fillarea">
@@ -232,6 +276,22 @@
 	  function goBack() {
 		window.history.back();
 	  }
+
+	  document.getElementById("togglePassword").addEventListener("click", function () {
+			let passwordField = document.getElementById("password");
+			let eyeOpen = document.getElementById("eyeOpen");
+			let eyeClosed = document.getElementById("eyeClosed");
+
+			if (passwordField.type === "password") {
+			passwordField.type = "text";
+			eyeOpen.style.display = "none";
+			eyeClosed.style.display = "inline";
+			} else {
+			passwordField.type = "password";
+			eyeOpen.style.display = "inline";
+			eyeClosed.style.display = "none";
+			}
+		});
   
 	  // Attach event listener AFTER the DOM loads
 	  document.addEventListener("DOMContentLoaded", () => {
