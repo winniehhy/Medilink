@@ -107,10 +107,12 @@
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
 		gap: 20px;
-		padding: 20px;
 		margin-top: 80px;
 		min-height: 300px;
 		max-width: 1200px;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.patient-card {
@@ -121,6 +123,8 @@
 		text-align: left;
 		position: relative;
 		min-height: 180px;
+		flex: 1 1 270px;
+		max-width: 270px;
 	}
 
 	.patient-button {
