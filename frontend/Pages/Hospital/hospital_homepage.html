@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/Hospital/hompage.css">
+</head>
+<body>
+    <div class="sidebar">
+        <a href="javascript:history.back()">
+            <img src="../../src/sidebar/back.png" width="30px" height="30px">
+            <span class="label">Back</span>
+        </a>
+        <a href="../Access/logIn.html">
+            <img src="../../src/sidebar/home.png" width="30px" height="30px">
+            <span class="label">Back to Home</span>
+        </a>
+    </div>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-bar" placeholder="Patient's IC">
+        <button class="search-button" onclick="searchPatient()">
+            <img src="../../src/sidebar/search.png" alt="Search" class="search-icon">
+        </button>
+    </div>
+    <div id="patientList" class="patient-grid"></div>
+
+    <script>
+        // Sample patient data for testing n will be fetching data from the db
+        const patients = [
+            { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+            { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+            { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+            { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+            { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+            { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+            { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+            { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+            { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+            { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+            { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" },
+            { name: "Michelle Tan", ic: "C1236543", nursingHome: "Mickey", admissionDate: "2025-01-10" },
+            { name: "John Doe", ic: "A1234567", nursingHome: "Sunway", admissionDate: "2024-02-20" },
+            { name: "Jane Smith", ic: "B7654321", nursingHome: "Maple", admissionDate: "2024-02-15" },
+            { name: "Alice Tan", ic: "C9876543", nursingHome: "Oakwood", admissionDate: "2024-01-10" }
+        ];
+
+        function displayPatients(patients) {
+            const grid = document.getElementById("patientList");
+            grid.innerHTML = "";
+
+            patients.forEach(patient => {
+                const card = document.createElement("div");
+                card.className = "patient-card";
+                card.innerHTML = `
+                    <p><strong>Name:</strong> ${patient.name}</p>
+                    <p><strong>IC:</strong> ${patient.ic}</p>
+                    <p><strong>Nursing Home:</strong> ${patient.nursingHome}</p>
+                    <p><strong>Admission Date:</strong> ${patient.admissionDate}</p>
+                    <button class="patient-button">Ready to Discharge</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function searchPatient() {
+            const searchValue = document.getElementById("searchInput").value;
+            const filteredPatients = patients.filter(patient => 
+                patient.ic.includes(searchValue)
+            );
+            displayPatients(filteredPatients);
+        }
+
+        displayPatients(patients);
+    </script>
+</body>
+</html>

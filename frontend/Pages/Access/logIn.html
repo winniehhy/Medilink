@@ -8,7 +8,7 @@
 
     <style>
         body {
-            background-image: url('src/LoginPage.png');
+            background-image: url('../../src/LoginPage.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -181,7 +181,7 @@
 
             if (hospitalResponse.ok) {
                 // Successful hospital login
-                window.location.href = '/hospital_homepage.html';
+                window.location.href = 'Pages/Hospital/hospital_homepage.html';
                 return;
             }
 
@@ -201,7 +201,7 @@
 
             if (nursingHomeResponse.ok) {
                 // Successful nursing home login
-                window.location.href = '/nursing_homepage.html';
+                window.location.href = 'Pages/Nursing/nursing_homepage.html';
                 return;
             }
 

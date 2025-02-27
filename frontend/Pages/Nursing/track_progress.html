@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;700&display=swap" rel="stylesheet">
-	<title>Existing Patient</title>
+	<title>Track Progress</title>
 	<style>
 		body {
 			background-color: #34a69f;
@@ -39,6 +39,25 @@
 			width: 100%;
 		}
 
+		.back-arrow {
+			font-size: 22px;
+			cursor: pointer;
+			position: absolute;
+			left: 10px;
+			color: #333;
+			font-weight: bold;
+			background: none;
+			border: none;
+			outline: none;
+			padding: 5px;
+			display: flex;
+			align-items: center;
+			transition: color 0.2s ease;
+		}
+
+		.back-arrow:hover {
+			color: #267d74;
+		}
 
 		.title {
 			font-size: 26px;
@@ -50,8 +69,8 @@
 		}
 
 		.title-icon {
-			width: 25px;
-			height: 25px;
+			width: 30px;
+			height: 30px;
 			margin-right: 10px;
 		}
 
@@ -168,31 +187,32 @@
 <body>
 	<div class="sidebar">
 		<a href="javascript:history.back()">
-			<img src="src/sidebar/back.png" width="30px" height="30px">
+			<img src="../../src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
 		<a href="basic_information.html">
-			<img src="src/sidebar/new-patient.png" width="30px" height="30px">
+			<img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
 			<span class="label">New Patient</span>
 		</a>
 		<a href="existing_patient.html">
-			<img src="src/sidebar/existing_patient.png" width="25px" height="25px">
+			<img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
 			<span class="label">Existing Patient</span>
 		</a>
 		<a href="track_progress.html">
-			<img src="src/sidebar/track_progress.png" width="30px" height="30px">
+			<img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
 			<span class="label">Track Progress</span>
 		</a>
 		<a href="nursing_homepage.html">
-			<img src="src/sidebar/home.png" width="30px" height="30px">
+			<img src="../../src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
 	</div>
 
 	<div class="middle-rectangle">
 		<div class="header">
-			<img src="src/sidebar/existing_patient.png" class="title-icon">
-			<div class="title">Existing Patient</div>
+			<!-- <button class="back-arrow" onclick="goBack()">&#8592;</button> -->
+			<img src="../../src/sidebar/track_progress.png" class="title-icon">
+			<div class="title">Track Progress</div>
 		</div>
 		<div class="fillingcontainer">
 			<div class="fillarea">
@@ -208,5 +228,10 @@
 		</div>
 	</div>
 
+	<script>
+		function goBack() {
+			window.history.back();
+		}
+	</script>
 </body>
 </html>
