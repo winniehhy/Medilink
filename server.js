@@ -1,10 +1,10 @@
-const express = require("express");
-const session = require("express-session");
-const bodyParser = require("body-parser");
+const express = require("./backend/node_modules/express");
+const session = require("./backend/node_modules/express-session");
+const bodyParser = require("./backend/node_modules/body-parser");
 const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts } = require("./iris");
 const path = require("path");
-const cors = require('cors');
-const bcrypt = require("bcryptjs");
+const cors = require('./backend/node_modules/cors');
+const bcrypt = require("./backend/node_modules/bcryptjs");
 
 // Initialize Express app and middleware
 const app = express();

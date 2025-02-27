@@ -1,4 +1,4 @@
-const iris = require("intersystems-iris-native");
+const iris = require("./backend/intersystems-iris-native");
 
 let connection;
 let db;
