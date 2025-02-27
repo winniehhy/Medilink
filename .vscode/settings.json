@@ -1,0 +1,7 @@
+{
+	"objectscript.conn": {
+		"server": "intersystems",
+		"ns": "USER",
+		"active": true
+	}
+}
