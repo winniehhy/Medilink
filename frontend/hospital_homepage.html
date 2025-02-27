@@ -148,11 +148,11 @@
 </head>
 <body>
 	<div class="sidebar">
-		<a href="#">
-			<img src="src/sidebar/back.png" width="30px" height="30px" onclick="goBack()">
+		<a href="javascript:history.back()">
+			<img src="src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
-        <a href="#">
+        <a href="hospital_homepage.html">
 			<img src="src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
@@ -167,9 +167,6 @@
 </body>
 
 	<script>
-		function goBack() {
-			window.history.back();
-		}
     
 		// Sample patient data for testing n will be fetching data from the db
 		const patients = [

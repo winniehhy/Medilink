@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Homepage</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div class="sidebar">
+		<a href="javascript:history.back()">
+			<img src="src/sidebar/back.png" width="30px" height="30px">
+			<span class="label">Back</span>
+		</a>
+		<a href="basic_information.html">
+			<img src="src/sidebar/new-patient.png" width="30px" height="30px">
+			<span class="label">New Patient</span>
+		</a>
+		<a href="existing_patient.html">
+			<img src="src/sidebar/existing_patient.png" width="25px" height="25px">
+			<span class="label">Existing Patient</span>
+		</a>
+		<a href="track_progress.html">
+			<img src="src/sidebar/track_progress.png" width="30px" height="30px">
+			<span class="label">Track Progress</span>
+		</a>
+		<a href="nursing_homepage.html">
+			<img src="src/sidebar/home.png" width="30px" height="30px">
+			<span class="label">Back to Home</span>
+		</a>
+	</div>
+    <div class="bg-colour"></div>
+    <div class="middle-rectangle">
+        <div class="fillingcontainer poll-container">
+            <div class="fillingcontainer">
+                <div class="left-title">Ready to discharge:
+                    <span id="poll-result">Yes</span>
+                </div>
+            </div>
+        </div>
+        <div class="fillingcontainer text-container">
+            <div class="left-title">Patient current condition:</div>
+            <div class="fillarea">
+                <textarea id="text-result" class="fill-text-input" readonly></textarea>
+            </div>
+        </div>        
+    </div>
+    <script>
+        function prevPage() {
+            window.history.back();
+        }
+        const fetchedPollResult = "No"; 
+        const fetchedDescription = "Patient needs further observation before discharge.";
+
+        document.getElementById("poll-result").textContent = fetchedPollResult;
+        document.getElementById("text-result").textContent = fetchedDescription;
+</script>
+
+    </script>
+</body>
+</html>
