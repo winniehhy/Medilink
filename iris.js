@@ -27,8 +27,8 @@ function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddr
         const db = connectToDB();
         if (!db) return reject("Database connection failed");
 
-		const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
-		console.log("Prepared parameters:", args);
+        const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
+        console.log("Prepared parameters:", args);
         try {
             db.classMethodVoid(
                 "Medilink.HospitalAccount",
@@ -91,80 +91,161 @@ function validateHospitalLogin(username, password) {
     }
 }
 
+/*---------------------------------------- NURSING HOME-------------------------------------------- */
+
 function insertNursingHomeData(finalData) {
-	return new Promise((resolve, reject) => {
-		const db = connectToDB();
-		if (!db) return reject("Database connection failed");
+    return new Promise((resolve, reject) => {
+        const db = connectToDB();
+        if (!db) return reject("Database connection failed");
 
-		// Log original parameter types and values
-		console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
-		console.log("Original parameter values:", finalData);
+        // Log original parameter types and values
+        console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
+        console.log("Original parameter values:", finalData);
 
-		// Process selected_treatments
-		let filteredTreatments = [];
-		if (finalData.treatments === "Some" && Array.isArray(finalData.selected_treatments)) {
-		filteredTreatments = finalData.selected_treatments.filter(t => t !== "Others").map(t => t.startsWith("Others:") ? t.replace("Others: ", "") : t);
-		}
+        // Process selected_treatments
+        let filteredTreatments = [];
+        if (finalData.treatments === "Some" && Array.isArray(finalData.selected_treatments)) {
+        filteredTreatments = finalData.selected_treatments.filter(t => t !== "Others").map(t => t.startsWith("Others:") ? t.replace("Others: ", "") : t);
+        }
 
-		const args = [
-			finalData.username,
-			finalData.hashedPassword,
-			finalData.nursingHomeName,
-			finalData.nursingHomeAddress,
-			finalData.nursingHomePhone,
-			finalData.party_responsibility,
-			finalData.available_days.join(","),
-			finalData.time_slot.from,
-			finalData.time_slot.to,
-			finalData.treatments,
-			filteredTreatments.join(",")
-		];
-		console.log("Converted parameters:", args);
-		args.forEach((arg, index) => {
-			console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
-		  });
+        const args = [
+            finalData.username,
+            finalData.hashedPassword,
+            finalData.nursingHomeName,
+            finalData.nursingHomeAddress,
+            finalData.nursingHomePhone,
+            finalData.party_responsibility,
+            finalData.available_days.join(","),
+            finalData.time_slot.from,
+            finalData.time_slot.to,
+            finalData.treatments,
+            filteredTreatments.join(",")
+        ];
+        console.log("Converted parameters:", args);
+        args.forEach((arg, index) => {
+            console.log(`Parameter ${index + 1} type after conversion: ${typeof arg}`);
+        });
 
-		try {
-			db.classMethodVoid(
-				"Medilink.NursingHomeAccount",
-				"InsertNursingHomeData",
-				...args
-			);
-			console.log(`✅ Inserted nursing home account for: ${finalData.username}`);
-			resolve(true);
-			
-		} catch (error) {
-			console.error("❌ Error calling class method:", error);
-			reject(false);
-		}
-	});
+        try {
+            db.classMethodVoid(
+                "Medilink.NursingHomeAccount",
+                "InsertNursingHomeData",
+                ...args
+            );
+            console.log(`✅ Inserted nursing home account for: ${finalData.username}`);
+            resolve(true);
+            
+        } catch (error) {
+            console.error("❌ Error calling class method:", error);
+            reject(false);
+        }
+    });
 }
+
+function validateNursingHomeLogin(username, password) {
+    console.log("Attempting to validate login for:", username);
+    
+    const db = connectToDB();
+    if (!db) {
+        console.error("Database connection failed during login");
+        return { success: false, error: "Database connection failed" };
+    }
+
+    try {
+        // Call the GetNursingHomeAccountByUsername method with the connection
+        const accountDataJson = db.classMethodValue(
+            "Medilink.NursingHomeAccount",
+            "GetNursingHomeAccountByUsername",
+            username
+        );
+      
+        // Parse the JSON response
+        const accountData = JSON.parse(accountDataJson);
+      
+        // Check if we got valid data back
+        if (!accountData || accountData.error) {
+            return { 
+                success: false, 
+                error: accountData.error || "User not found" 
+            };
+        }
+      
+        // Return the account data
+        return { success: true, accountData };
+    } catch (error) {
+        console.error("Error validating nursing home login:", error);
+        return { 
+            success: false, 
+            error: "Internal server error" 
+        };
+    }
+}  
+
+/*------------------------------------------GET INFORMATION ------------------------------------- */
 
 function getHospitalAccounts() {
-const db = connectToDB();
-if (!db) {
-	console.error("❌ Database connection failed");
-	return null;
+    const db = connectToDB();
+    if (!db) {
+        console.error("❌ Database connection failed");
+        return null;
+    }
+
+    try {
+        // Call ObjectScript method and get JSON
+        let jsonResult = db.classMethodValue("Medilink.HospitalAccount", "GetAllHospitals");
+
+        // Convert JSON string to JavaScript array
+        let results = JSON.parse(jsonResult);
+
+        console.log("🔍 Query Result:", results);
+        return results;
+    } catch (error) {
+        console.error("❌ Error fetching hospital data:", error.message);
+        return [];
+    }
 }
 
-try {
-		// Call ObjectScript method and get JSON
-		let jsonResult = db.classMethodValue("Medilink.HospitalAccount", "GetAllHospitals");
 
-		// Convert JSON string to JavaScript array
-		let results = JSON.parse(jsonResult);
+function getNursingHomeAccount(username) {
+    console.log("Attempting to get nursing home account for:", username);
+    
+    const db = connectToDB();
+    if (!db) {
+        console.error("Database connection failed during nursing home account retrieval");
+        return null;
+    }
 
-		console.log("🔍 Query Result:", results);
-		return results;
-	} catch (error) {
-		console.error("❌ Error fetching hospital data:", error.message);
-		return [];
-	}
+    try {
+
+        const args = [username];
+
+        // Call the GetNursingHomeAccountByUsername method
+        const jsonResult = db.classMethodValue(
+            "Medilink.NursingHomeAccount", 
+            "GetNursingHomeAccountByUsername", 
+            ...args
+        );
+        
+        if (!jsonResult) {
+            console.log("No nursing home account found");
+            return null;
+        }
+        
+        // Parse the result
+        const accountData = JSON.parse(jsonResult);
+        console.log("Nursing home account retrieved successfully");
+        return accountData;
+    } catch (error) {
+        console.error("Error getting nursing home account:", error);
+        return null;
+    }
 }
 
 module.exports = {
-  insertHospitalData,
-  validateHospitalLogin,
-  insertNursingHomeData,
-  getHospitalAccounts
+    insertHospitalData,
+    insertNursingHomeData,
+    validateHospitalLogin,
+    validateNursingHomeLogin,
+    getHospitalAccounts,
+    getNursingHomeAccount
 };
