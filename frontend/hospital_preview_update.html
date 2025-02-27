@@ -8,11 +8,11 @@
 </head>
 <body>
     <div class="sidebar">
-		<a href="#">
-			<img src="src/sidebar/back.png" width="30px" height="30px" onclick="prevPage()">
+		<a href="javascript:history.back()">
+			<img src="src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
-        <a href="#">
+        <a href="hospital_homepage.html">
 			<img src="src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
@@ -26,11 +26,11 @@
             <div class="title">Patient Name: <span id="patient-name"></span></div>
         </div>        
         <div class="button-container">
-			<button class="button">
+			<button class="button" onclick="location.href='hospital_patient_record.html'">
 				<div class="circle"></div>
 				Preview Form
 			</button>
-			<button class="button">
+			<button class="button" onclick="location.href='hospital_update_patient.html'">
 				<div class="circle"></div>
 				Update Status
 			</button>
@@ -38,10 +38,6 @@
     </div>
     <div class="bottom-rectangle"></div>
     <script>
-        function prevPage() {
-            window.history.back();
-        }
-
     //     document.addEventListener("DOMContentLoaded", function () {
     //     const patientId = localStorage.getItem("patientId");
     //     const patientName = localStorage.getItem("patientName");
