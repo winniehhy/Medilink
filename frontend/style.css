@@ -65,8 +65,8 @@ body {
 
 .fillingcontainer {
     width: 100%;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .title {
@@ -191,7 +191,6 @@ input:valid + .labelline {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 10px;
 }
 
 .poll-form label {
@@ -202,6 +201,7 @@ input:valid + .labelline {
 .text-container {
     width: 100%;
     margin-top: 50px;
+    margin-bottom: 10%;
 }
 
 .fillarea {
@@ -246,6 +246,64 @@ input:valid + .labelline {
     font-weight: 600;
     text-align: left;
     margin-left: 10%;
-    color: #333;
-    letter-spacing: 0.5px;
+    letter-spacing: 1.5px;
+}
+
+.underline {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #34a69f;
+    padding: 15px 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.next-button {
+    margin-top: 20px;
+    background-color: #2ba6a6;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    align-self: flex-end;
+    float: right;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.next-button:hover {
+    background-color: #154a5f;
+}
+
+.main {
+    width: 90%;
+    max-width: 500px;
+    background-color: #d4f2eb;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    position: relative;
+    margin: 10px;
+}
+
+.pr {
+    font-size: 32px;
+	font-weight: bold;
+	color: #267d74;
+	position: relative;
+	top: 20px;
+	margin-bottom: 40px;
+	letter-spacing: 1px;
+}
+
+.no-bg {
+    width: 100%;
+    max-width: 600px;
 }
