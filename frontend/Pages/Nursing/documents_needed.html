@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Patient Information - Basic Information</title>
+	<title>Patient Information - Documents Needed</title>
 	<style>
 	body {
 		background: linear-gradient(135deg, #e6f9f0, #b2e2d1);
@@ -98,6 +98,20 @@
 		letter-spacing: 1px;
 	}
 
+	h2 {
+		font-size: 20px;
+		font-weight: bold;
+		color: #ffffff;
+		background-color: #34a69f;
+		padding: 15px 25px;
+		border-radius: 15px;
+		text-align: center;
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+		margin-bottom: 40px;
+		letter-spacing: 1px;
+		text-transform: uppercase;
+	}
+
 	/* Section progress bar */
 	.section-progress {
 		width: 90%;
@@ -136,7 +150,6 @@
 		text-decoration: none;
 	}
 
-
 	.active-section {
 		background-color: #34a69f;
 	}
@@ -154,7 +167,6 @@
 	.form-group {
 		margin-bottom: 20px;
 		display: flex;
-		justify-content: space-between;
 		align-items: flex-start;
 		margin-top: 20px;
 	}
@@ -162,10 +174,11 @@
 	.form-group label {
 		font-weight: bold;
 		width: 40%;
+		margin-right: 20px;
 	}
 
 	.form-group input[type="text"] {
-		width: 55%;
+		width: 40%;
 		padding: 5px;
 		border: 1px solid #ccc;
 		border-radius: 4px;
@@ -184,7 +197,17 @@
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
-		width: 55%;
+		flex-grow: 1;
+	}
+
+	.form-group .radio-group label {
+		display: flex;
+		align-items: center;
+		width: 100%;
+	}
+
+	.form-group .radio-group input[type="radio"] {
+		margin-right: 10px;
 	}
 
 	.next-button {
@@ -204,36 +227,41 @@
 	.next-button:hover {
 		background-color: #154a5f;
 		}
+	
+	.button:hover {
+		background-color: #154a5f;
+	}
+
 	</style>
 </head>
 <body>
 	<div class="sidebar">
 		<a href="javascript:history.back()">
-			<img src="src/sidebar/back.png" width="30px" height="30px">
+			<img src="../../src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
 		<a href="basic_information.html">
-			<img src="src/sidebar/new-patient.png" width="30px" height="30px">
+			<img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
 			<span class="label">New Patient</span>
 		</a>
 		<a href="existing_patient.html">
-			<img src="src/sidebar/existing_patient.png" width="25px" height="25px">
+			<img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
 			<span class="label">Existing Patient</span>
 		</a>
 		<a href="track_progress.html">
-			<img src="src/sidebar/track_progress.png" width="30px" height="30px">
+			<img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
 			<span class="label">Track Progress</span>
 		</a>
 		<a href="nursing_homepage.html">
-			<img src="src/sidebar/home.png" width="30px" height="30px">
+			<img src="../../src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
 	</div>
 
 	<div class="main-content">
-		<h1>Patient Information</h1>
+		<h1>Hospital-to-Nursing Home Transfer Documents</h1>
 		<div class="section-progress">
-			<a href="basic_information.html" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
+			<a href="basic_information.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
 				<div class="section-progress-fill">Basic Information</div>
 			</a>
 			<a href="physical_capability.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
@@ -242,43 +270,51 @@
 			<a href="cognitive_mental_health.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
 				<div class="section-progress-fill">Cognitive & Mental Health</div>
 			</a>
-			<a href="documents_needed.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="documents_needed.html" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
 				<div class="section-progress-fill">Document Needed</div>
 			</a>
 		</div>
 
 		<form>
 			<div class="form-group">
-				<label for="staff">Staff-In-Charge:</label>
-				<input type="text" id="staff" name="staff" placeholder="e.g., Ms. Leong Kai Wat">
-			</div>
-			<div class="form-group">
-				<label for="patient-id">Patient ID:</label>
-				<input type="text" id="patient-id" name="patient-id" placeholder="e.g., PID12345">
-			</div>
-			<div class="form-group">
-				<label for="admission-date">Date of Admission:</label>
-				<input type="text" id="admission-date" name="admission-date" placeholder="e.g., 2025-02-24">
-			</div>
-			<div class="form-group">
-				<label for="patient-name">Patient Name:</label>
-				<input type="text" id="patient-name" name="patient-name" placeholder="e.g., Jane Doe">
-			</div>
-			<div class="form-group">
-				<label for="patient-ic">Patient IC:</label>
-				<input type="text" id="patient-ic" name="patient-ic" placeholder="e.g., S1234567A">
-			</div>
-
-			<div class="form-group">
-				<label>Sex:</label>
-				<div class="radio-group">
-					<label><input type="radio" name="sex" value="male"> Male</label>
-					<label><input type="radio" name="sex" value="female"> Female</label>
+				<label>Document Needed Upon Discharged:</label>
+				<div class="radio-group" id="document-list">
+				<!-- Custom condition input and button aligned horizontally -->
+					<div style="display: flex; align-items: center; gap: 10px;">
+						<input type="text" id="new-document" placeholder="Add a new document" style="padding: 5px; width: 70%; border-radius: 5px; border: 1px solid #ccc;">
+						<button type="button" onclick="addDocuments()" style="padding: 5px 10px; border-radius: 5px; background-color: #2ba6a6; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;">Add</button>
+					</div>
+			
+				<label><input type="checkbox" name="document-needed" value="Hospital Discharge Summary"> Hospital Discharge Summary</label>
+				<label><input type="checkbox" name="document-needed" value="Occupational Therapy/Physiotherapy Report"> Occupational Therapy/Physiotherapy Report</label>
+				<label><input type="checkbox" name="document-needed" value="Medication List"> Medication List</label>
+				<label><input type="checkbox" name="document-needed" value="Speech Therapy Report"> Speech Therapy Report</label>
+				<label><input type="checkbox" name="document-needed" value="Dietetic Report"> Dietetic Report</label>
 				</div>
 			</div>
-
-			<a href="physical_capability.html" class="next-button">Next Page</a>
+			
+			<button type="submit" class="next-button">Submit</button>
 		</form>
 	</div>
+	<script>
+		function addDocuments() {
+			const documentInput = document.getElementById("new-document");
+			const documentValue = documentInput.value.trim(); // Use documentValue instead of conditionValue
+
+			if (documentValue) {
+				// Create a new checkbox with the input value
+				const newCheckbox = document.createElement("label");
+				// Checked the checkbox by default
+				newCheckbox.innerHTML = `<input type="checkbox" name="document-needed" value="${documentValue}" checked> ${documentValue}`;
+				// Append the new checkbox to the document list
+				document.getElementById("document-list").appendChild(newCheckbox);
+
+				// Clear the input field after adding
+				documentInput.value = "";
+			} else {
+				alert("Please enter a valid document name.");
+			}
+		}
+	</script>
 </body>
 </html>

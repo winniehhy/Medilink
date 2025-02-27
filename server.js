@@ -21,27 +21,27 @@ app.use(express.static(path.join(__dirname, "frontend")));
 
 // Static Routes - grouped together
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "homepage.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/homepage.html"));
 });
 
 app.get("/signup", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "signup.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/signup.html"));
 });
 
 app.get("/logIn", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "logIn.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/logIn.html"));
 });
 
 app.get("/signup_form_hospital", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "signup_form_hospital.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/signup_form_hospital.html"));
 });
 
 app.get("/signup_form_nursing", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/signup_form_nursing.html"));
 });
 
 app.get("/signup_form_nursing_criteria", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "signup_form_nursing_criteria.html"));
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Access/signup_form_nursing_criteria.html"));
 });
 
 /*--------------------------------------- SIGN UP ROUTES ------------------------------------------------------- */
