@@ -1,4 +1,5 @@
 const iris = require("./backend/intersystems-iris-native");
+const bcrypt = require('bcrypt');
 
 let connection;
 let db;
@@ -44,6 +45,36 @@ function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddr
     });
 }
 
+async function validatePassword(inputUsername, inputPassword, requestParty) {
+    const db = connectToDB();
+    if (!db) {
+        console.error("Database connection failed during login");
+        return false;
+    }
+
+    try {
+        let retrievedHash = "";
+
+        if (requestParty === "hospital") {
+            retrievedHash = await db.classMethodValue(
+                "Medilink.HospitalAccount",
+                "GetHashedPasswordByUsername",
+                inputUsername
+            );
+        }
+
+        if (!retrievedHash) {
+            console.error("Invalid username or password");
+            return false;
+        }
+
+        return await bcrypt.compare(inputPassword, retrievedHash);
+    } catch (error) {
+        console.error("Error during password validation:", error);
+        return false;
+    }
+}
+
 function validateHospitalLogin(username, password) {
     console.log("Attempting to validate login for:", username); // Add logging
     
@@ -60,7 +91,7 @@ function validateHospitalLogin(username, password) {
             JSON.stringify(password)
         ];
 
-        console.log("Calling IRIS ValidateLogin method"); // Add logging
+        console.log("Calling IRIS GetHashedPasswordByUsername method"); // Add logging
         
         // Call the ValidateLogin method from your IRIS class
         const result = db.classMethodValue(
@@ -244,7 +275,7 @@ function getNursingHomeAccount(username) {
 module.exports = {
     insertHospitalData,
     insertNursingHomeData,
-    validateHospitalLogin,
+    validatePassword,
     validateNursingHomeLogin,
     getHospitalAccounts,
     getNursingHomeAccount
