@@ -296,6 +296,34 @@ function getNursingHomeAccount(username) {
     }
 }
 
+/*---------------------------------------- REGISTER PATIENT -------------------------------------------- */
+async function insertPatientData(staff, patientId, admissionDate, patientName, patientIc, sex) {
+    try {
+        const db = connectToDB(); // Ensure database connection
+        if (!db) {
+            console.error("❌ Database connection failed");
+            return false;
+        }
+
+        // Call ObjectScript method in IRIS to insert data
+        db.classMethodVoid(
+            "MyApp.Patient",   // Namespace.ClassName
+            "InsertPatientData", // Method name
+            staff, patientId, admissionDate, patientName, patientIc, sex
+        );
+
+        console.log(`✅ Successfully inserted patient: ${patientName}`);
+        return true;
+    } catch (error) {
+        console.error("❌ Error inserting patient data:", error);
+        return false;
+    }
+}
+
+module.exports = { insertPatientData };  // Export the function
+
+/*---------------------------------------- EXPORTS -------------------------------------------- */
+
 module.exports = {
     insertHospitalData,
     insertNursingHomeData,

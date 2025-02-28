@@ -234,6 +234,33 @@ app.get('/api/hospital-search', async (req, res) => {
   }
 });
 
+/*----------------------------------------- REGISTER PATIENT --------------------------------------------------- */
+
+const { insertPatientData } = require("./iris"); // Import function
+
+// API Route to store patient information
+app.post("/api/save-patient", async (req, res) => {
+    const { staff, patientId, admissionDate, patientName, patientIc, sex } = req.body;
+
+    if (!staff || !patientId || !admissionDate || !patientName || !patientIc || !sex) {
+        return res.status(400).json({ error: "All fields are required." });
+    }
+
+    try {
+        const success = await insertPatientData(staff, patientId, admissionDate, patientName, patientIc, sex);
+
+        if (!success) {
+            return res.status(500).json({ error: "Failed to insert patient record." });
+        }
+
+        res.status(201).json({ message: "Patient record saved successfully!" });
+    } catch (error) {
+        console.error("Error saving patient record:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
 // Check Database Connection
