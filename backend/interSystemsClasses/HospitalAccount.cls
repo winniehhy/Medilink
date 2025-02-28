@@ -61,35 +61,19 @@ ClassMethod InsertHospitalData(pUsername As %String, pPassword As %String, pHosp
   Quit tSC
 }
 
-ClassMethod ValidateLogin(pUsername As %String, pPassword As %String) As %Status
+ClassMethod GetHashedPasswordByUsername(pUsername As %String) As %String
 {
-    Set tSC = $$$OK
-    Try {
-        Set tSQL = "SELECT PasswordHash FROM Medilink.HospitalAccount WHERE Username = ?"
         Set tStatement = ##class(%SQL.Statement).%New()
-        Set tSC = tStatement.%Prepare(tSQL)
-        If $$$ISERR(tSC) Quit
-        
+        Do tStatement.%Prepare("SELECT PasswordHash FROM Medilink.HospitalAccount WHERE Username = ?")
         Set tResult = tStatement.%Execute(pUsername)
         
-        If 'tResult.%Next() {
-            Set tSC = $$$ERROR($$$GeneralError, "User not found")
-            Quit
+        If tResult.%Next() {
+            Quit tResult.%Get("PasswordHash")
         }
         
-        Set tStoredHash = tResult.PasswordHash
-        
-        If (tStoredHash '= pPassword) {
-            Set tSC = $$$ERROR($$$GeneralError, "Invalid password")
-            Quit
-        }
-        
-    } Catch ex {
-        Set tSC = ex.AsStatus()
-    }
-    
-    Quit tSC
+        Quit ""
 }
+
 
 Storage Default
 {
