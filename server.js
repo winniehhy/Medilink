@@ -1,7 +1,7 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
 const bodyParser = require("./backend/node_modules/body-parser");
-const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts } = require("./iris");
+const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts } = require("./iris");
 const path = require("path");
 const cors = require('./backend/node_modules/cors');
 const bcrypt = require("./backend/node_modules/bcryptjs");
@@ -148,18 +148,14 @@ app.post("/api/hospital-login", async (req, res) => {
   }
 
   try {
-    const loginResult = validateHospitalLogin(username, password);
-    console.log("Login result:", loginResult);
-
-    if (loginResult.success) {
-      res.json({ 
-        message: "Login successful"
-      });
-    } else {
-      res.status(401).json({ 
-        error: loginResult.error || "Invalid username or password"
-      });
-    }
+	const isValid = await validatePassword(username, password, "hospital");
+	if (isValid) {
+		console.log("Login successful!");
+		res.json({ message: "Login successful"});
+	} else {
+		console.log("Invalid username or password");
+		res.status(401).json({ error: loginResult.error || "Invalid username or password"});
+	}
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ 
