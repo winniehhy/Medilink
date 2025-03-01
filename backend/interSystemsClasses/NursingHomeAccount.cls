@@ -66,6 +66,19 @@ ClassMethod ValidateLogin(pUsername As %String, pPassword As %String) As %Status
     Quit tSC
 }
 
+ClassMethod GetUsername(pUsername As %String) As %String
+{
+        Set tStatement = ##class(%SQL.Statement).%New()
+        Do tStatement.%Prepare("SELECT Username FROM Medilink.NursingHomeAccount WHERE Username = ?")
+        Set tResult = tStatement.%Execute(pUsername)
+        
+        If tResult.%Next() {
+            Quit tResult.%Get("Username")
+        }
+        
+        Quit ""
+}
+
 Storage Default
 {
 <Data name="NursingHomeAccountDefaultData">
