@@ -49,8 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // 	.then(data => alert(data.message))
 // 	.catch(error => console.error("❌ Error:", error));
 // });
-document.querySelector("#patient-form").addEventListener("submit", function(event) {
-	event.preventDefault();
+document.getElementById("submit").addEventListener("click", function() {
 
 	const patientData = {
 		staff: document.getElementById("staff").value,
@@ -60,6 +59,7 @@ document.querySelector("#patient-form").addEventListener("submit", function(even
 		sex: document.querySelector('input[name="sex"]:checked').value
 	};
 
+	console.log("📤 Sending patient data:", patientData);
 	fetch("http://localhost:4000/api/save-patient", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
