@@ -1,0 +1,157 @@
+body {
+	background-color: #34a69f;
+	color: black;
+	/* text-align: center; */
+	padding: 0;
+	margin: 0;
+	font-family: 'Lato', sans-serif;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	width: 100%;
+	flex-direction: column;
+}
+
+.middle-rectangle {
+	width: 100%;
+	max-width: 900px;
+	/* background-color: #D9D9D93A; */
+	background-color: white;
+	border-radius: 15px;
+	padding: 30px;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+	justify-content: left;
+	text-justify: left;
+	/* text-align: center; */
+	position: relative;
+	/* text-align: left; */
+}
+
+.question-rectangle {
+	width: 100%;
+	max-width: 800px;
+	background-color: white;
+	border-radius: 15px;
+	padding: 5px;
+	display: flex;
+	text-align: left;
+	position: relative;
+	justify-content: left;
+	align-items: left;
+	margin: auto;
+	top: 5%;
+	border-color: #34a69f;
+	border: 2px solid #34a69f;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	width: 100%;
+}
+
+.subtitle {
+	font-size: 32px;
+	margin: 0;
+	flex-grow: 1;
+	text-align: center;
+	font-weight: bold;
+}
+
+.criteria {
+	font-size: 18px;
+	margin: 0%;
+	text-align: left;
+	text-justify: left;
+	width: 100%;
+}
+
+.button-container {
+	display: flex;
+	flex-direction: column;
+	margin-top: 50px;
+	text-align: right;
+	align-items: flex-end;
+}
+
+.button {
+	display: flex;
+	align-items: right;
+	/* justify-content: flex-start; */
+	justify-content: center;
+	background-color: #08212b;
+	color: white;
+	font-size: 18px;
+	font-weight: bold;
+	padding: 15px;
+	border: none;
+	border-radius: 30px;
+	cursor: pointer;
+	width: 100%;
+	max-width: 100px;
+	margin-left: auto;
+	/* margin: inherit; */
+	text-align: center;
+}
+
+.button:hover {
+	background-color: #154a5f;
+}
+
+.back-arrow {
+	font-size: 22px;
+	cursor: pointer;
+	position: absolute;
+	left: 10px;
+	color: #333;
+	font-weight: bold;
+	background: none;
+	border: none;
+	outline: none;
+	padding: 5px;
+	display: flex;
+	align-items: left;
+	transition: color 0.2s ease;
+}
+
+.back-arrow:hover {
+	color: #267d74;
+}
+
+.option {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	padding: 5px;
+	border-radius: 5px;
+	transition: background 0.3s;
+	width: 100%;
+	flex-shrink: 0;
+	margin: 0; /* Remove default margin */
+	padding-left: 0;
+}
+.option:hover {
+	background: #f0f0f0;
+}
+input[type="radio"] {
+	margin: 0; /* Remove default margin */
+	padding: 0;
+	transform: scale(1.2);
+	cursor: pointer;
+}
+.custom-border {
+border: 2px solid #34a69f; /* Change color here */
+border-radius: 8px; /* Optional: Adds rounded corners */
+padding: 10px;
+margin-bottom: 15px;
+width: 90%;
+}
+
+legend {
+font-weight: bold;
+color: #34a69f; /* Matches border color */
+}
