@@ -44,6 +44,45 @@ app.get("/signup_form_nursing_criteria", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Access/signup_form_nursing_criteria.html"));
 });
 
+/*==================================== NURSING HOME GET HTML API ===================================================== */
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Nursing Home Main HomePage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app.get("/nursing_home_homepage", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/nursing_homepage.html"));
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Nursing Home New Patient ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app.get("/basic_information", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/basic_information.html"));
+});
+
+app.get("/cognitive_mental_health", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/cognitive_mental_health.html"));
+});
+
+app.get("/physical_capability", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/physical_capability.html"));
+});
+
+app.get("/documents_needed", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/documents_needed.html"));
+});
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Exising Patient~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app.get("/existing_patient", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/existing_patient.html"));
+});
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app.get("/track_progress", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/track_progress.html"));
+});
+
+app.get("/patient_status", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_status.html"));
+});
+
 /*--------------------------------------- SIGN UP ROUTES ------------------------------------------------------- */
 
 function isValidSGPhoneNumber(phone) {
@@ -240,26 +279,29 @@ const { insertPatientData } = require("./iris"); // Import function
 
 // API Route to store patient information
 app.post("/api/save-patient", async (req, res) => {
-    const { staff, patientId, admissionDate, patientName, patientIc, sex } = req.body;
+  const { staff, admissionDate, patientName, patientIc, sex } = req.body;
 
-    if (!staff || !patientId || !admissionDate || !patientName || !patientIc || !sex) {
-        return res.status(400).json({ error: "All fields are required." });
-    }
+  console.log("🛠️ Received data:", req.body); // Debugging: Check what is received
 
-    try {
-        const success = await insertPatientData(staff, patientId, admissionDate, patientName, patientIc, sex);
+  if (!staff || !admissionDate || !patientName || !patientIc || !sex) {
+      return res.status(400).json({ error: "All fields are required." });
+  }
 
-        if (!success) {
-            return res.status(500).json({ error: "Failed to insert patient record." });
-        }
+  try {
+      const success = await insertPatientData(staff, admissionDate, patientName, patientIc, sex);
 
-        res.status(201).json({ message: "Patient record saved successfully!" });
-    } catch (error) {
-        console.error("Error saving patient record:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
+      if (!success) {
+          console.error("❌ Insert Failed in IRIS!");
+          return res.status(500).json({ error: "Failed to insert patient record." });
+      }
+
+      console.log("✅ Patient record inserted successfully!");
+      res.status(201).json({ message: "Patient record saved successfully!" });
+  } catch (error) {
+      console.error("❌ Error saving patient record:", error);
+      res.status(500).json({ error: "Internal server error" });
+  }
 });
-
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
