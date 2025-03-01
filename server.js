@@ -46,34 +46,50 @@ app.get("/signup_form_nursing_criteria", (req, res) => {
 
 /*--------------------------------------- SIGN UP ROUTES ------------------------------------------------------- */
 
+function isValidSGPhoneNumber(phone) {
+    const localPattern = /^[689]\d{7}$/;
+    const internationalPattern = /^\+65[689]\d{7}$/;
+
+    return localPattern.test(phone) || internationalPattern.test(phone);
+}
+
 // Hospital Signup Route
 app.post("/api/hospital-signup", async (req, res) => {
-  const { username, password, hospitalName, hospitalAddress, hospitalPhone } = req.body;
+	const { username, password, hospitalName, hospitalAddress, hospitalPhone } = req.body;
   
-  if (!username || !password || !hospitalName || !hospitalAddress || !hospitalPhone) {
-    return res.status(400).json({ error: "Missing fields!" });
-  }
+	// Validate required fields
+	if (!username || !password || !hospitalName || !hospitalAddress || !hospitalPhone) {
+	  return res.status(400).json({ error: "Missing fields!" });
+	}
+  
+	// Validate password length
+	if (password.length < 6) {
+	  return res.status(400).json({ error: "Password must be at least 6 characters long." });
+	}
 
-  if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters long." });
-  }
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const success = await insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone);
-    
-    if (!success) {
-      return res.status(500).json({ error: "Failed to insert hospital account" });
-    }
-
-    res.status(201).json({ message: "Hospital account created successfully!" });
-  } catch (error) {
-    console.error("Error during hospital signup:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+	if (!isValidSGPhoneNumber(hospitalPhone)) {
+		return res.status(400).json({ error: "Invalid Singapore phone number." });
+	}
+  
+	try {
+	  const salt = await bcrypt.genSalt(10);
+	  const hashedPassword = await bcrypt.hash(password, salt);
+  
+	  await insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone);
+	  
+	  res.status(201).json({ message: "Hospital account created successfully!" });
+  
+	} catch (error) {
+	  console.error("Error during hospital signup:", error.message);
+  
+	  if (error.message === "Username already exists") {
+		return res.status(409).json({ error: "Username already exists" });
+	  }
+  
+	  res.status(500).json({ error: "Internal server error" });
+	}
+  });
+  
 
 // Nursing Home Signup Routes (Two-Step Process)
 // Step 1: Store initial data in session
@@ -87,6 +103,10 @@ app.post("/api/nursinghome-signup-temp", async (req, res) => {
   if (password.length < 6) {
     return res.status(400).json({ error: "Password must be at least 6 characters long." });
   }
+
+  if (!isValidSGPhoneNumber(nursingHomePhone)) {
+	return res.status(400).json({ error: "Invalid Singapore phone number." });
+}
 
   try {
     const salt = await bcrypt.genSalt(10);
@@ -109,28 +129,30 @@ app.post("/api/nursinghome-signup-temp", async (req, res) => {
 
 // Step 2: Complete nursing home signup process
 app.post("/api/nursinghome-signup", async (req, res) => {
-  if (!req.session.signupData) {
-    return res.status(400).send("First step data missing.");
-  }
+	if (!req.session.signupData) {
+	  return res.status(400).send("First step data missing.");
+	}
   
-  const finalData = { ...req.session.signupData, ...req.body };
-  console.log("final data", finalData);
+	const finalData = { ...req.session.signupData, ...req.body };
+	console.log("final data", finalData);
   
-  try {
-    const success = await insertNursingHomeData(finalData);
-
-    if (!success) {
-      req.session.destroy(); // Clear session after storing
-      return res.status(500).json({ error: "Failed to insert nursing home account" });
-    }
-    
-    res.status(200).json({message: "Signup completed"});
-  } catch (error) {
-    req.session.destroy(); // Clear session after storing
-    console.error("Error during nursing home signup:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+	try {
+	  await insertNursingHomeData(finalData);
+	  res.status(201).json({ message: "Nursing Home account created successfully!" });
+	} catch (error) {
+	  console.error("Error during nursing home signup:", error.message);
+  
+	  if (error.message === "Username already exists") {
+		return res.status(409).json({ error: "Username already exists" });
+	  }
+  
+	  return res.status(500).json({ error: "Internal server error" });
+	} finally {
+	  req.session.destroy(); // Destroy session AFTER response is sent
+	}
+  });
+  
+  
 
 /*--------------------------------------- LOGIN ROUTES ------------------------------------------------------- */
 

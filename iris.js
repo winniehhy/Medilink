@@ -25,22 +25,36 @@ function connectToDB() {
 
 function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone) {
     return new Promise((resolve, reject) => {
-        const db = connectToDB();
-        if (!db) return reject("Database connection failed");
-
-        const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
-        console.log("Prepared parameters:", args);
         try {
+            const db = connectToDB();
+            if (!db) throw new Error("Database connection failed");
+
+            const args = [username, hashedPassword, hospitalName, hospitalAddress, hospitalPhone];
+            console.log("Prepared parameters:", args);
+
+            // Check if username exists
+            let retrievedUsername = db.classMethodValue(
+                "Medilink.HospitalAccount",
+                "GetUsername",
+                username
+            );
+
+            if (retrievedUsername) {
+                return reject(new Error("Username already exists"));
+            }
+
+            // Insert data
             db.classMethodVoid(
                 "Medilink.HospitalAccount",
                 "InsertHospitalData",
                 ...args
             );
+
             console.log(`✅ Inserted hospital account for: ${username}`);
             resolve(true);
         } catch (error) {
             console.error("❌ Error calling class method:", error);
-            reject(false);
+            reject(new Error("Database operation failed"));
         }
     });
 }
@@ -75,60 +89,60 @@ async function validatePassword(inputUsername, inputPassword, requestParty) {
     }
 }
 
-function validateHospitalLogin(username, password) {
-    console.log("Attempting to validate login for:", username); // Add logging
+// function validateHospitalLogin(username, password) {
+//     console.log("Attempting to validate login for:", username); // Add logging
     
-    const db = connectToDB();
-    if (!db) {
-        console.error("Database connection failed during login"); // Add logging
-        return { success: false, error: "Database connection failed" };
-    }
+//     const db = connectToDB();
+//     if (!db) {
+//         console.error("Database connection failed during login"); // Add logging
+//         return { success: false, error: "Database connection failed" };
+//     }
 
-    try {
-        // Convert parameters to strings
-        const args = [
-            JSON.stringify(username),
-            JSON.stringify(password)
-        ];
+//     try {
+//         // Convert parameters to strings
+//         const args = [
+//             JSON.stringify(username),
+//             JSON.stringify(password)
+//         ];
 
-        console.log("Calling IRIS GetHashedPasswordByUsername method"); // Add logging
+//         console.log("Calling IRIS GetHashedPasswordByUsername method"); // Add logging
         
-        // Call the ValidateLogin method from your IRIS class
-        const result = db.classMethodValue(
-            "Medilink.HospitalAccount",
-            "ValidateLogin",
-            ...args
-        );
+//         // Call the ValidateLogin method from your IRIS class
+//         const result = db.classMethodValue(
+//             "Medilink.HospitalAccount",
+//             "ValidateLogin",
+//             ...args
+//         );
 
-        console.log("IRIS ValidateLogin result:", result); // Add logging
+//         console.log("IRIS ValidateLogin result:", result); // Add logging
 
-        if (result === "1" || result === 1) {
-            return { 
-                success: true,
-                message: "Login successful"
-            };
-        } else {
-            return { 
-                success: false,
-                error: "Invalid username or password"
-            };
-        }
-    } catch (error) {
-        console.error("Login validation error:", error); // Add logging
-        return { 
-            success: false, 
-            error: `Login validation failed: ${error.message}`
-        };
-    }
-}
+//         if (result === "1" || result === 1) {
+//             return { 
+//                 success: true,
+//                 message: "Login successful"
+//             };
+//         } else {
+//             return { 
+//                 success: false,
+//                 error: "Invalid username or password"
+//             };
+//         }
+//     } catch (error) {
+//         console.error("Login validation error:", error); // Add logging
+//         return { 
+//             success: false, 
+//             error: `Login validation failed: ${error.message}`
+//         };
+//     }
+// }
 
 /*---------------------------------------- NURSING HOME-------------------------------------------- */
 
 function insertNursingHomeData(finalData) {
     return new Promise((resolve, reject) => {
         const db = connectToDB();
-        if (!db) return reject("Database connection failed");
-
+        if (!db) throw new Error("Database connection failed");
+	
         // Log original parameter types and values
         console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
         console.log("Original parameter values:", finalData);
@@ -158,6 +172,16 @@ function insertNursingHomeData(finalData) {
         });
 
         try {
+			let retrievedUsername = db.classMethodValue(
+                "Medilink.NursingHomeAccount",
+                "GetUsername",
+                finalData.username
+            );
+
+            if (retrievedUsername) {
+                return reject(new Error("Username already exists"));
+            }
+
             db.classMethodVoid(
                 "Medilink.NursingHomeAccount",
                 "InsertNursingHomeData",
@@ -168,7 +192,7 @@ function insertNursingHomeData(finalData) {
             
         } catch (error) {
             console.error("❌ Error calling class method:", error);
-            reject(false);
+            reject(new Error("Database operation failed"));
         }
     });
 }
