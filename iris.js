@@ -297,19 +297,21 @@ function getNursingHomeAccount(username) {
 }
 
 /*---------------------------------------- REGISTER PATIENT -------------------------------------------- */
-async function insertPatientData(staff, patientId, admissionDate, patientName, patientIc, sex) {
+async function insertPatientData(staff, admissionDate, patientName, patientIc, sex) {
     try {
-        const db = connectToDB(); // Ensure database connection
+        const db = connectToDB();
         if (!db) {
             console.error("❌ Database connection failed");
             return false;
         }
 
-        // Call ObjectScript method in IRIS to insert data
+        console.log("🛠️ Preparing to insert:", { staff, admissionDate, patientName, patientIc, sex });
+
+        // Call IRIS method
         db.classMethodVoid(
-            "MyApp.Patient",   // Namespace.ClassName
-            "InsertPatientData", // Method name
-            staff, patientId, admissionDate, patientName, patientIc, sex
+            "Medilink.Patient",  
+            "InsertPatientData",
+            staff, admissionDate, patientName, patientIc, sex
         );
 
         console.log(`✅ Successfully inserted patient: ${patientName}`);
@@ -320,8 +322,6 @@ async function insertPatientData(staff, patientId, admissionDate, patientName, p
     }
 }
 
-module.exports = { insertPatientData };  // Export the function
-
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
 module.exports = {
@@ -330,5 +330,7 @@ module.exports = {
     validatePassword,
     validateNursingHomeLogin,
     getHospitalAccounts,
-    getNursingHomeAccount
+    getNursingHomeAccount,
+
+    insertPatientData
 };
