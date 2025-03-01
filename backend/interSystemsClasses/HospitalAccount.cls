@@ -74,6 +74,19 @@ ClassMethod GetHashedPasswordByUsername(pUsername As %String) As %String
         Quit ""
 }
 
+ClassMethod GetUsername(pUsername As %String) As %String
+{
+        Set tStatement = ##class(%SQL.Statement).%New()
+        Do tStatement.%Prepare("SELECT Username FROM Medilink.HospitalAccount WHERE Username = ?")
+        Set tResult = tStatement.%Execute(pUsername)
+        
+        If tResult.%Next() {
+            Quit tResult.%Get("Username")
+        }
+        
+        Quit ""
+}
+
 
 Storage Default
 {
