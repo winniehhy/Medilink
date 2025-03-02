@@ -70,7 +70,7 @@ document.getElementById("submit").addEventListener("click", function() {
 		alert(data.message);
 		if (data.message.includes("success")) {
 			console.log("✅ Navigating to next page...");
-			window.location.href = "/physical_capability"; // ✅ Correct absolute path
+			window.location.href = "physical_capability.html"; // ✅ Correct absolute path
 		}
 	})
 	.catch(error => console.error("❌ Error:", error));
