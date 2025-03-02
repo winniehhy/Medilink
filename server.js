@@ -47,7 +47,7 @@ app.get("/signup_form_nursing_criteria", (req, res) => {
 /*==================================== NURSING HOME GET HTML API ===================================================== */
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Nursing Home Main HomePage~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-app.get("/nursing_home_homepage", (req, res) => {
+app.get("/nursing_homepage", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/nursing_homepage.html"));
 });
 
@@ -66,6 +66,10 @@ app.get("/physical_capability", (req, res) => {
 
 app.get("/documents_needed", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/documents_needed.html"));
+});
+
+app.get("/patient_information", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_information.html"));
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Exising Patient~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -276,22 +280,40 @@ app.get('/api/hospital-search', async (req, res) => {
 
 const { insertPatientData } = require("./iris"); // Import function
 
-// API Route to store patient information
 app.post("/api/save-patient", async (req, res) => {
-  const { staff, admissionDate, patientName, patientIc, sex } = req.body;
+  const { patientData, physicalData, cognitiveData, documentData } = req.body;
 
   console.log("🛠️ Received data:", req.body); // Debugging: Check what is received
 
-  if (!staff || !admissionDate || !patientName || !patientIc || !sex) {
+  if (!patientData || !physicalData || !cognitiveData || !documentData) {
       return res.status(400).json({ error: "All fields are required." });
   }
 
   try {
-      const success = await insertPatientData(staff, admissionDate, patientName, patientIc, sex);
+      // Save basic patient data
+      const success = await insertPatientData(
+          patientData.staff,
+          patientData.admissionDate,
+          patientData.patientName,
+          patientData.patientIc,
+          patientData.sex
+      );
 
       if (!success) {
           console.error("❌ Insert Failed in IRIS!");
           return res.status(500).json({ error: "Failed to insert patient record." });
+      }
+
+      // Save physical capability data
+      const physicalSuccess = await insertPhysicalCapabilityData(
+          patientData.patientIc, // Use patientIc as the identifier
+          physicalData.ambulation,
+          physicalData.walkingAids
+      );
+
+      if (!physicalSuccess) {
+          console.error("❌ Insert Failed in IRIS!");
+          return res.status(500).json({ error: "Failed to insert physical capability data." });
       }
 
       console.log("✅ Patient record inserted successfully!");
@@ -301,6 +323,31 @@ app.post("/api/save-patient", async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
   }
 });
+// // API Route to store patient information
+// app.post("/api/save-patient", async (req, res) => {
+//   const { staff, admissionDate, patientName, patientIc, sex } = req.body;
+
+//   console.log("🛠️ Received data:", req.body); // Debugging: Check what is received
+
+//   if (!staff || !admissionDate || !patientName || !patientIc || !sex) {
+//       return res.status(400).json({ error: "All fields are required." });
+//   }
+
+//   try {
+//       const success = await insertPatientData(staff, admissionDate, patientName, patientIc, sex);
+
+//       if (!success) {
+//           console.error("❌ Insert Failed in IRIS!");
+//           return res.status(500).json({ error: "Failed to insert patient record." });
+//       }
+
+//       console.log("✅ Patient record inserted successfully!");
+//       res.status(201).json({ message: "Patient record saved successfully!" });
+//   } catch (error) {
+//       console.error("❌ Error saving patient record:", error);
+//       res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 // Define the router
 const router = express.Router();
