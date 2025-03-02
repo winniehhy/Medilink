@@ -152,17 +152,33 @@ function addDocuments() {
 };
 
 //-----------------------------------------------------------Tab Navigation---------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", function () {
     let currentTab = 0; // Default tab index
 
     function showTab(index) {
         const tabs = document.querySelectorAll(".tab");
+        const sections = document.querySelectorAll(".section-progress-fill");
+    
+        // Hide all tabs and reset section colors
         tabs.forEach((tab, i) => {
             tab.style.display = i === index ? "block" : "none";
         });
+    
+        // Update section colors
+        sections.forEach((section, i) => {
+            if (i === index) {
+                section.classList.add("active-section"); // Brighter green for active section
+            } else {
+                section.classList.remove("active-section"); // Light green for other sections
+            }
+        });
+    
         currentTab = index;
         console.log("Switched to tab:", currentTab);
     }
+    
+    showTab(currentTab); // Show the default tab
 
     function saveData() {
         const patientData = {
@@ -184,7 +200,8 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     
         const documentData = {
-            documentsNeeded: Array.from(document.querySelectorAll('input[name="document-needed"]:checked')).map(d => d.value)
+            documentsNeeded: [...document.querySelectorAll('input[name="document-needed"]:checked')]
+                .map(d => d.value)
         };
     
         console.log("📤 Saving Data:", { patientData, physicalData, cognitiveData, documentData });
@@ -192,25 +209,38 @@ document.addEventListener("DOMContentLoaded", function () {
         return { patientData, physicalData, cognitiveData, documentData };
     }
     
-    document.querySelector("form").addEventListener("submit", function (e) {
-        e.preventDefault();
-        const data = saveData();
+    document.addEventListener("DOMContentLoaded", function () {
+        const submitButton = document.getElementById("submit-button");
     
-        // Send data to the backend
-        fetch("http://localhost:4000/api/save-patient", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-            if (data.message.includes("success")) {
-                // Redirect to another page if needed
-                window.location.href = "nursing_homepage";
-            }
-        })
-        .catch(error => console.error("❌ Error:", error));
+        if (!submitButton) {
+            console.error("❌ Submit button not found!");
+            return;
+        }
+    
+        submitButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            console.log("✅ Submit button clicked");  // Debugging log
+    
+            // Collect all form data
+            const data = saveData();
+            console.log("📤 Data to send:", data);  // Debugging log
+    
+            fetch("http://localhost:4000/api/save-patient", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(responseData => {
+                console.log("✅ Response received:", responseData); // Debugging log
+                alert(responseData.message);
+    
+                if (responseData.message.includes("success")) {
+                    window.location.href = "nursing_homepage";
+                }
+            })
+            .catch(error => console.error("❌ Error in fetch:", error));
+        });
     });
 
     function nextTab() {
@@ -220,6 +250,9 @@ document.addEventListener("DOMContentLoaded", function () {
             currentTab++;
             showTab(currentTab);
         }
+        else {
+            console.log("🚫 Already at last tab, cannot go forward");
+        }
     }
 
     function prevTab() {
@@ -228,12 +261,18 @@ document.addEventListener("DOMContentLoaded", function () {
             currentTab--;
             showTab(currentTab);
         }
+        else {
+            console.log("🚫 Already at first tab, cannot go back");
+        }
     }
+
+    console.log("✅ JavaScript Loaded"); // Debugging log
 
     // Attach event listeners to Next and Previous buttons
     document.querySelectorAll(".next-button").forEach((btn) => {
         btn.addEventListener("click", function (e) {
             e.preventDefault();
+            console.log("➡️ Next button clicked");
             nextTab();
         });
     });
@@ -241,6 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".prev-button").forEach((btn) => {
         btn.addEventListener("click", function (e) {
             e.preventDefault();
+            console.log("⬅️ Previous button clicked");
             prevTab();
         });
     });
@@ -254,6 +294,37 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Show the default tab
-    showTab(0);
+    const submitButton = document.getElementById("submit-button");
+
+    if (!submitButton) {
+        console.error("❌ Submit button not found! Check your HTML.");
+    }
+    else {
+        console.log("✅ Submit button detected!");
+    }
+
+    submitButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        console.log("✅ Submit button clicked");  // Debugging log
+
+        // Collect all form data
+        const data = saveData();
+        console.log("📤 Data to send:", data);  // Debugging log
+
+        fetch("http://localhost:4000/api/save-patient", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            console.log("✅ Server Response:", responseData); // Debugging log
+            alert(responseData.message);
+
+            if (responseData.message.includes("success")) {
+                window.location.href = "nursing_homepage";
+            }
+        })
+        .catch(error => console.error("❌ Fetch Error:", error));
+    });
 });
