@@ -33,23 +33,23 @@
 	<div class="main-content">
 		<h1>Patient Information</h1>
 		<div class="section-progress">
-			<a href="basic_information" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
 				<div class="section-progress-fill active-section">Basic Information</div>
 			</a>
-			<a href="physical_capability" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
 				<div class="section-progress-fill">Physical Capability</div>
 			</a>
-			<a href="cognitive_mental_health" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
 				<div class="section-progress-fill">Cognitive & Mental Health</div>
 			</a>
-			<a href="documents_needed" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
 				<div class="section-progress-fill">Document Needed</div>
 			</a>
 		</div>
 
 		<form>
 			<!-- Tab 1 : Basic Information -->
-			<div class="tab" id="tab0">
+			<div class="tab active-tab" id="tab0">
 				<div class="form-group">
 					<label for="staff">Staff-In-Charge:</label>
 					<input type="text" id="staff" name="staff" placeholder="e.g., Ms. Leong Kai Wat">
@@ -154,7 +154,7 @@
 					</div>
 				</div>
 				<button type="button" class="prev-button">Previous</button>
-				<button type="submit" class="next-button">Submit</button>
+				<button type="submit" id="submit-button" class="next-button">Submit</button>
 			</div>
 		</form>
 	</div>

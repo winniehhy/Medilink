@@ -1,97 +1,85 @@
 Class Medilink.Patient Extends %Persistent
 {
+  Property PatientID As %String;
+  Property Staff As %String;
+  Property AdmissionDate As %String;
+  Property PatientName As %String;
+  Property PatientIC As %String;
+  Property Sex As %String;
+  Property Ambulation As %String; // Physical capability: Ambulation
+  Property WalkingAids As %String; // Physical capability: Walking aids
+  Property CognitiveConditions As %String; // Cognitive conditions
+  Property MentalHealthConditions As %String; // Mental health conditions
+  Property DocumentsNeeded As %String; // Documents needed
 
-Property PatientID As %String;
+  // Define a unique index on PatientID
+  Index PatientIDIndex On PatientID [ Unique ];
 
-Property Staff As %String;
+  ClassMethod GeneratePatientID() As %String
+  {
+      Set lastPatient = ""
+      &sql(SELECT TOP 1 PatientID INTO :lastPatient FROM Medilink.Patient ORDER BY PatientID DESC)
+      
+      If SQLCODE '= 0 || lastPatient = "" {
+          Quit "P1"
+      }
 
-Property AdmissionDate As %String;
-
-Property PatientName As %String;
-
-Property PatientIC As %String;
-
-Property Sex As %String;
-
-Property Ambulation As %String;
-
-Property WalkingAids As %String;
-
-// Define a unique index on PatientID
-
-Index PatientIDIndex On PatientID [ Unique ];
-
-ClassMethod GeneratePatientID() As %String
-{
-        Set lastPatient = ""
-        &sql(SELECT TOP 1 PatientID INTO :lastPatient FROM Medilink.Patient ORDER BY PatientID DESC)
-        
-        If SQLCODE '= 0 || lastPatient = "" {
-            Quit "P1"
-        }
-
-        Set num = $Extract(lastPatient, 2, *) + 1
-        Quit "P" _ num
-}
-
-ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPatientName As %String, pPatientIC As %String, pSex As %String) As %Status
-{
-    Set tSC = $$$OK
-    Set patientID = ..GeneratePatientID()
-
-    // Check if the generated PatientID already exists
-    //&sql(SELECT COUNT(*) INTO :count FROM Medilink.Patient WHERE PatientID = :patientID)
-    //DO ##class(%SYS.System).WriteToConsoleLog(count)
-    //If count > 0 {
-    //    Quit $$$ERROR($$$GeneralError, "PatientID already exists: "_patientID)
-    //}
-
-    &sql(
-        INSERT INTO Medilink.Patient (PatientID, Staff, AdmissionDate, PatientName, PatientIC, Sex)
-        VALUES (:patientID, :pStaff, :pAdmissionDate, :pPatientName, :pPatientIC, :pSex)
-    )
-
-    DO ##class(%SYS.System).WriteToConsoleLog(SQLCODE)
-    
-    If SQLCODE < 0 {
-        Set tSC = $$$ERROR($$$GeneralError, "SQL Insert Failed: "_SQLCODE)
-    }
-    
-    Quit tSC
-}
-
-ClassMethod GetPatientByIC(pPatientIC As %String) As %String
-{
-        Set tSQL = "SELECT * FROM Medilink.Patient WHERE PatientIC = ?"
-        Set tStatement = ##class(%SQL.Statement).%New()
-        Set tSC = tStatement.%Prepare(tSQL)
-        If $$$ISERR(tSC) { Quit "{}" }
-        
-        Set tResult = tStatement.%Execute(pPatientIC)
-        If 'tResult.%Next() { Quit "{}" }
-
-        Set patientJSON = "{""PatientID"":"""_tResult.PatientID_""", ""Staff"":"""_tResult.Staff_""", ""AdmissionDate"":"""_tResult.AdmissionDate_""", ""PatientName"":"""_tResult.PatientName_""", ""PatientIC"":"""_tResult.PatientIC_""", ""Sex"":"""_tResult.Sex_"""}"
-        Quit patientJSON
-}
-
-ClassMethod InsertPhysicalCapabilityData(patientIc As %String, ambulation As %String, walkingAids As %String) As %Status
-{
-  // 1) Attempt to find the existing patient by patientIc
-  //    If your class uses "patientIc" as the IDKey, you can do:
-  set tPatient = ##class(Medilink.Patient).%OpenId(patientIc)
-  
-  // 2) If the row doesn't exist, decide whether to create or throw an error
-  if tPatient="" {
-    Quit $$$ERROR($$$GeneralError,"No existing patient found for: "_patientIc)
+      Set num = $Extract(lastPatient, 2, *) + 1
+      Quit "P" _ num
   }
 
-  // 3) Update fields
-  set tPatient.Ambulation = ambulation
-  set tPatient.WalkingAids = walkingAids
+  ClassMethod InsertPatientData(
+      pStaff As %String, 
+      pAdmissionDate As %String, 
+      pPatientName As %String, 
+      pPatientIC As %String, 
+      pSex As %String, 
+      pAmbulation As %String, 
+      pWalkingAids As %String, 
+      pCognitiveConditions As %String, 
+      pMentalHealthConditions As %String, 
+      pDocumentsNeeded As %String
+  ) As %Status
+  {
+      Set tSC = $$$OK
+      Set patientID = ..GeneratePatientID()
 
-  // 4) Save
-  set sc = tPatient.%Save()
-  Quit:sc
+      &sql(
+          INSERT INTO Medilink.Patient (
+              PatientID, 
+              Staff, 
+              AdmissionDate, 
+              PatientName, 
+              PatientIC, 
+              Sex, 
+              Ambulation, 
+              WalkingAids, 
+              CognitiveConditions, 
+              MentalHealthConditions, 
+              DocumentsNeeded
+          )
+          VALUES (
+              :patientID, 
+              :pStaff, 
+              :pAdmissionDate, 
+              :pPatientName, 
+              :pPatientIC, 
+              :pSex, 
+              :pAmbulation, 
+              :pWalkingAids, 
+              :pCognitiveConditions, 
+              :pMentalHealthConditions, 
+              :pDocumentsNeeded
+          )
+      )
+
+      DO ##class(%SYS.System).WriteToConsoleLog(SQLCODE)
+      
+      If SQLCODE < 0 {
+          Set tSC = $$$ERROR($$$GeneralError, "SQL Insert Failed: "_SQLCODE)
+      }
+      
+      Quit tSC
 }
 
 Storage Default
