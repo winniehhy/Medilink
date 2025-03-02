@@ -297,7 +297,18 @@ function getNursingHomeAccount(username) {
 }
 
 /*---------------------------------------- REGISTER PATIENT -------------------------------------------- */
-async function insertPatientData(staff, admissionDate, patientName, patientIc, sex) {
+async function insertPatientData(
+    staff, 
+    admissionDate, 
+    patientName, 
+    patientIc, 
+    sex, 
+    ambulation, 
+    walkingAids, 
+    cognitiveConditions, 
+    mentalHealthConditions, 
+    documentsNeeded
+) {
     try {
         const db = connectToDB();
         if (!db) {
@@ -305,13 +316,33 @@ async function insertPatientData(staff, admissionDate, patientName, patientIc, s
             return false;
         }
 
-        console.log("🛠️ Preparing to insert:", { staff, admissionDate, patientName, patientIc, sex });
+        console.log("🛠️ Preparing to insert:", { 
+            staff, 
+            admissionDate, 
+            patientName, 
+            patientIc, 
+            sex, 
+            ambulation, 
+            walkingAids, 
+            cognitiveConditions, 
+            mentalHealthConditions, 
+            documentsNeeded 
+        });
 
         // Call IRIS method
         db.classMethodVoid(
             "Medilink.Patient",  
             "InsertPatientData",
-            staff, admissionDate, patientName, patientIc, sex
+            staff, 
+            admissionDate, 
+            patientName, 
+            patientIc, 
+            sex, 
+            ambulation, 
+            walkingAids, 
+            cognitiveConditions, 
+            mentalHealthConditions, 
+            documentsNeeded
         );
 
         console.log(`✅ Successfully inserted patient: ${patientName}`);
@@ -323,33 +354,6 @@ async function insertPatientData(staff, admissionDate, patientName, patientIc, s
 }
 
 
-async function insertPhysicalCapabilityData(ambulation, walkingAids) {
-    try {
-      const db = connectToDB();
-      if (!db) {
-        console.error("❌ Database connection failed");
-        return false;
-      }
-  
-      console.log("🛠️ Inserting physical capability data:", { ambulation, walkingAids });
-  
-      // Suppose your IRIS class method also does NOT require patientIc
-      db.classMethodVoid(
-        "Medilink.Patient",
-        "InsertPhysicalCapabilityData",
-        ambulation,
-        walkingAids
-      );
-  
-      console.log("✅ Successfully inserted physical capability data");
-      return true;
-    } catch (error) {
-      console.error("❌ Error inserting physical capability data:", error);
-      return false;
-    }
-  }
-  
-  
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
 module.exports = {
@@ -361,5 +365,4 @@ module.exports = {
     getNursingHomeAccount,
 
     insertPatientData,
-    insertPhysicalCapabilityData
 };
