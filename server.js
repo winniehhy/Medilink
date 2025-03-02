@@ -285,35 +285,40 @@ app.post("/api/save-patient", async (req, res) => {
 
   console.log("🛠️ Received data:", req.body); // Debugging: Check what is received
 
-  if (!patientData || !physicalData || !cognitiveData || !documentData) {
-      return res.status(400).json({ error: "All fields are required." });
+  // Validate data
+  const errors = [];
+  if (!patientData.staff) errors.push("Staff-In-Charge");
+  if (!patientData.admissionDate) errors.push("Date of Admission");
+  if (!patientData.patientName) errors.push("Patient Name");
+  if (!patientData.patientIc) errors.push("Patient IC");
+  if (!patientData.sex) errors.push("Sex");
+  if (!physicalData.ambulation) errors.push("Ambulation");
+  if (cognitiveData.cognitiveConditions.length === 0) errors.push("Cognitive Conditions");
+  if (cognitiveData.mentalHealthConditions.length === 0) errors.push("Mental Health Conditions");
+  if (documentData.documentsNeeded.length === 0) errors.push("Documents Needed");
+
+  if (errors.length > 0) {
+      return res.status(400).json({ error: "Missing fields: " + errors.join(", ") });
   }
 
   try {
-      // Save basic patient data
+      // Save all patient data in one call
       const success = await insertPatientData(
           patientData.staff,
           patientData.admissionDate,
           patientData.patientName,
           patientData.patientIc,
-          patientData.sex
+          patientData.sex,
+          physicalData.ambulation,
+          physicalData.walkingAids,
+          cognitiveData.cognitiveConditions.join(", "), // Convert array to string
+          cognitiveData.mentalHealthConditions.join(", "), // Convert array to string
+          documentData.documentsNeeded.join(", ") // Convert array to string
       );
 
       if (!success) {
           console.error("❌ Insert Failed in IRIS!");
           return res.status(500).json({ error: "Failed to insert patient record." });
-      }
-
-      // Save physical capability data
-      const physicalSuccess = await insertPhysicalCapabilityData(
-          patientData.patientIc, // Use patientIc as the identifier
-          physicalData.ambulation,
-          physicalData.walkingAids
-      );
-
-      if (!physicalSuccess) {
-          console.error("❌ Insert Failed in IRIS!");
-          return res.status(500).json({ error: "Failed to insert physical capability data." });
       }
 
       console.log("✅ Patient record inserted successfully!");
@@ -323,6 +328,7 @@ app.post("/api/save-patient", async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
   }
 });
+
 // // API Route to store patient information
 // app.post("/api/save-patient", async (req, res) => {
 //   const { staff, admissionDate, patientName, patientIc, sex } = req.body;
@@ -350,29 +356,29 @@ app.post("/api/save-patient", async (req, res) => {
 // });
 
 // Define the router
-const router = express.Router();
+// const router = express.Router();
 
-router.post("/api/save-physical-capability", async (req, res) => {
-  try {
-    const { ambulation, walkingAids } = req.body;
+// router.post("/api/save-physical-capability", async (req, res) => {
+//   try {
+//     const { ambulation, walkingAids } = req.body;
     
-    // Call the IRIS helper function without patientIc:
-    const success = await insertPhysicalCapabilityData(ambulation, walkingAids);
+//     // Call the IRIS helper function without patientIc:
+//     const success = await insertPhysicalCapabilityData(ambulation, walkingAids);
 
-    if (success) {
-      return res.json({ message: "Physical capability data saved successfully" });
-    } else {
-      return res.json({ message: "Error saving physical capability data" });
-    }
-  } catch (error) {
-    console.error("❌ Server error saving physical capability data:", error);
-    return res.status(500).json({ message: "Server error" });
-  }
-});
+//     if (success) {
+//       return res.json({ message: "Physical capability data saved successfully" });
+//     } else {
+//       return res.json({ message: "Error saving physical capability data" });
+//     }
+//   } catch (error) {
+//     console.error("❌ Server error saving physical capability data:", error);
+//     return res.status(500).json({ message: "Server error" });
+//   }
+// });
 
 
 // Use the router
-app.use(router);
+// app.use(router);
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
