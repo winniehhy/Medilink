@@ -1,7 +1,7 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
 const bodyParser = require("./backend/node_modules/body-parser");
-const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts } = require("./iris");
+const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
 const cors = require('./backend/node_modules/cors');
 const bcrypt = require("./backend/node_modules/bcryptjs");
@@ -72,7 +72,6 @@ app.get("/documents_needed", (req, res) => {
 app.get("/existing_patient", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/existing_patient.html"));
 });
-
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 app.get("/track_progress", (req, res) => {
@@ -302,6 +301,31 @@ app.post("/api/save-patient", async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
   }
 });
+
+// Define the router
+const router = express.Router();
+
+router.post("/api/save-physical-capability", async (req, res) => {
+  try {
+    const { ambulation, walkingAids } = req.body;
+    
+    // Call the IRIS helper function without patientIc:
+    const success = await insertPhysicalCapabilityData(ambulation, walkingAids);
+
+    if (success) {
+      return res.json({ message: "Physical capability data saved successfully" });
+    } else {
+      return res.json({ message: "Error saving physical capability data" });
+    }
+  } catch (error) {
+    console.error("❌ Server error saving physical capability data:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// Use the router
+app.use(router);
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 

@@ -13,6 +13,10 @@ Property PatientIC As %String;
 
 Property Sex As %String;
 
+Property Ambulation As %String;
+
+Property WalkingAids As %String;
+
 // Define a unique index on PatientID
 
 Index PatientIDIndex On PatientID [ Unique ];
@@ -70,6 +74,26 @@ ClassMethod GetPatientByIC(pPatientIC As %String) As %String
         Quit patientJSON
 }
 
+ClassMethod InsertPhysicalCapabilityData(patientIc As %String, ambulation As %String, walkingAids As %String) As %Status
+{
+  // 1) Attempt to find the existing patient by patientIc
+  //    If your class uses "patientIc" as the IDKey, you can do:
+  set tPatient = ##class(Medilink.Patient).%OpenId(patientIc)
+  
+  // 2) If the row doesn't exist, decide whether to create or throw an error
+  if tPatient="" {
+    Quit $$$ERROR($$$GeneralError,"No existing patient found for: "_patientIc)
+  }
+
+  // 3) Update fields
+  set tPatient.Ambulation = ambulation
+  set tPatient.WalkingAids = walkingAids
+
+  // 4) Save
+  set sc = tPatient.%Save()
+  Quit:sc
+}
+
 Storage Default
 {
 <Data name="Medilink_PatientDefaultData">
@@ -95,7 +119,17 @@ Storage Default
 <Value>Sex</Value>
 </Value>
 </Data>
+<Data name="PatientDefaultData">
+<Subscript>"1"</Subscript>
+<Value name="1">
+<Value>Ambulation</Value>
+</Value>
+<Value name="2">
+<Value>WalkingAids</Value>
+</Value>
+</Data>
 <DataLocation>^Medilink.PatientD</DataLocation>
+<DefaultData>PatientDefaultData</DefaultData>
 <ExtentSize>1</ExtentSize>
 <IdLocation>^Medilink.PatientD</IdLocation>
 <IndexLocation>^Medilink.PatientI</IndexLocation>
