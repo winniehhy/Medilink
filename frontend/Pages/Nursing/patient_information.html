@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../../css/Nursing/patient_information.css">
+	<title>Patient Information</title>
+</head>
+<body>
+	<div class="sidebar">
+		<a href="javascript:history.back()">
+			<img src="../../src/sidebar/back.png" width="30px" height="30px">
+			<span class="label">Back</span>
+		</a>
+		<a href="basic_information">
+			<img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
+			<span class="label">New Patient</span>
+		</a>
+		<a href="existing_patient">
+			<img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
+			<span class="label">Existing Patient</span>
+		</a>
+		<a href="track_progress">
+			<img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
+			<span class="label">Track Progress</span>
+		</a>
+		<a href="nursing_homepage">
+			<img src="../../src/sidebar/home.png" width="30px" height="30px">
+			<span class="label">Back to Home</span>
+		</a>
+	</div>
+
+	<div class="main-content">
+		<h1>Patient Information</h1>
+		<div class="section-progress">
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
+				<div class="section-progress-fill active-section">Basic Information</div>
+			</a>
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
+				<div class="section-progress-fill">Physical Capability</div>
+			</a>
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
+				<div class="section-progress-fill">Cognitive & Mental Health</div>
+			</a>
+			<a href="javascript:void(0)" class="section-link" style="flex-basis: 25%;">
+				<div class="section-progress-fill">Document Needed</div>
+			</a>
+		</div>
+
+		<form>
+			<!-- Tab 1 : Basic Information -->
+			<div class="tab active-tab" id="tab0">
+				<div class="form-group">
+					<label for="staff">Staff-In-Charge:</label>
+					<input type="text" id="staff" name="staff" placeholder="e.g., Ms. Leong Kai Wat">
+				</div>
+				<div class="form-group">
+					<label for="admission-date">Date of Admission:</label>
+					<input type="text" id="admission-date" name="admission-date" placeholder="e.g., 2025-02-24">
+				</div>
+				<div class="form-group">
+					<label for="patient-name">Patient Name:</label>
+					<input type="text" id="patient-name" name="patient-name" placeholder="e.g., Jane Doe">
+				</div>
+				<div class="form-group">
+					<label for="patient-ic">Patient IC:</label>
+					<input type="text" id="patient-ic" name="patient-ic" placeholder="e.g., S1234567A">
+				</div>
+
+				<div class="form-group">
+					<label>Sex:</label>
+					<div class="radio-group">
+						<label><input type="radio" name="sex" value="male"> Male</label>
+						<label><input type="radio" name="sex" value="female"> Female</label>
+					</div>
+				</div>
+
+				<button id="submit" class="next-button">Next Page</button>
+			</div>
+
+			<!-- Tab 2 : Physical Capability -->
+			<div class="tab" id="tab1">
+				<h2>Patient Premorbid Ability</h2>
+				<div class="form-group">
+					<label>Ambulation:</label>
+					<div class="radio-group">
+						<label><input type="radio" name="ambulation" value="Bed-bound"> Bed-bound</label>
+						<label><input type="radio" name="ambulation" value="Wheelchair-bound"> Wheelchair-bound</label>
+						<label><input type="radio" name="ambulation" value="Ambulatory with walking aids and supervision"> Ambulatory with walking aids and supervision</label>
+						<label><input type="radio" name="ambulation" value="Ambulatory with walking aids and assistance"> Ambulatory with walking aids and assistance</label>
+						<label><input type="radio" name="ambulation" value="Independent ambulatory with walking aids"> Independent ambulatory with walking aids</label>
+						<label><input type="radio" name="ambulation" value="Total Independent ambulatory"> Total Independent ambulatory</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="walking-aids">Walking Aids:</label>
+					<input type="text" id="walking-aids" name="walking-aids" placeholder="e.g., crutches/walking stick/wheelchair">
+				</div>
+				
+				<button type="button" class="prev-button">Previous</button>
+				<button type="button" id="submitPhysical" class="next-button">Next Page</button>
+			</div>
+
+			<!-- Tab 3 : Cognitive & Mental Health -->
+			<div class="tab" id="tab2">
+				<h2>Patient Premorbid Ability</h2>
+				<div class="form-group">
+					<label>Cognitive Conditions:</label>
+					<div class="radio-group" id="cognitive-conditions">
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="new-cognitive-condition" placeholder="Add a new condition" style="padding: 5px; width: 70%; border-radius: 5px; border: 1px solid #ccc;">
+							<button type="button" onclick="addCondition('cognitive-conditions', 'new-cognitive-condition')" style="padding: 5px 10px; border-radius: 5px; background-color: #2ba6a6; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;">Add</button>
+						</div>
+						<label><input type="checkbox" name="cognitive" value="Dementia"> Dementia</label>
+						<label><input type="checkbox" name="cognitive" value="Alzheimer's Disease"> Alzheimer's Disease</label>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label>Mental Health Conditions:</label>
+					<div class="radio-group" id="mental_health_conditions">
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="new-mental-condition" placeholder="Add a new condition" style="padding: 5px; width: 70%; border-radius: 5px; border: 1px solid #ccc;">
+							<button type="button" onclick="addCondition('mental_health_conditions', 'new-mental-condition')" style="padding: 5px 10px; border-radius: 5px; background-color: #2ba6a6; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;">Add</button>
+						</div>
+						<label><input type="checkbox" name="mental_health" value="Depression"> Depression</label>
+						<label><input type="checkbox" name="mental_health" value="Anxiety Disorder"> Anxiety Disorder</label>
+						<label><input type="checkbox" name="mental_health" value="Schizophrenia"> Schizophrenia</label>
+					</div>
+				</div>
+
+				<div style="display: flex; justify-content: space-between; margin-top: 40px;">
+					<button type="button" class="prev-button">Previous</button>
+					<button type="button" id="submit" class="next-button">Next Page</button>
+				</div>
+			</div>
+
+			<!-- Tab 4 : Document Needed -->
+			<div class="tab" id="tab3">
+				<h2>Documents Needed Upon Discharge</h2>
+				<div class="form-group">
+					<label>Documents Required:</label>
+					<div class="radio-group" id="document-list">
+						<div style="display: flex; align-items: center; gap: 10px;">
+							<input type="text" id="new-document" placeholder="Add a new document" style="padding: 5px; width: 70%; border-radius: 5px; border: 1px solid #ccc;">
+							<button type="button" onclick="addDocuments()" style="padding: 5px 10px; border-radius: 5px; background-color: #2ba6a6; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;">Add</button>
+						</div>
+						<label><input type="checkbox" name="document-needed" value="Hospital Discharge Summary"> Hospital Discharge Summary</label>
+						<label><input type="checkbox" name="document-needed" value="Occupational Therapy/Physiotherapy Report"> Occupational Therapy/Physiotherapy Report</label>
+						<label><input type="checkbox" name="document-needed" value="Medication List"> Medication List</label>
+						<label><input type="checkbox" name="document-needed" value="Speech Therapy Report"> Speech Therapy Report</label>
+						<label><input type="checkbox" name="document-needed" value="Dietetic Report"> Dietetic Report</label>
+					</div>
+				</div>
+				<button type="button" class="prev-button">Previous</button>
+				<button type="submit" id="submit-button" class="next-button">Submit</button>
+			</div>
+		</form>
+	</div>
+
+	<script src="../../js/Nursing/patient_information.js"></script>
+</body>
+</html>

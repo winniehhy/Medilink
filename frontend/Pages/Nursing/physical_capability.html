@@ -1,73 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="../../css/Nursing/physical_capability.css">
-	<title>Patient Information - Physical Capability</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/Nursing/physical_capability.css">
+    <title>Patient Information - Physical Capability</title>
 </head>
 <body>
-	<div class="sidebar">
-		<a href="javascript:history.back()">
-			<img src="../../src/sidebar/back.png" width="30px" height="30px">
-			<span class="label">Back</span>
-		</a>
-		<a href="basic_information.html">
-			<img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
-			<span class="label">New Patient</span>
-		</a>
-		<a href="existing_patient.html">
-			<img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
-			<span class="label">Existing Patient</span>
-		</a>
-		<a href="track_progress.html">
-			<img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
-			<span class="label">Track Progress</span>
-		</a>
-		<a href="nursing_homepage.html">
-			<img src="../../src/sidebar/home.png" width="30px" height="30px">
-			<span class="label">Back to Home</span>
-		</a>
-	</div>
+    <div class="sidebar">
+        <a href="javascript:history.back()">
+            <img src="../../src/sidebar/back.png" width="30px" height="30px">
+            <span class="label">Back</span>
+        </a>
+        <a href="basic_information">
+            <img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
+            <span class="label">New Patient</span>
+        </a>
+        <a href="existing_patient">
+            <img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
+            <span class="label">Existing Patient</span>
+        </a>
+        <a href="track_progress">
+            <img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
+            <span class="label">Track Progress</span>
+        </a>
+        <a href="nursing_homepage">
+            <img src="../../src/sidebar/home.png" width="30px" height="30px">
+            <span class="label">Back to Home</span>
+        </a>
+    </div>
 
-	<div class="main-content">
-		<h1>Patient Information</h1>
-		<div class="section-progress">
-			<a href="basic_information.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
-				<div class="section-progress-fill">Basic Information</div>
-			</a>
-			<a href="physical_capability.html" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
-				<div class="section-progress-fill">Physical Capability</div>
-			</a>
-			<a href="cognitive_mental_health.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
-				<div class="section-progress-fill">Cognitive & Mental Health</div>
-			</a>
-			<a href="documents_needed.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
-				<div class="section-progress-fill">Document Needed</div>
-			</a>
-		</div>
+    <div class="main-content">
+        <h1>Patient Information</h1>
+        <div class="section-progress">
+            <a href="basic_information" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+                <div class="section-progress-fill">Basic Information</div>
+            </a>
+            <a href="physical_capability" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
+                <div class="section-progress-fill active-section">Physical Capability</div>
+            </a>
+            <a href="cognitive_mental_health" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+                <div class="section-progress-fill">Cognitive & Mental Health</div>
+            </a>
+            <a href="documents_needed" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+                <div class="section-progress-fill">Document Needed</div>
+            </a>
+        </div>
 
-		<form>
-			<h2>Patient Premorbid Ability</h2>
-			<div class="form-group">
-				<label>Ambulation:</label>
-				<div class="radio-group">
-					<label><input type="radio" name="ambulation" value="Bed-bound"> Bed-bound</label>
-					<label><input type="radio" name="ambulation" value="Wheelchair-bound"> Wheelchair-bound</label>
-					<label><input type="radio" name="ambulation" value="Ambulatory with walking aids and supervision"> Ambulatory with walking aids and supervision</label>
-					<label><input type="radio" name="ambulation" value="Ambulatory with walking aids and assistance"> Ambulatory with walking aids and assistance</label>
-					<label><input type="radio" name="ambulation" value="Independent ambulatory with walking aids"> Independent ambulatory with walking aids</label>
-					<label><input type="radio" name="ambulation" value="Total Independent ambulatory"> Total Independent ambulatory</label>
-				</div>
-			</div>
+        <form>
+            <h2>Patient Premorbid Ability</h2>
+            <div class="form-group">
+                <label>Ambulation:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ambulation" value="Bed-bound"> Bed-bound</label>
+                    <label><input type="radio" name="ambulation" value="Wheelchair-bound"> Wheelchair-bound</label>
+                    <label><input type="radio" name="ambulation" value="Ambulatory with walking aids and supervision"> Ambulatory with walking aids and supervision</label>
+                    <label><input type="radio" name="ambulation" value="Ambulatory with walking aids and assistance"> Ambulatory with walking aids and assistance</label>
+                    <label><input type="radio" name="ambulation" value="Independent ambulatory with walking aids"> Independent ambulatory with walking aids</label>
+                    <label><input type="radio" name="ambulation" value="Total Independent ambulatory"> Total Independent ambulatory</label>
+                </div>
+            </div>
 
-			<div class="form-group">
-				<label for="walking aids">Walking Aids:</label>
-				<input type="text" id="walking aids" name="walking aids" placeholder="e.g., crutches/walking stick/wheelchair">
-			</div>
-			
-			<a href="cognitive_mental_health.html" class="next-button">Next Page</a>
-		</form>
-	</div>
+            <div class="form-group">
+                <label for="walking-aids">Walking Aids:</label>
+                <input type="text" id="walking-aids" name="walking-aids" placeholder="e.g., crutches/walking stick/wheelchair">
+            </div>
+            
+            <button type="button" id="submitPhysical" class="next-button">Next Page</button>
+        </form>
+    </div>
+    <script src="../../js/Nursing/physical_capability.js"></script>
 </body>
 </html>
