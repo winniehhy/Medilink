@@ -81,6 +81,10 @@ app.get("/update_patient_info", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/update_patient_info.html"));
 });
 
+app.get("/patient_management", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_management.html"));
+});
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 app.get("/track_progress", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/track_progress.html"));
