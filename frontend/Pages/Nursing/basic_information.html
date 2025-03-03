@@ -12,19 +12,19 @@
 			<img src="../../src/sidebar/back.png" width="30px" height="30px">
 			<span class="label">Back</span>
 		</a>
-		<a href="basic_information.html">
+		<a href="basic_information">
 			<img src="../../src/sidebar/new-patient.png" width="30px" height="30px">
 			<span class="label">New Patient</span>
 		</a>
-		<a href="existing_patient.html">
+		<a href="existing_patient">
 			<img src="../../src/sidebar/existing_patient.png" width="25px" height="25px">
 			<span class="label">Existing Patient</span>
 		</a>
-		<a href="track_progress.html">
+		<a href="track_progress">
 			<img src="../../src/sidebar/track_progress.png" width="30px" height="30px">
 			<span class="label">Track Progress</span>
 		</a>
-		<a href="nursing_homepage.html">
+		<a href="nursing_homepage">
 			<img src="../../src/sidebar/home.png" width="30px" height="30px">
 			<span class="label">Back to Home</span>
 		</a>
@@ -33,16 +33,16 @@
 	<div class="main-content">
 		<h1>Patient Information</h1>
 		<div class="section-progress">
-			<a href="basic_information.html" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
-				<div class="section-progress-fill">Basic Information</div>
+			<a href="basic_information" class="section-link" style="flex-basis: 25%; background-color: #34a69f;">
+				<div class="section-progress-fill active-section">Basic Information</div>
 			</a>
-			<a href="physical_capability.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="physical_capability" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
 				<div class="section-progress-fill">Physical Capability</div>
 			</a>
-			<a href="cognitive_mental_health.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="cognitive_mental_health" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
 				<div class="section-progress-fill">Cognitive & Mental Health</div>
 			</a>
-			<a href="documents_needed.html" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
+			<a href="documents_needed" class="section-link" style="flex-basis: 25%; background-color: #a0d6d6;">
 				<div class="section-progress-fill">Document Needed</div>
 			</a>
 		</div>
@@ -52,10 +52,10 @@
 				<label for="staff">Staff-In-Charge:</label>
 				<input type="text" id="staff" name="staff" placeholder="e.g., Ms. Leong Kai Wat">
 			</div>
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<label for="patient-id">Patient ID:</label>
 				<input type="text" id="patient-id" name="patient-id" placeholder="e.g., PID12345">
-			</div>
+			</div> -->
 			<div class="form-group">
 				<label for="admission-date">Date of Admission:</label>
 				<input type="text" id="admission-date" name="admission-date" placeholder="e.g., 2025-02-24">
@@ -77,8 +77,11 @@
 				</div>
 			</div>
 
-			<a href="physical_capability.html" class="next-button">Next Page</a>
+			<button id="submit" class="next-button">Next Page</button>
+			<!-- <a href="physical_capability" class="next-button">Next Page</a> -->
 		</form>
 	</div>
+
+	<script src="../../js/Nursing/basic_information.js"></script>
 </body>
 </html>

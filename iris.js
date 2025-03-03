@@ -296,11 +296,125 @@ function getNursingHomeAccount(username) {
     }
 }
 
+/*---------------------------------------- REGISTER PATIENT -------------------------------------------- */
+function formatDate(dateString) {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+}
+
+function sanitizeInput(input) {
+    return JSON.stringify(input).replace(/"/g, ''); // Remove extra quotes
+}
+
+async function insertPatientData(
+    staff, 
+    admissionDate, 
+    patientName, 
+    patientIc, 
+    sex, 
+    ambulation, 
+    walkingAids, 
+    cognitiveConditions, 
+    mentalHealthConditions, 
+    documentsNeeded
+) {
+    try {
+        const db = connectToDB();
+        if (!db) {
+            console.error("❌ Database connection failed");
+            return false;
+        }
+
+        // Convert date format
+        const formattedDate = formatDate(admissionDate);
+        
+        // Sanitize input
+        staff = sanitizeInput(staff);
+        patientName = sanitizeInput(patientName);
+        patientIc = sanitizeInput(patientIc);
+        sex = sanitizeInput(sex);
+        ambulation = sanitizeInput(ambulation);
+        walkingAids = sanitizeInput(walkingAids);
+        cognitiveConditions = sanitizeInput(cognitiveConditions.join(", "));
+        mentalHealthConditions = sanitizeInput(mentalHealthConditions.join(", "));
+        documentsNeeded = sanitizeInput(documentsNeeded.join(", "));
+
+        console.log("🛠️ Preparing to insert:", { 
+            staff, 
+            formattedDate, 
+            patientName, 
+            patientIc, 
+            sex, 
+            ambulation, 
+            walkingAids, 
+            cognitiveConditions, 
+            mentalHealthConditions, 
+            documentsNeeded 
+        });
+
+        // Call IRIS method with formatted date
+        db.classMethodVoid(
+            "Medilink.Patient",  
+            "InsertPatientData",
+            staff, 
+            formattedDate, 
+            patientName, 
+            patientIc, 
+            sex, 
+            ambulation, 
+            walkingAids, 
+            cognitiveConditions, 
+            mentalHealthConditions, 
+            documentsNeeded
+        );
+
+        console.log(`✅ Successfully inserted patient: ${patientName}`);
+        return true;
+    } catch (error) {
+        console.error("❌ Error inserting patient data:", error);
+        return false;
+    }
+}
+
+/*---------------------------------------- UPDATE PATIENT -------------------------------------------- */
+function getPatientData(name, ic) {
+    const db = connectToDB();
+    if (!db) return null;
+
+    try {
+        const result = db.classMethodValue("Medilink.Patient", "GetPatientData", name, ic);
+        return JSON.parse(result);
+    } catch (error) {
+        console.error("❌ Error fetching patient data:", error);
+        return null;
+    }
+}
+
+function updatePatientData(patientData) {
+    const db = connectToDB();
+    if (!db) return false;
+
+    try {
+        db.classMethodVoid("Medilink.Patient", "UpdatePatientData", ...Object.values(patientData));
+        return true;
+    } catch (error) {
+        console.error("❌ Error updating patient data:", error);
+        return false;
+    }
+}
+
+
+/*---------------------------------------- EXPORTS -------------------------------------------- */
+
 module.exports = {
     insertHospitalData,
     insertNursingHomeData,
     validatePassword,
     validateNursingHomeLogin,
     getHospitalAccounts,
-    getNursingHomeAccount
+    getNursingHomeAccount,
+
+    insertPatientData,
+    getPatientData,
+    updatePatientData
 };
