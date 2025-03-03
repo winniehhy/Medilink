@@ -94,22 +94,29 @@ ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPat
 }
 
 /// Retrieve patient data by Name and IC
-ClassMethod GetPatientData(name As %String, ic As %String) As %String
+ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %String
 {
-    Set result = ##class(%DynamicObject).%New()  // ✅ Correct way to create JSON object
+    Set result = ##class(%DynamicObject).%New()
     Try {
-        Set obj = ##class(Medilink.Patient).%OpenId(name _ "_" _ ic)
-        If obj '= "" {
-            Do result.%Set("staff", obj.Staff)
-            Do result.%Set("admissionDate", obj.AdmissionDate)
-            Do result.%Set("patientName", obj.PatientName)
-            Do result.%Set("patientIc", obj.PatientIC)
-            Do result.%Set("sex", obj.Sex)
-            Do result.%Set("ambulation", obj.Ambulation)
-            Do result.%Set("walkingAids", obj.WalkingAids)
-            Do result.%Set("cognitiveConditions", obj.CognitiveConditions)
-            Do result.%Set("mentalHealthConditions", obj.MentalHealthConditions)
-            Do result.%Set("documentsNeeded", obj.DocumentsNeeded)
+        &sql(SELECT PatientID, Staff, AdmissionDate, PatientName, PatientIC, Sex, Ambulation, 
+                     WalkingAids, CognitiveConditions, MentalHealthConditions, DocumentsNeeded
+              INTO :patientID, :staff, :admissionDate, :name, :ic, :sex, :ambulation, 
+                   :walkingAids, :cognitiveConditions, :mentalHealthConditions, :documentsNeeded
+              FROM Medilink.Patient
+              WHERE PatientName = :PatientName AND PatientIC = :PatientIC)
+
+        If SQLCODE = 0 {
+            Do result.%Set("patientID", patientID)
+            Do result.%Set("staff", staff)
+            Do result.%Set("admissionDate", admissionDate)
+            Do result.%Set("patientName", name)
+            Do result.%Set("patientIc", ic)
+            Do result.%Set("sex", sex)
+            Do result.%Set("ambulation", ambulation)
+            Do result.%Set("walkingAids", walkingAids)
+            Do result.%Set("cognitiveConditions", cognitiveConditions)
+            Do result.%Set("mentalHealthConditions", mentalHealthConditions)
+            Do result.%Set("documentsNeeded", documentsNeeded)
         } Else {
             Do result.%Set("error", "Patient not found")
         }
@@ -117,7 +124,7 @@ ClassMethod GetPatientData(name As %String, ic As %String) As %String
         Do result.%Set("error", "Error retrieving patient data: "_ex.DisplayString())
     }
     
-    Quit result.%ToJSON() // ✅ Returns JSON correctly
+    Quit result.%ToJSON()
 }
 
 /// Update patient information in the database

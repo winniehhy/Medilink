@@ -1,5 +1,6 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
+const MemoryStore = require("memorystore")(session);
 const bodyParser = require("./backend/node_modules/body-parser");
 const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
@@ -10,11 +11,26 @@ const bcrypt = require("./backend/node_modules/bcryptjs");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+// app.use(session({
+//   secret: "mySuperSecretKey", // save to .env later
+//   resave: false,
+//   saveUninitialized: true
+// }));
+
 app.use(session({
-  secret: "mySuperSecretKey", // save to .env later
+  secret: "mySuperSecretKey",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,  // ⚠️ Set to false to avoid unnecessary session creation
+  store: new MemoryStore({ checkPeriod: 86400000 }), // 🔄 Keeps sessions alive for 24 hours
+  cookie: { secure: false, httpOnly: true, maxAge: 86400000 } // 🔑 Ensure cookies persist
 }));
+
+app.use((req, res, next) => {
+  console.log("🔹 Session ID:", req.sessionID);
+  console.log("🔹 Session Data:", req.session);
+  next();
+});
+
 
 // Serve static files from "frontend" folder
 app.use(express.static(path.join(__dirname, "frontend")));
@@ -342,24 +358,45 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-    const { name, ic } = req.query;
-    
-    if (!name || !ic) {
-        return res.status(400).json({ success: false, error: "Missing parameters" });
+  const { name, ic } = req.query;
+
+  if (!name || !ic) {
+    return res.status(400).json({ success: false, error: "Missing parameters" });
+  }
+
+  try {
+    const patient = await getPatientData(name, ic);
+    if (!patient) {
+      return res.status(404).json({ success: false, error: "Patient not found" });
     }
 
-    try {
-        const patient = await getPatientData(name, ic);
-        if (!patient) {
-            return res.status(404).json({ success: false, error: "Patient not found" });
-        }
-
-        res.json({ success: true, patient });
-    } catch (error) {
-        console.error("❌ Error fetching patient:", error);
-        res.status(500).json({ success: false, error: "Server error" });
+    if (!req.session) {
+      console.error("❌ ERROR: req.session is undefined!");
+      return res.status(500).json({ success: false, error: "Session not initialized" });
     }
+
+    req.session.patientData = patient; // Save patient in session
+    console.log("✅ Stored patient in session:", req.session.patientData);
+
+    res.json({ success: true, patient });
+  } catch (error) {
+    console.error("❌ Error fetching patient:", error);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
 });
+
+// Get patient data from session
+app.get("/api/get-session-patient", (req, res) => {
+  console.log("📌 Checking session:", req.session);
+
+  if (!req.session || !req.session.patientData) {
+    return res.status(404).json({ success: false, error: "No patient data in session" });
+  }
+
+  console.log("✅ Session contains:", req.session.patientData);
+  res.json({ success: true, patient: req.session.patientData });
+});
+
 
 app.post("/api/update-patient", async (req, res) => {
     try {
