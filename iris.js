@@ -297,6 +297,15 @@ function getNursingHomeAccount(username) {
 }
 
 /*---------------------------------------- REGISTER PATIENT -------------------------------------------- */
+function formatDate(dateString) {
+    const [day, month, year] = dateString.split("/");
+    return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+}
+
+function sanitizeInput(input) {
+    return JSON.stringify(input).replace(/"/g, ''); // Remove extra quotes
+}
+
 async function insertPatientData(
     staff, 
     admissionDate, 
@@ -316,9 +325,23 @@ async function insertPatientData(
             return false;
         }
 
+        // Convert date format
+        const formattedDate = formatDate(admissionDate);
+        
+        // Sanitize input
+        staff = sanitizeInput(staff);
+        patientName = sanitizeInput(patientName);
+        patientIc = sanitizeInput(patientIc);
+        sex = sanitizeInput(sex);
+        ambulation = sanitizeInput(ambulation);
+        walkingAids = sanitizeInput(walkingAids);
+        cognitiveConditions = sanitizeInput(cognitiveConditions.join(", "));
+        mentalHealthConditions = sanitizeInput(mentalHealthConditions.join(", "));
+        documentsNeeded = sanitizeInput(documentsNeeded.join(", "));
+        
         console.log("🛠️ Preparing to insert:", { 
             staff, 
-            admissionDate, 
+            formattedDate, 
             patientName, 
             patientIc, 
             sex, 
@@ -329,12 +352,12 @@ async function insertPatientData(
             documentsNeeded 
         });
 
-        // Call IRIS method
+        // Call IRIS method with formatted date
         db.classMethodVoid(
             "Medilink.Patient",  
             "InsertPatientData",
             staff, 
-            admissionDate, 
+            formattedDate, 
             patientName, 
             patientIc, 
             sex, 
@@ -352,6 +375,7 @@ async function insertPatientData(
         return false;
     }
 }
+
 
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
