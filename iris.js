@@ -338,7 +338,7 @@ async function insertPatientData(
         cognitiveConditions = sanitizeInput(cognitiveConditions.join(", "));
         mentalHealthConditions = sanitizeInput(mentalHealthConditions.join(", "));
         documentsNeeded = sanitizeInput(documentsNeeded.join(", "));
-        
+
         console.log("🛠️ Preparing to insert:", { 
             staff, 
             formattedDate, 
@@ -376,6 +376,32 @@ async function insertPatientData(
     }
 }
 
+/*---------------------------------------- UPDATE PATIENT -------------------------------------------- */
+function getPatientData(name, ic) {
+    const db = connectToDB();
+    if (!db) return null;
+
+    try {
+        const result = db.classMethodValue("Medilink.Patient", "GetPatientData", name, ic);
+        return JSON.parse(result);
+    } catch (error) {
+        console.error("❌ Error fetching patient data:", error);
+        return null;
+    }
+}
+
+function updatePatientData(patientData) {
+    const db = connectToDB();
+    if (!db) return false;
+
+    try {
+        db.classMethodVoid("Medilink.Patient", "UpdatePatientData", ...Object.values(patientData));
+        return true;
+    } catch (error) {
+        console.error("❌ Error updating patient data:", error);
+        return false;
+    }
+}
 
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
@@ -389,4 +415,6 @@ module.exports = {
     getNursingHomeAccount,
 
     insertPatientData,
+    getPatientData,
+    updatePatientData
 };

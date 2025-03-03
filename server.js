@@ -77,6 +77,10 @@ app.get("/existing_patient", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/existing_patient.html"));
 });
 
+app.get("/update_patient_info", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/update_patient_info.html"));
+});
+
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 app.get("/track_progress", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/track_progress.html"));
@@ -329,56 +333,43 @@ app.post("/api/save-patient", async (req, res) => {
   }
 });
 
-// // API Route to store patient information
-// app.post("/api/save-patient", async (req, res) => {
-//   const { staff, admissionDate, patientName, patientIc, sex } = req.body;
+/*----------------------------------------- GET PATIENT --------------------------------------------------- */
 
-//   console.log("🛠️ Received data:", req.body); // Debugging: Check what is received
+const { getPatientData, updatePatientData } = require("./iris");
 
-//   if (!staff || !admissionDate || !patientName || !patientIc || !sex) {
-//       return res.status(400).json({ error: "All fields are required." });
-//   }
-
-//   try {
-//       const success = await insertPatientData(staff, admissionDate, patientName, patientIc, sex);
-
-//       if (!success) {
-//           console.error("❌ Insert Failed in IRIS!");
-//           return res.status(500).json({ error: "Failed to insert patient record." });
-//       }
-
-//       console.log("✅ Patient record inserted successfully!");
-//       res.status(201).json({ message: "Patient record saved successfully!" });
-//   } catch (error) {
-//       console.error("❌ Error saving patient record:", error);
-//       res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-// Define the router
-// const router = express.Router();
-
-// router.post("/api/save-physical-capability", async (req, res) => {
-//   try {
-//     const { ambulation, walkingAids } = req.body;
+app.get("/api/get-patient", async (req, res) => {
+    const { name, ic } = req.query;
     
-//     // Call the IRIS helper function without patientIc:
-//     const success = await insertPhysicalCapabilityData(ambulation, walkingAids);
+    if (!name || !ic) {
+        return res.status(400).json({ success: false, error: "Missing parameters" });
+    }
 
-//     if (success) {
-//       return res.json({ message: "Physical capability data saved successfully" });
-//     } else {
-//       return res.json({ message: "Error saving physical capability data" });
-//     }
-//   } catch (error) {
-//     console.error("❌ Server error saving physical capability data:", error);
-//     return res.status(500).json({ message: "Server error" });
-//   }
-// });
+    try {
+        const patient = await getPatientData(name, ic);
+        if (!patient) {
+            return res.status(404).json({ success: false, error: "Patient not found" });
+        }
 
+        res.json({ success: true, patient });
+    } catch (error) {
+        console.error("❌ Error fetching patient:", error);
+        res.status(500).json({ success: false, error: "Server error" });
+    }
+});
 
-// Use the router
-// app.use(router);
+app.post("/api/update-patient", async (req, res) => {
+    try {
+        const success = await updatePatientData(req.body);
+        if (success) {
+            return res.json({ success: true, message: "Patient updated successfully!" });
+        }
+        res.status(500).json({ success: false, error: "Update failed" });
+    } catch (error) {
+        console.error("❌ Error updating patient:", error);
+        res.status(500).json({ success: false, error: "Server error" });
+    }
+});
+
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
