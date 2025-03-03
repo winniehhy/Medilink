@@ -1,22 +1,44 @@
 Class Medilink.Patient Extends %Persistent
 {
-  Property PatientID As %String;
-  Property Staff As %String;
-  Property AdmissionDate As %String;
-  Property PatientName As %String;
-  Property PatientIC As %String;
-  Property Sex As %String;
-  Property Ambulation As %String; // Physical capability: Ambulation
-  Property WalkingAids As %String; // Physical capability: Walking aids
-  Property CognitiveConditions As %String; // Cognitive conditions
-  Property MentalHealthConditions As %String; // Mental health conditions
-  Property DocumentsNeeded As %String; // Documents needed
 
-  // Define a unique index on PatientID
-  Index PatientIDIndex On PatientID [ Unique ];
+Property PatientID As %String;
 
-  ClassMethod GeneratePatientID() As %String
-  {
+Property Staff As %String;
+
+Property AdmissionDate As %String;
+
+Property PatientName As %String;
+
+Property PatientIC As %String;
+
+Property Sex As %String;
+
+Property Ambulation As %String;
+
+// Physical capability: Ambulation
+
+Property WalkingAids As %String;
+
+// Physical capability: Walking aids
+
+Property CognitiveConditions As %String;
+
+// Cognitive conditions
+
+Property MentalHealthConditions As %String;
+
+// Mental health conditions
+
+Property DocumentsNeeded As %String;
+
+// Documents needed
+
+// Define a unique index on PatientID
+
+Index PatientIDIndex On PatientID [ Unique ];
+
+ClassMethod GeneratePatientID() As %String
+{
       Set lastPatient = ""
       &sql(SELECT TOP 1 PatientID INTO :lastPatient FROM Medilink.Patient ORDER BY PatientID DESC)
       
@@ -26,21 +48,10 @@ Class Medilink.Patient Extends %Persistent
 
       Set num = $Extract(lastPatient, 2, *) + 1
       Quit "P" _ num
-  }
+}
 
-  ClassMethod InsertPatientData(
-      pStaff As %String, 
-      pAdmissionDate As %String, 
-      pPatientName As %String, 
-      pPatientIC As %String, 
-      pSex As %String, 
-      pAmbulation As %String, 
-      pWalkingAids As %String, 
-      pCognitiveConditions As %String, 
-      pMentalHealthConditions As %String, 
-      pDocumentsNeeded As %String
-  ) As %Status
-  {
+ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPatientName As %String, pPatientIC As %String, pSex As %String, pAmbulation As %String, pWalkingAids As %String, pCognitiveConditions As %String, pMentalHealthConditions As %String, pDocumentsNeeded As %String) As %Status
+{
       Set tSC = $$$OK
       Set patientID = ..GeneratePatientID()
 
@@ -82,6 +93,62 @@ Class Medilink.Patient Extends %Persistent
       Quit tSC
 }
 
+/// Retrieve patient data by Name and IC
+ClassMethod GetPatientData(name As %String, ic As %String) As %String
+{
+    Set result = ##class(%DynamicObject).%New()  // ✅ Correct way to create JSON object
+    Try {
+        Set obj = ##class(Medilink.Patient).%OpenId(name _ "_" _ ic)
+        If obj '= "" {
+            Do result.%Set("staff", obj.Staff)
+            Do result.%Set("admissionDate", obj.AdmissionDate)
+            Do result.%Set("patientName", obj.PatientName)
+            Do result.%Set("patientIc", obj.PatientIC)
+            Do result.%Set("sex", obj.Sex)
+            Do result.%Set("ambulation", obj.Ambulation)
+            Do result.%Set("walkingAids", obj.WalkingAids)
+            Do result.%Set("cognitiveConditions", obj.CognitiveConditions)
+            Do result.%Set("mentalHealthConditions", obj.MentalHealthConditions)
+            Do result.%Set("documentsNeeded", obj.DocumentsNeeded)
+        } Else {
+            Do result.%Set("error", "Patient not found")
+        }
+    } Catch ex {
+        Do result.%Set("error", "Error retrieving patient data: "_ex.DisplayString())
+    }
+    
+    Quit result.%ToJSON() // ✅ Returns JSON correctly
+}
+
+/// Update patient information in the database
+ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
+{
+    Try {
+        Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
+        
+        If obj '= "" {
+            Set obj.Staff = Staff
+            Set obj.AdmissionDate = AdmissionDate
+            Set obj.Sex = Sex
+            Set obj.Ambulation = Ambulation
+            Set obj.WalkingAids = WalkingAids
+            Set obj.CognitiveConditions = CognitiveConditions
+            Set obj.MentalHealthConditions = MentalHealthConditions
+            Set obj.DocumentsNeeded = DocumentsNeeded
+
+            Set sc = obj.%Save()
+            If $$$ISERR(sc) {
+                Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
+            }
+            Return $$$OK  // Correct way to return success
+        } Else {
+            Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
+        }
+    } Catch ex {
+        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
+    }
+}
+
 Storage Default
 {
 <Data name="Medilink_PatientDefaultData">
@@ -114,6 +181,15 @@ Storage Default
 </Value>
 <Value name="2">
 <Value>WalkingAids</Value>
+</Value>
+<Value name="3">
+<Value>CognitiveConditions</Value>
+</Value>
+<Value name="4">
+<Value>MentalHealthConditions</Value>
+</Value>
+<Value name="5">
+<Value>DocumentsNeeded</Value>
 </Value>
 </Data>
 <DataLocation>^Medilink.PatientD</DataLocation>
