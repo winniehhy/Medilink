@@ -11,11 +11,14 @@ document.getElementById("search-patient").addEventListener("click", function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                localStorage.setItem("patientData", JSON.stringify(data.patient));
-                window.location.href = "update_patient_info";
+                console.log("✅ Patient data stored in session:", data.patient);
+                setTimeout(() => {
+                    window.location.href = "update_patient_info";
+                }, 500);
             } else {
                 alert("Patient not found.");
             }
         })
         .catch(error => console.error("❌ Error fetching patient data:", error));
+
 });
