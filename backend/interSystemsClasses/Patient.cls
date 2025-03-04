@@ -93,7 +93,6 @@ ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPat
       Quit tSC
 }
 
-/// Retrieve patient data by Name and IC
 ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %String
 {
     Set result = ##class(%DynamicObject).%New()
@@ -128,9 +127,49 @@ ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %Str
 }
 
 /// Update patient information in the database
+// ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
+// {
+//     Try {
+//         Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
+        
+//         If obj '= "" {
+//             Set obj.Staff = Staff
+//             Set obj.AdmissionDate = AdmissionDate
+//             Set obj.Sex = Sex
+//             Set obj.Ambulation = Ambulation
+//             Set obj.WalkingAids = WalkingAids
+//             Set obj.CognitiveConditions = CognitiveConditions
+//             Set obj.MentalHealthConditions = MentalHealthConditions
+//             Set obj.DocumentsNeeded = DocumentsNeeded
+
+//             Set sc = obj.%Save()
+//             If $$$ISERR(sc) {
+//                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
+//             }
+//             Return $$$OK  // Correct way to return success
+//         } Else {
+//             Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
+//         }
+//     } Catch ex {
+//         Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
+//     }
+// }
 ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
 {
     Try {
+        // Log the incoming data
+        Write "📥 Updating patient with data:", !
+        Write "PatientName: ", PatientName, !
+        Write "PatientIC: ", PatientIC, !
+        Write "Staff: ", Staff, !
+        Write "AdmissionDate: ", AdmissionDate, !
+        Write "Sex: ", Sex, !
+        Write "Ambulation: ", Ambulation, !
+        Write "WalkingAids: ", WalkingAids, !
+        Write "CognitiveConditions: ", CognitiveConditions, !
+        Write "MentalHealthConditions: ", MentalHealthConditions, !
+        Write "DocumentsNeeded: ", DocumentsNeeded, !
+
         Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
         
         If obj '= "" {
@@ -145,13 +184,17 @@ ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staf
 
             Set sc = obj.%Save()
             If $$$ISERR(sc) {
+                Write "❌ Error saving patient data: ", $System.Status.GetErrorText(sc), !
                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
             }
+            Write "✅ Patient data saved successfully!", !
             Return $$$OK  // Correct way to return success
         } Else {
+            Write "❌ Patient not found", !
             Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
         }
     } Catch ex {
+        Write "❌ Error updating patient data: ", ex.DisplayString(), !
         Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
     }
 }

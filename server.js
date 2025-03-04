@@ -26,11 +26,11 @@ app.use(session({
   cookie: { secure: false, httpOnly: true, maxAge: 86400000 } // 🔑 Ensure cookies persist
 }));
 
-// app.use((req, res, next) => {
-//   console.log("🔹 Session ID:", req.sessionID);
-//   console.log("🔹 Session Data:", req.session);
-//   next();
-// });
+app.use((req, res, next) => {
+  console.log("🔹 Session ID:", req.sessionID);
+  console.log("🔹 Session Data:", req.session);
+  next();
+});
 
 
 // Serve static files from "frontend" folder
@@ -355,32 +355,34 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-  const { name, ic } = req.query;
+    const { name, ic } = req.query;
 
-  if (!name || !ic) {
-    return res.status(400).json({ success: false, error: "Missing parameters" });
-  }
-
-  try {
-    const patient = await getPatientData(name, ic);
-    if (!patient) {
-      return res.status(404).json({ success: false, error: "Patient not found" });
+    if (!name || !ic) {
+        return res.status(400).json({ success: false, error: "Missing parameters" });
     }
 
-    if (!req.session) {
-      console.error("❌ ERROR: req.session is undefined!");
-      return res.status(500).json({ success: false, error: "Session not initialized" });
+    try {
+        const patient = await getPatientData(name, ic);
+        // Check if the patient is null or contains an error property
+        if (!patient || patient.error) {
+            return res.status(404).json({ success: false, error: "Patient not found" });
+        }
+
+        if (!req.session) {
+            console.error("❌ ERROR: req.session is undefined!");
+            return res.status(500).json({ success: false, error: "Session not initialized" });
+        }
+
+        req.session.patientData = patient; // Save the valid patient data in session
+        console.log("✅ Stored patient in session:", req.session.patientData);
+
+        res.json({ success: true, patient });
+    } catch (error) {
+        console.error("❌ Error fetching patient:", error);
+        res.status(500).json({ success: false, error: "Server error" });
     }
-
-    req.session.patientData = patient; // Save patient in session
-    console.log("✅ Stored patient in session:", req.session.patientData);
-
-    res.json({ success: true, patient });
-  } catch (error) {
-    console.error("❌ Error fetching patient:", error);
-    res.status(500).json({ success: false, error: "Server error" });
-  }
 });
+
 
 // Get patient data from session
 app.get("/api/get-session-patient", (req, res) => {
@@ -394,20 +396,21 @@ app.get("/api/get-session-patient", (req, res) => {
   res.json({ success: true, patient: req.session.patientData });
 });
 
+/*----------------------------------------- UPDATE PATIENT --------------------------------------------------- */
 
 app.post("/api/update-patient", async (req, res) => {
-    try {
-        const success = await updatePatientData(req.body);
-        if (success) {
-            return res.json({ success: true, message: "Patient updated successfully!" });
-        }
-        res.status(500).json({ success: false, error: "Update failed" });
-    } catch (error) {
-        console.error("❌ Error updating patient:", error);
-        res.status(500).json({ success: false, error: "Server error" });
-    }
+  try {
+      console.log("📥 Received update request:", req.body); // Log the incoming data
+      const success = await updatePatientData(req.body);
+      if (success) {
+          return res.json({ success: true, message: "Patient updated successfully!" });
+      }
+      res.status(500).json({ success: false, error: "Update failed" });
+  } catch (error) {
+      console.error("❌ Error updating patient:", error);
+      res.status(500).json({ success: false, error: "Server error: " + error.message }); // Include the error message in the response
+  }
 });
-
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 

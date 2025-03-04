@@ -406,8 +406,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Prefill documents needed
             if (patient.documentsNeeded) {
-                patient.documentsNeeded.split(", ").forEach(document => {
-                    const documentCheckbox = document.querySelector(`input[name="document-needed"][value="${document.trim()}"]`);
+                patient.documentsNeeded.split(", ").forEach(condition => {
+                    const documentCheckbox = document.querySelector(`input[name="document-needed"][value="${condition.trim()}"]`);
                     if (documentCheckbox) documentCheckbox.checked = true;
                 });
             }
@@ -459,9 +459,16 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // ------------------ Update Patient Data ------------------
+    function getCheckedValues(groupName) {
+        return Array.from(document.querySelectorAll(`input[name="${groupName}"]:checked`))
+            .map(checkbox => checkbox.value)
+            .join(", ");
+    }
+    
     document.getElementById("update-button").addEventListener("click", function (e) {
         e.preventDefault();
         
+        // Collect all the form data
         const updatedData = {
             staff: document.getElementById("staff").value,
             admissionDate: document.getElementById("admission-date").value,
@@ -477,6 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
         
         console.log("📤 Sending updated patient data:", updatedData);
         
+        // Send the data to the server
         fetch("http://localhost:4000/api/update-patient", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -491,7 +499,6 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => console.error("❌ Error updating patient:", error));
     });
-
     // ------------------ Utility Functions ------------------
     function fillCheckboxes(groupName, values) {
         if (values) {
