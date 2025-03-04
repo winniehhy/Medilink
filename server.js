@@ -11,6 +11,7 @@ const bcrypt = require("./backend/node_modules/bcryptjs");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+// Old Version
 // app.use(session({
 //   secret: "mySuperSecretKey", // save to .env later
 //   resave: false,
