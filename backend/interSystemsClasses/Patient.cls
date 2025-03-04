@@ -1,35 +1,35 @@
 Class Medilink.Patient Extends %Persistent
 {
 
-Property PatientID As %String;
+Property PatientID As %String(MAXLEN = 1000);
 
-Property Staff As %String;
+Property Staff As %String(MAXLEN = 1000);
 
-Property AdmissionDate As %String;
+Property AdmissionDate As %String(MAXLEN = 1000);
 
-Property PatientName As %String;
+Property PatientName As %String(MAXLEN = 1000);
 
-Property PatientIC As %String;
+Property PatientIC As %String(MAXLEN = 1000);
 
-Property Sex As %String;
+Property Sex As %String(MAXLEN = 1000);
 
-Property Ambulation As %String;
+Property Ambulation As %String(MAXLEN = 1000);
 
 // Physical capability: Ambulation
 
-Property WalkingAids As %String;
+Property WalkingAids As %String(MAXLEN = 1000);
 
 // Physical capability: Walking aids
 
-Property CognitiveConditions As %String;
+Property CognitiveConditions As %String(MAXLEN = 1000);
 
 // Cognitive conditions
 
-Property MentalHealthConditions As %String;
+Property MentalHealthConditions As %String(MAXLEN = 1000);
 
 // Mental health conditions
 
-Property DocumentsNeeded As %String;
+Property DocumentsNeeded As %String(MAXLEN = 1000);
 
 // Documents needed
 
