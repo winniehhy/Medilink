@@ -26,11 +26,11 @@ app.use(session({
   cookie: { secure: false, httpOnly: true, maxAge: 86400000 } // 🔑 Ensure cookies persist
 }));
 
-app.use((req, res, next) => {
-  console.log("🔹 Session ID:", req.sessionID);
-  console.log("🔹 Session Data:", req.session);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("🔹 Session ID:", req.sessionID);
+//   console.log("🔹 Session Data:", req.session);
+//   next();
+// });
 
 
 // Serve static files from "frontend" folder
@@ -96,10 +96,6 @@ app.get("/existing_patient", (req, res) => {
 
 app.get("/update_patient_info", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/update_patient_info.html"));
-});
-
-app.get("/patient_management", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_management.html"));
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -329,17 +325,17 @@ app.post("/api/save-patient", async (req, res) => {
   try {
       // Save all patient data in one call
       const success = await insertPatientData(
-          patientData.staff,
-          patientData.admissionDate,
-          patientData.patientName,
-          patientData.patientIc,
-          patientData.sex,
-          physicalData.ambulation,
-          physicalData.walkingAids,
-          cognitiveData.cognitiveConditions,
-          cognitiveData.mentalHealthConditions,
-          documentData.documentsNeeded
-      );
+        patientData.staff,
+        patientData.admissionDate,
+        patientData.patientName,
+        patientData.patientIc,
+        patientData.sex,
+        physicalData.ambulation,
+        physicalData.walkingAids,
+        cognitiveData.cognitiveConditions,
+        cognitiveData.mentalHealthConditions,
+        documentData.documentsNeeded
+    );
 
       if (!success) {
           console.error("❌ Insert Failed in IRIS!");
