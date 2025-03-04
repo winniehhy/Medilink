@@ -319,9 +319,9 @@ app.post("/api/save-patient", async (req, res) => {
           patientData.sex,
           physicalData.ambulation,
           physicalData.walkingAids,
-          cognitiveData.cognitiveConditions.join(", "), // Convert array to string
-          cognitiveData.mentalHealthConditions.join(", "), // Convert array to string
-          documentData.documentsNeeded.join(", ") // Convert array to string
+          cognitiveData.cognitiveConditions,
+          cognitiveData.mentalHealthConditions,
+          documentData.documentsNeeded
       );
 
       if (!success) {
