@@ -376,33 +376,54 @@ async function insertPatientData(
     }
 }
 
-/*---------------------------------------- UPDATE PATIENT -------------------------------------------- */
+/*---------------------------------------- GET PATIENT -------------------------------------------- */
 function getPatientData(name, ic) {
     const db = connectToDB();
     if (!db) return null;
 
     try {
         const result = db.classMethodValue("Medilink.Patient", "GetPatientData", name, ic);
-        return JSON.parse(result);
+        const patient = JSON.parse(result);
+        if (patient.error) {
+            console.error("Patient retrieval error:", patient.error);
+            return null;
+        }
+        return patient;
     } catch (error) {
         console.error("❌ Error fetching patient data:", error);
         return null;
     }
 }
 
+/*---------------------------------------- UPDATE PATIENT -------------------------------------------- */
+
+// In iris.js
 function updatePatientData(patientData) {
     const db = connectToDB();
     if (!db) return false;
 
     try {
-        db.classMethodVoid("Medilink.Patient", "UpdatePatientData", ...Object.values(patientData));
+        db.classMethodVoid(
+            "Medilink.Patient", 
+            "UpdatePatientData",
+            // Parameter order MUST match the ClassMethod definition in Patient.cls
+            patientData.patientName,    // PatientName
+            patientData.patientIc,      // PatientIC
+            patientData.staff,          // Staff
+            patientData.admissionDate,  // AdmissionDate
+            patientData.sex,            // Sex
+            patientData.ambulation,     // Ambulation
+            patientData.walkingAids,    // WalkingAids
+            patientData.cognitiveConditions,  // CognitiveConditions
+            patientData.mentalHealthConditions, // MentalHealthConditions
+            patientData.documentsNeeded // DocumentsNeeded
+        );
         return true;
     } catch (error) {
         console.error("❌ Error updating patient data:", error);
         return false;
     }
 }
-
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
