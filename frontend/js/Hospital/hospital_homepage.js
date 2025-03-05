@@ -4,7 +4,7 @@ function loadPatients() {
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        displayPatients(data.patients);
+        displayPatients(data.data);
       } else {
         document.getElementById("patientList").innerHTML = 
           `<div class="error-message">${data.error || "Failed to load patients"}</div>`;
@@ -38,10 +38,10 @@ function displayPatients(patients) {
       <p><strong>Admission Date:</strong> ${patient.admissionDate || "N/A"}</p>
       <p><strong>Sex:</strong> ${patient.sex || "N/A"}</p>
       <p><strong>Ambulation:</strong> ${patient.ambulation || "N/A"}</p>
-      <p><strong>Walking Aids:</strong> ${patient.WalkingAids || "N/A"}</p>
-      <p><strong>Cognitive Conditions:</strong> ${patient.CognitiveConditions || "N/A"}</p>
-      <p><strong>Mental Health Condition:</strong> ${patient.MentalHealthConditions || "N/A"}</p>
-      <p><strong>Document Needed:</strong> ${patient.DocumentsNeeded|| "N/A"}</p>
+      <p><strong>Walking Aids:</strong> ${patient.walkingAids || "N/A"}</p>
+      <p><strong>Cognitive Conditions:</strong> ${patient.cognitiveConditions || "N/A"}</p>
+      <p><strong>Mental Health Condition:</strong> ${patient.mentalHealthConditions || "N/A"}</p>
+      <p><strong>Document Needed:</strong> ${patient.documentsNeeded|| "N/A"}</p>
       <button class="patient-button" 
         data-id="${patient.patientIc}" 
         data-status="${patient.readyToDischarge ? 'true' : 'false'}">

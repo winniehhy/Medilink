@@ -437,31 +437,29 @@ app.post("/api/update-patient-status", async (req, res) => {
 
 
 /*--------------------------------------- HOSPITAL SEARCH -------------------------------------------------------*/
-const { getAllPatients, searchPatientsByIC } = require("./iris");
+
+const { GetAllPatients } = require('./iris');
 
 app.get("/api/patients", async (req, res) => {
   try {
-    const patients = await getAllPatients();
-    res.json({ success: true, data: patients });
+    console.log("📊 Fetching all patients from database...");
+    const patients = await GetAllPatients(); // Ensure this matches the function name in iris.js
+    
+    // Add more detailed logging
+    console.log(`✅ Retrieved ${patients.length} patients from database`);
+    
+    // Send the patients data to the client
+    res.json({ 
+      success: true, 
+      count: patients.length,
+      data: patients 
+    });
   } catch (error) {
     console.error("❌ Error fetching patients:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch patient data" });
-  }
-});
-
-// Search patients by IC (for hospital view)
-app.get("/api/patients/search", async (req, res) => {
-  try {
-    const { query } = req.query;
-    if (!query) {
-      return res.status(400).json({ success: false, error: "Search query is required" });
-    }
-    
-    const patients = await searchPatientsByIC(query);
-    res.json({ success: true, data: patients });
-  } catch (error) {
-    console.error("❌ Error searching patients:", error);
-    res.status(500).json({ success: false, error: "Failed to search patients" });
+    res.status(500).json({ 
+      success: false, 
+      error: "Failed to fetch patient data: " + error.message 
+    });
   }
 });
 
