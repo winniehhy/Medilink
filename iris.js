@@ -1,5 +1,5 @@
 const iris = require("./backend/intersystems-iris-native");
-const bcrypt = require('bcrypt');
+const bcrypt = require('./backend/node_modules/bcrypt');
 
 let connection;
 let db;
@@ -447,6 +447,45 @@ function updatePatientStatus(patientIC, readyToDischarge, comments) {
     }
 }
 
+/*------------------------------------- HOSPITAL ----------------------------------------*/
+
+async function GetAllPatients() {
+    const db = connectToDB();
+    if (!db) return false;
+    
+    try {
+        // Use db instead of iris since db has the classMethodValue method
+        const jsonData = db.classMethodValue(
+            "Medilink.Patient", 
+            "GetAllPatients"
+        );
+        
+        // Log the raw data for debugging
+        console.log("Raw JSON data length:", jsonData.length);
+        
+        // Parse the JSON string returned from IRIS
+        const patients = JSON.parse(jsonData);
+        
+        if (patients.error) {
+            console.error("❌ Error in IRIS GetAllPatients method:", patients.error);
+            throw new Error(patients.error);
+        }
+        
+        console.log(`✅ Retrieved ${patients.length} patients successfully`);
+        return patients;
+    } catch (err) {
+        console.error("❌ Error getting all patients:", err);
+        throw err;
+    } finally {
+          // Only close if the db object has a close method
+          if (db && typeof db.close === 'function') {
+            db.close();
+        }
+    }
+}
+
+
+
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
@@ -461,5 +500,8 @@ module.exports = {
     insertPatientData,
     getPatientData,
     updatePatientData,
-    updatePatientStatus
+    updatePatientStatus,
+
+    GetAllPatients
+
 };

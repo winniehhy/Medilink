@@ -1,6 +1,6 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
-const MemoryStore = require("memorystore")(session);
+const MemoryStore = require("./backend/node_modules/memorystore")(session);
 const bodyParser = require("./backend/node_modules/body-parser");
 const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
@@ -434,6 +434,35 @@ app.post("/api/update-patient-status", async (req, res) => {
         res.status(500).json({ success: false, error: "Server error" });
     }
 });
+
+
+/*--------------------------------------- HOSPITAL SEARCH -------------------------------------------------------*/
+
+const { GetAllPatients } = require('./iris');
+
+app.get("/api/patients", async (req, res) => {
+  try {
+    console.log("📊 Fetching all patients from database...");
+    const patients = await GetAllPatients(); // Ensure this matches the function name in iris.js
+    
+    // Add more detailed logging
+    console.log(`✅ Retrieved ${patients.length} patients from database`);
+    
+    // Send the patients data to the client
+    res.json({ 
+      success: true, 
+      count: patients.length,
+      data: patients 
+    });
+  } catch (error) {
+    console.error("❌ Error fetching patients:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Failed to fetch patient data: " + error.message 
+    });
+  }
+});
+
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
