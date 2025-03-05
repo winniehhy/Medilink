@@ -449,50 +449,40 @@ function updatePatientStatus(patientIC, readyToDischarge, comments) {
 
 /*------------------------------------- HOSPITAL ----------------------------------------*/
 
-function getAllPatients() {
+async function GetAllPatients() {
     const db = connectToDB();
-    if (!db) {
-      console.error("❌ Database connection failed");
-      return [];
-    }
-  
+    if (!db) return false;
+    
     try {
-      // Call ObjectScript method and get JSON
-      let jsonResult = db.classMethodValue("Medilink.Patient", "GetAllPatients");
-      
-      // Parse JSON string to JavaScript array
-      let results = JSON.parse(jsonResult);
-      
-      console.log("🔍 Patients Query Result:", results);
-      return results;
-    } catch (error) {
-      console.error("❌ Error fetching patient data:", error.message);
-      return [];
+        // Use db instead of iris since db has the classMethodValue method
+        const jsonData = db.classMethodValue(
+            "Medilink.Patient", 
+            "GetAllPatients"
+        );
+        
+        // Log the raw data for debugging
+        console.log("Raw JSON data length:", jsonData.length);
+        
+        // Parse the JSON string returned from IRIS
+        const patients = JSON.parse(jsonData);
+        
+        if (patients.error) {
+            console.error("❌ Error in IRIS GetAllPatients method:", patients.error);
+            throw new Error(patients.error);
+        }
+        
+        console.log(`✅ Retrieved ${patients.length} patients successfully`);
+        return patients;
+    } catch (err) {
+        console.error("❌ Error getting all patients:", err);
+        throw err;
+    } finally {
+          // Only close if the db object has a close method
+          if (db && typeof db.close === 'function') {
+            db.close();
+        }
     }
-  }
-  
-  // Function to search patients by IC
-  function searchPatientsByIC(icQuery) {
-    const db = connectToDB();
-    if (!db) {
-      console.error("❌ Database connection failed");
-      return [];
-    }
-  
-    try {
-      // Call ObjectScript method with search parameter
-      let jsonResult = db.classMethodValue("Medilink.Patient", "SearchPatientsByIC", icQuery);
-      
-      // Parse JSON string to JavaScript array
-      let results = JSON.parse(jsonResult);
-      
-      console.log("🔍 Patient Search Result:", results);
-      return results;
-    } catch (error) {
-      console.error("❌ Error searching patients:", error.message);
-      return [];
-    }
-  }
+}
 
 
 
@@ -512,6 +502,6 @@ module.exports = {
     updatePatientData,
     updatePatientStatus,
 
-    getAllPatients,
-    searchPatientsByIC
+    GetAllPatients
+
 };
