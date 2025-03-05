@@ -1,5 +1,6 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
+const MemoryStore = require("memorystore")(session);
 const bodyParser = require("./backend/node_modules/body-parser");
 const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
@@ -10,11 +11,27 @@ const bcrypt = require("./backend/node_modules/bcryptjs");
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+// Old Version
+// app.use(session({
+//   secret: "mySuperSecretKey", // save to .env later
+//   resave: false,
+//   saveUninitialized: true
+// }));
+
 app.use(session({
-  secret: "mySuperSecretKey", // save to .env later
+  secret: "mySuperSecretKey",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,  // ⚠️ Set to false to avoid unnecessary session creation
+  store: new MemoryStore({ checkPeriod: 86400000 }), // 🔄 Keeps sessions alive for 24 hours
+  cookie: { secure: false, httpOnly: true, maxAge: 86400000 } // 🔑 Ensure cookies persist
 }));
+
+app.use((req, res, next) => {
+  console.log("🔹 Session ID:", req.sessionID);
+  console.log("🔹 Session Data:", req.session);
+  next();
+});
+
 
 // Serve static files from "frontend" folder
 app.use(express.static(path.join(__dirname, "frontend")));
@@ -79,10 +96,6 @@ app.get("/existing_patient", (req, res) => {
 
 app.get("/update_patient_info", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/update_patient_info.html"));
-});
-
-app.get("/patient_management", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_management.html"));
 });
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Nursing Home Track Progress~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -312,17 +325,17 @@ app.post("/api/save-patient", async (req, res) => {
   try {
       // Save all patient data in one call
       const success = await insertPatientData(
-          patientData.staff,
-          patientData.admissionDate,
-          patientData.patientName,
-          patientData.patientIc,
-          patientData.sex,
-          physicalData.ambulation,
-          physicalData.walkingAids,
-          cognitiveData.cognitiveConditions,
-          cognitiveData.mentalHealthConditions,
-          documentData.documentsNeeded
-      );
+        patientData.staff,
+        patientData.admissionDate,
+        patientData.patientName,
+        patientData.patientIc,
+        patientData.sex,
+        physicalData.ambulation,
+        physicalData.walkingAids,
+        cognitiveData.cognitiveConditions,
+        cognitiveData.mentalHealthConditions,
+        documentData.documentsNeeded
+    );
 
       if (!success) {
           console.error("❌ Insert Failed in IRIS!");
@@ -342,17 +355,26 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-    const { name, ic } = req.query;
-    
-    if (!name || !ic) {
+    const { ic } = req.query;
+
+    if (!ic) {
         return res.status(400).json({ success: false, error: "Missing parameters" });
     }
 
     try {
-        const patient = await getPatientData(name, ic);
-        if (!patient) {
+        const patient = await getPatientData(ic);
+        // Check if the patient is null or contains an error property
+        if (!patient || patient.error) {
             return res.status(404).json({ success: false, error: "Patient not found" });
         }
+
+        if (!req.session) {
+            console.error("❌ ERROR: req.session is undefined!");
+            return res.status(500).json({ success: false, error: "Session not initialized" });
+        }
+
+        req.session.patientData = patient; // Save the valid patient data in session
+        console.log("✅ Stored patient in session:", req.session.patientData);
 
         res.json({ success: true, patient });
     } catch (error) {
@@ -361,19 +383,57 @@ app.get("/api/get-patient", async (req, res) => {
     }
 });
 
+
+// Get patient data from session
+app.get("/api/get-session-patient", (req, res) => {
+  console.log("📌 Checking session:", req.session);
+
+  if (!req.session || !req.session.patientData) {
+    return res.status(404).json({ success: false, error: "No patient data in session" });
+  }
+
+  console.log("✅ Session contains:", req.session.patientData);
+  res.json({ success: true, patient: req.session.patientData });
+});
+
+/*----------------------------------------- UPDATE PATIENT --------------------------------------------------- */
+
 app.post("/api/update-patient", async (req, res) => {
+  try {
+      console.log("📥 Received update request:", req.body); // Log the incoming data
+      const success = await updatePatientData(req.body);
+      if (success) {
+          return res.json({ success: true, message: "Patient updated successfully!" });
+      }
+      res.status(500).json({ success: false, error: "Update failed" });
+  } catch (error) {
+      console.error("❌ Error updating patient:", error);
+      res.status(500).json({ success: false, error: "Server error: " + error.message }); // Include the error message in the response
+  }
+});
+
+/*----------------------------------------- UPDATE PATIENT STATUS --------------------------------------------------- */
+
+const { updatePatientStatus } = require("./iris");
+
+app.post("/api/update-patient-status", async (req, res) => {
+    const { ic, readyToDischarge, comments } = req.body;
+
+    if (!ic) {
+        return res.status(400).json({ success: false, error: "Missing IC" });
+    }
+
     try {
-        const success = await updatePatientData(req.body);
+        const success = await updatePatientStatus(ic, readyToDischarge, comments);
         if (success) {
-            return res.json({ success: true, message: "Patient updated successfully!" });
+            return res.json({ success: true, message: "Patient status updated successfully!" });
         }
         res.status(500).json({ success: false, error: "Update failed" });
     } catch (error) {
-        console.error("❌ Error updating patient:", error);
+        console.error("❌ Error updating patient status:", error);
         res.status(500).json({ success: false, error: "Server error" });
     }
 });
-
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
