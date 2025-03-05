@@ -1,6 +1,6 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
-const MemoryStore = require("memorystore")(session);
+const MemoryStore = require("./backend/node_modules/memorystore")(session);
 const bodyParser = require("./backend/node_modules/body-parser");
 const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
@@ -434,6 +434,37 @@ app.post("/api/update-patient-status", async (req, res) => {
         res.status(500).json({ success: false, error: "Server error" });
     }
 });
+
+
+/*--------------------------------------- HOSPITAL SEARCH -------------------------------------------------------*/
+const { getAllPatients, searchPatientsByIC } = require("./iris");
+
+app.get("/api/patients", async (req, res) => {
+  try {
+    const patients = await getAllPatients();
+    res.json({ success: true, data: patients });
+  } catch (error) {
+    console.error("❌ Error fetching patients:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch patient data" });
+  }
+});
+
+// Search patients by IC (for hospital view)
+app.get("/api/patients/search", async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ success: false, error: "Search query is required" });
+    }
+    
+    const patients = await searchPatientsByIC(query);
+    res.json({ success: true, data: patients });
+  } catch (error) {
+    console.error("❌ Error searching patients:", error);
+    res.status(500).json({ success: false, error: "Failed to search patients" });
+  }
+});
+
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 

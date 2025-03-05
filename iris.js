@@ -1,5 +1,5 @@
 const iris = require("./backend/intersystems-iris-native");
-const bcrypt = require('bcrypt');
+const bcrypt = require('./backend/node_modules/bcrypt');
 
 let connection;
 let db;
@@ -447,6 +447,55 @@ function updatePatientStatus(patientIC, readyToDischarge, comments) {
     }
 }
 
+/*------------------------------------- HOSPITAL ----------------------------------------*/
+
+function getAllPatients() {
+    const db = connectToDB();
+    if (!db) {
+      console.error("❌ Database connection failed");
+      return [];
+    }
+  
+    try {
+      // Call ObjectScript method and get JSON
+      let jsonResult = db.classMethodValue("Medilink.Patient", "GetAllPatients");
+      
+      // Parse JSON string to JavaScript array
+      let results = JSON.parse(jsonResult);
+      
+      console.log("🔍 Patients Query Result:", results);
+      return results;
+    } catch (error) {
+      console.error("❌ Error fetching patient data:", error.message);
+      return [];
+    }
+  }
+  
+  // Function to search patients by IC
+  function searchPatientsByIC(icQuery) {
+    const db = connectToDB();
+    if (!db) {
+      console.error("❌ Database connection failed");
+      return [];
+    }
+  
+    try {
+      // Call ObjectScript method with search parameter
+      let jsonResult = db.classMethodValue("Medilink.Patient", "SearchPatientsByIC", icQuery);
+      
+      // Parse JSON string to JavaScript array
+      let results = JSON.parse(jsonResult);
+      
+      console.log("🔍 Patient Search Result:", results);
+      return results;
+    } catch (error) {
+      console.error("❌ Error searching patients:", error.message);
+      return [];
+    }
+  }
+
+
+
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
@@ -461,5 +510,8 @@ module.exports = {
     insertPatientData,
     getPatientData,
     updatePatientData,
-    updatePatientStatus
+    updatePatientStatus,
+
+    getAllPatients,
+    searchPatientsByIC
 };
