@@ -127,6 +127,7 @@ body {
     background: white;
     transition: 0.2s ease;
     color: #333;
+    text-align: left;
 }
 
 .fill-text-input:focus,
@@ -134,6 +135,30 @@ body {
     border-color: #267d74;
     box-shadow: 0 0 5px rgba(52, 166, 159, 0.5);
 }
+
+.status-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 80%;
+    margin: 10px auto;
+}
+
+.status-label {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: left;
+    letter-spacing: 1.5px;
+    width: 250px;
+}
+
+.poll-text {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    color: #267d74;
+}
+
 
 #poll-result {
     color: #267d74;

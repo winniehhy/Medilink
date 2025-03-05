@@ -38,23 +38,25 @@
 	</div>
 
 	<div class="middle-rectangle">
+		
 		<div class="header">
 			<!-- <button class="back-arrow" onclick="goBack()">&#8592;</button> -->
 			<img src="../../src/sidebar/track_progress.png" class="title-icon">
 			<div class="title">Track Progress</div>
 		</div>
+
 		<div class="fillingcontainer">
 			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Enter Patient Name</label>
+				<input type="text" id="search-ic" required>
+				<label id="search-ic" class="labelline">Enter Patient IC</label>
 			</div>
 		</div>
-		<div class="fillingcontainer">
-			<div class="fillarea">
-				<input type="text" required>
-				<label class="labelline">Enter Patient IC</label>
-			</div>
+
+		<div class="search-container">
+			<button id="search-patient">Search</button>
 		</div>
 	</div>
+
+	<script src="../../js/Nursing/track_progress.js"></script>
 </body>
 </html>
