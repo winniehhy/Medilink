@@ -15,23 +15,19 @@ Property Sex As %String(MAXLEN = 1000);
 
 Property Ambulation As %String(MAXLEN = 1000);
 
-// Physical capability: Ambulation
-
 Property WalkingAids As %String(MAXLEN = 1000);
-
-// Physical capability: Walking aids
 
 Property CognitiveConditions As %String(MAXLEN = 1000);
 
-// Cognitive conditions
-
 Property MentalHealthConditions As %String(MAXLEN = 1000);
-
-// Mental health conditions
 
 Property DocumentsNeeded As %String(MAXLEN = 1000);
 
-// Documents needed
+// For Track Progress
+
+Property ReadyToDischarge As %Boolean [ InitialExpression = 0 ];
+
+Property Comments As %String(MAXLEN = 1000);
 
 // Define a unique index on PatientID
 
@@ -93,16 +89,19 @@ ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPat
       Quit tSC
 }
 
-ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %String
+ClassMethod GetPatientData(PatientIC As %String) As %String
 {
     Set result = ##class(%DynamicObject).%New()
     Try {
-        &sql(SELECT PatientID, Staff, AdmissionDate, PatientName, PatientIC, Sex, Ambulation, 
-                     WalkingAids, CognitiveConditions, MentalHealthConditions, DocumentsNeeded
-              INTO :patientID, :staff, :admissionDate, :name, :ic, :sex, :ambulation, 
-                   :walkingAids, :cognitiveConditions, :mentalHealthConditions, :documentsNeeded
-              FROM Medilink.Patient
-              WHERE PatientName = :PatientName AND PatientIC = :PatientIC)
+       &sql(SELECT PatientID, Staff, AdmissionDate, PatientName, PatientIC, Sex, Ambulation, 
+                    WalkingAids, CognitiveConditions, MentalHealthConditions, DocumentsNeeded, 
+                    ReadyToDischarge, Comments
+            INTO :patientID, :staff, :admissionDate, :name, :ic, :sex, :ambulation, 
+                    :walkingAids, :cognitiveConditions, :mentalHealthConditions, 
+                    :documentsNeeded, :ReadyToDischarge, :Comments
+            FROM Medilink.Patient
+            WHERE PatientIC = :PatientIC)
+
 
         If SQLCODE = 0 {
             Do result.%Set("patientID", patientID)
@@ -116,6 +115,8 @@ ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %Str
             Do result.%Set("cognitiveConditions", cognitiveConditions)
             Do result.%Set("mentalHealthConditions", mentalHealthConditions)
             Do result.%Set("documentsNeeded", documentsNeeded)
+            Do result.%Set("readyToDischarge", ReadyToDischarge)
+            Do result.%Set("comments", Comments)
         } Else {
             Do result.%Set("error", "Patient not found")
         }
@@ -126,53 +127,33 @@ ClassMethod GetPatientData(PatientName As %String, PatientIC As %String) As %Str
     Quit result.%ToJSON()
 }
 
-/// Update patient information in the database
-// ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
-// {
-//     Try {
-//         Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
-        
-//         If obj '= "" {
-//             Set obj.Staff = Staff
-//             Set obj.AdmissionDate = AdmissionDate
-//             Set obj.Sex = Sex
-//             Set obj.Ambulation = Ambulation
-//             Set obj.WalkingAids = WalkingAids
-//             Set obj.CognitiveConditions = CognitiveConditions
-//             Set obj.MentalHealthConditions = MentalHealthConditions
-//             Set obj.DocumentsNeeded = DocumentsNeeded
-
-//             Set sc = obj.%Save()
-//             If $$$ISERR(sc) {
-//                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
-//             }
-//             Return $$$OK  // Correct way to return success
-//         } Else {
-//             Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
-//         }
-//     } Catch ex {
-//         Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
-//     }
-// }
-ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
+ClassMethod UpdatePatientData(
+    PatientName As %String, 
+    PatientIC As %String, 
+    Staff As %String, 
+    AdmissionDate As %String, 
+    Sex As %String, 
+    Ambulation As %String, 
+    WalkingAids As %String, 
+    CognitiveConditions As %String, 
+    MentalHealthConditions As %String, 
+    DocumentsNeeded As %String
+) As %Status
 {
-    Try {
-        // Log the incoming data
-        Write "📥 Updating patient with data:", !
-        Write "PatientName: ", PatientName, !
-        Write "PatientIC: ", PatientIC, !
-        Write "Staff: ", Staff, !
-        Write "AdmissionDate: ", AdmissionDate, !
-        Write "Sex: ", Sex, !
-        Write "Ambulation: ", Ambulation, !
-        Write "WalkingAids: ", WalkingAids, !
-        Write "CognitiveConditions: ", CognitiveConditions, !
-        Write "MentalHealthConditions: ", MentalHealthConditions, !
-        Write "DocumentsNeeded: ", DocumentsNeeded, !
+    DO ##class(%SYS.System).WriteToConsoleLog("Starting UpdatePatientData")
 
-        Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
+    Try {
+        // Find the patient by PatientIC
+        Set obj = ""
+        &sql(SELECT %ID INTO :patientID FROM Medilink.Patient WHERE PatientIC = :PatientIC)
         
+        If (SQLCODE = 0) {
+            Set obj = ##class(Medilink.Patient).%OpenId(patientID)
+        }
+
+        // Check if the patient was found
         If obj '= "" {
+            // Update patient data
             Set obj.Staff = Staff
             Set obj.AdmissionDate = AdmissionDate
             Set obj.Sex = Sex
@@ -182,20 +163,52 @@ ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staf
             Set obj.MentalHealthConditions = MentalHealthConditions
             Set obj.DocumentsNeeded = DocumentsNeeded
 
+            // Save changes
             Set sc = obj.%Save()
             If $$$ISERR(sc) {
-                Write "❌ Error saving patient data: ", $System.Status.GetErrorText(sc), !
                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
             }
-            Write "✅ Patient data saved successfully!", !
-            Return $$$OK  // Correct way to return success
+
+            DO ##class(%SYS.System).WriteToConsoleLog("Patient data updated successfully")
+            Return $$$OK  // Success
         } Else {
-            Write "❌ Patient not found", !
-            Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
+            DO ##class(%SYS.System).WriteToConsoleLog("Patient not found")
+            Return $$$ERROR($$$GeneralError, "Patient not found with IC: "_PatientIC)
         }
     } Catch ex {
-        Write "❌ Error updating patient data: ", ex.DisplayString(), !
-        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
+        DO ##class(%SYS.System).WriteToConsoleLog("ERROR: "_ex.DisplayString())
+        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())
+    }
+}
+
+ClassMethod UpdatePatientStatus(PatientIC As %String, ReadyToDischarge As %Boolean, Comments As %String) As %Status
+{
+    Try {
+        // Find the patient using PatientIC
+        Set obj = ""
+        &sql(SELECT %ID INTO :patientID FROM Medilink.Patient WHERE PatientIC = :PatientIC)
+
+        If (SQLCODE = 0) {
+            Set obj = ##class(Medilink.Patient).%OpenId(patientID)
+        }
+
+        If obj '= "" {
+            // ✅ Update fields
+            Set obj.ReadyToDischarge = ReadyToDischarge
+            Set obj.Comments = Comments
+
+            // ✅ Save changes
+            Set sc = obj.%Save()
+            If $$$ISERR(sc) {
+                Return $$$ERROR($$$GeneralError, "Error saving patient status: "_$System.Status.GetErrorText(sc))
+            }
+
+            Return $$$OK  // Success
+        } Else {
+            Return $$$ERROR($$$GeneralError, "Patient not found with IC: "_PatientIC)
+        }
+    } Catch ex {
+        Return $$$ERROR($$$GeneralError, "Error updating patient status: "_ex.DisplayString())
     }
 }
 

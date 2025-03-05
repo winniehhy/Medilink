@@ -355,14 +355,14 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-    const { name, ic } = req.query;
+    const { ic } = req.query;
 
-    if (!name || !ic) {
+    if (!ic) {
         return res.status(400).json({ success: false, error: "Missing parameters" });
     }
 
     try {
-        const patient = await getPatientData(name, ic);
+        const patient = await getPatientData(ic);
         // Check if the patient is null or contains an error property
         if (!patient || patient.error) {
             return res.status(404).json({ success: false, error: "Patient not found" });
@@ -410,6 +410,29 @@ app.post("/api/update-patient", async (req, res) => {
       console.error("❌ Error updating patient:", error);
       res.status(500).json({ success: false, error: "Server error: " + error.message }); // Include the error message in the response
   }
+});
+
+/*----------------------------------------- UPDATE PATIENT STATUS --------------------------------------------------- */
+
+const { updatePatientStatus } = require("./iris");
+
+app.post("/api/update-patient-status", async (req, res) => {
+    const { ic, readyToDischarge, comments } = req.body;
+
+    if (!ic) {
+        return res.status(400).json({ success: false, error: "Missing IC" });
+    }
+
+    try {
+        const success = await updatePatientStatus(ic, readyToDischarge, comments);
+        if (success) {
+            return res.json({ success: true, message: "Patient status updated successfully!" });
+        }
+        res.status(500).json({ success: false, error: "Update failed" });
+    } catch (error) {
+        console.error("❌ Error updating patient status:", error);
+        res.status(500).json({ success: false, error: "Server error" });
+    }
 });
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */

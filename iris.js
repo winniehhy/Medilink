@@ -377,12 +377,12 @@ async function insertPatientData(
 }
 
 /*---------------------------------------- GET PATIENT -------------------------------------------- */
-function getPatientData(name, ic) {
+function getPatientData(ic) {
     const db = connectToDB();
     if (!db) return null;
 
     try {
-        const result = db.classMethodValue("Medilink.Patient", "GetPatientData", name, ic);
+        const result = db.classMethodValue("Medilink.Patient", "GetPatientData", ic);
         const patient = JSON.parse(result);
         if (patient.error) {
             console.error("Patient retrieval error:", patient.error);
@@ -395,12 +395,13 @@ function getPatientData(name, ic) {
     }
 }
 
-/*---------------------------------------- UPDATE PATIENT -------------------------------------------- */
+/*---------------------------------------- UPDATE PATIENT DATA-------------------------------------------- */
 
-// In iris.js
 function updatePatientData(patientData) {
     const db = connectToDB();
     if (!db) return false;
+
+    console.log("🛠️ updatePatientData:", {patientData});
 
     try {
         db.classMethodVoid(
@@ -425,6 +426,28 @@ function updatePatientData(patientData) {
     }
 }
 
+/*---------------------------------------- UPDATE PATIENT STATUS -------------------------------------------- */
+function updatePatientStatus(patientIC, readyToDischarge, comments) {
+    const db = connectToDB();
+    if (!db) return false;
+
+    try {
+        db.classMethodVoid(
+            "Medilink.Patient", 
+            "UpdatePatientStatus",
+            patientIC,
+            readyToDischarge, // Boolean value (true/false)
+            comments // String
+        );
+        console.log(`✅ Patient status updated for ${patientIC}: Discharge = ${readyToDischarge}, Comments = "${comments}"`);
+        return true;
+    } catch (error) {
+        console.error("❌ Error updating patient status:", error);
+        return false;
+    }
+}
+
+
 /*---------------------------------------- EXPORTS -------------------------------------------- */
 
 module.exports = {
@@ -437,5 +460,6 @@ module.exports = {
 
     insertPatientData,
     getPatientData,
-    updatePatientData
+    updatePatientData,
+    updatePatientStatus
 };
