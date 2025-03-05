@@ -13,7 +13,7 @@ document.getElementById("search-patient").addEventListener("click", function() {
             if (data.success) {
                 console.log("✅ Patient data stored in session:", data.patient);
                 setTimeout(() => {
-                    window.location.href = "update_patient_info";
+                    window.location.href = "patient_status";
                 }, 500);
             } else {
                 alert("Patient not found.");

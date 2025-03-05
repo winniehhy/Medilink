@@ -151,11 +151,10 @@
 							<input type="text" id="new-document" placeholder="Add a new document" style="padding: 5px; width: 70%; border-radius: 5px; border: 1px solid #ccc;">
 							<button type="button" onclick="addDocuments()" style="padding: 5px 10px; border-radius: 5px; background-color: #2ba6a6; color: white; border: none; cursor: pointer; transition: background-color 0.3s ease;">Add</button>
 						</div>
-						<label><input type="checkbox" name="document-needed" value="Hospital Discharge Summary"> Hospital Discharge Summary</label>
-						<label><input type="checkbox" name="document-needed" value="Occupational Therapy Physiotherapy Report"> Occupational Therapy Physiotherapy Report</label>
-						<label><input type="checkbox" name="document-needed" value="Medication List"> Medication List</label>
-						<label><input type="checkbox" name="document-needed" value="Speech Therapy Report"> Speech Therapy Report</label>
-						<label><input type="checkbox" name="document-needed" value="Dietetic Report"> Dietetic Report</label>
+						<label><input type="checkbox" name="document-needed" value="Brief Discharge Summary"> Hospital Discharge Summary</label>
+						<label><input type="checkbox" name="document-needed" value="Length Discharge Summary (Includes Procedures Done and Complete Medication List)"> Length Discharge Summary (Includes Procedures Done and Complete Medication List)</label>
+						<label><input type="checkbox" name="document-needed" value="Memo To Outpatient Clinic (If Any)"> Memo To Outpatient Clinic (If Any)</label>
+						<label><input type="checkbox" name="document-needed" value="Transitional Care Unit(TCU) Letter"> Transitional Care Unit(TCU) Letter</label>
 					</div>
 				</div>
 				<button type="button" class="prev-button">Previous</button>
@@ -164,6 +163,6 @@
 		</form>
 	</div>
 
-	<script src="../../js/Nursing/patient_information.js"></script>
+	<script src="../../js/Nursing/update_patient_info.js" defer></script>
 </body>
 </html>
