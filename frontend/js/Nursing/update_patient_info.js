@@ -28,62 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
-// document.getElementById("submit").addEventListener("click", function() {
-
-// 	const patientData = {
-// 		staff: document.getElementById("staff").value,
-// 		admissionDate: document.getElementById("admission-date").value,
-// 		patientName: document.getElementById("patient-name").value,
-// 		patientIc: document.getElementById("patient-ic").value,
-// 		sex: document.querySelector('input[name="sex"]:checked').value
-// 	};
-
-// 	console.log("📤 Sending patient data:", patientData);
-// 	fetch("http://localhost:4000/api/save-patient", {
-// 		method: "POST",
-// 		headers: { "Content-Type": "application/json" },
-// 		body: JSON.stringify(patientData)
-// 	})
-// 	.then(response => response.json())
-// 	.then(data => {
-// 		alert(data.message);
-// 		// if (data.message.includes("success")) {
-// 		// 	console.log("✅ Navigating to next page...");
-// 		// 	window.location.href = "physical_capability"; // ✅ Correct absolute path
-// 		// }
-// 	})
-// 	.catch(error => console.error("❌ Error:", error));
-// });
-
-// --------------------------------------------------Physical Capability Tab---------------------------------------------------
-// document.getElementById("submitPhysical").addEventListener("click", function(e) {
-// 	e.preventDefault(); // Stop any default button behavior
-  
-// 	// Only collect ambulation and walkingAids
-// 	const physicalData = {
-// 	  ambulation: document.querySelector('input[name="ambulation"]:checked')?.value || "",
-// 	  walkingAids: document.getElementById("walking-aids").value
-// 	};
-  
-// 	console.log("📤 Sending physical capability data:", physicalData);
-  
-// 	// POST to your Node backend
-// 	fetch("http://localhost:4000/api/save-physical-capability", {
-// 	  method: "POST",
-// 	  headers: { "Content-Type": "application/json" },
-// 	  body: JSON.stringify(physicalData)
-// 	})
-// 	  .then(response => response.json())
-// 	  .then(data => {
-// 		alert(data.message);
-// 		// if (data.message.includes("success")) {
-// 		//   // Go to the next page
-// 		//   window.location.href = "";
-// 		// }
-// 	  })
-// 	  .catch(error => console.error("❌ Error:", error));
-//   });
-
 // -----------------------------------------------Cognitive and Mental Health Tab---------------------------------------------
 function addCondition(groupId, inputId) {
 	const conditionInput = document.getElementById(inputId);
@@ -102,34 +46,6 @@ function addCondition(groupId, inputId) {
 		alert("Please enter a valid condition.");
 	}
 };
-
-// document.getElementById("submit").addEventListener("click", function(e) {
-//     e.preventDefault(); // Stop any default button behavior
-
-//     // Collect cognitive and mental health conditions
-//     const cognitiveData = {
-//         cognitiveConditions: Array.from(document.querySelectorAll('input[name="cognitive-condition"]:checked')).map(checkbox => checkbox.value),
-//         mentalHealthConditions: Array.from(document.querySelectorAll('input[name="mental-health-condition"]:checked')).map(checkbox => checkbox.value)
-//     };
-
-//     console.log("📤 Sending cognitive and mental health data:", cognitiveData);
-
-//     // POST to your Node backend
-//     fetch("http://localhost:4000/api/save-cognitive-mental-health", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(cognitiveData)
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         alert(data.message);
-//         // if (data.message.includes("success")) {
-//         //     // Go to the next page
-//         //     window.location.href = "./Pages/Nursing/documents_needed.html";
-//         // }
-//     })
-//     .catch(error => console.error("❌ Error:", error));
-// });
 
 // -----------------------------------------------Document Needed Tab---------------------------------------------------
 function addDocuments() {
@@ -151,85 +67,131 @@ function addDocuments() {
 	}
 };
 
-//-----------------------------------------------------------Tab Navigation---------------------------------------------------
-
+// -------------------------------------------- Page Load: Prefill Data ---------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
-    let currentTab = 0; // Default tab index
+    console.log("✅ JavaScript Loaded");
+    let currentTab = 0; // Default to first tab
+    showTab(currentTab);
 
+    // ------------------ Prefill Data from Session ------------------
+    fetch("http://localhost:4000/api/get-session-patient", {
+        method: "GET",
+        credentials: "include" 
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("✅ Prefilling form with:", data.patient);
+            const patient = data.patient;
+
+            // Prefill basic information
+            document.getElementById("staff").value = patient.staff || "";
+            document.getElementById("admission-date").value = patient.admissionDate || "";
+            document.getElementById("patient-name").value = patient.patientName || "";
+            document.getElementById("patient-ic").value = patient.patientIc || "";
+
+            // Prefill sex
+            const sexRadio = document.querySelector(`input[name="sex"][value="${patient.sex}"]`);
+            if (sexRadio) sexRadio.checked = true;
+
+            // Prefill ambulation
+            const ambulationRadio = document.querySelector(`input[name="ambulation"][value="${patient.ambulation}"]`);
+            if (ambulationRadio) ambulationRadio.checked = true;
+
+            // Prefill walking aids
+            document.getElementById("walking-aids").value = patient.walkingAids || "";
+
+            // Prefill cognitive conditions
+            if (patient.cognitiveConditions) {
+                patient.cognitiveConditions.split(", ").forEach(condition => {
+                    const cognitiveCheckbox = document.querySelector(`input[name="cognitive"][value="${condition}"]`);
+                    if (cognitiveCheckbox) cognitiveCheckbox.checked = true;
+                });
+            }
+
+            // Prefill mental health conditions
+            if (patient.mentalHealthConditions) {
+                patient.mentalHealthConditions.split(", ").forEach(condition => {
+                    const mentalHealthCheckbox = document.querySelector(`input[name="mental_health"][value="${condition}"]`);
+                    if (mentalHealthCheckbox) mentalHealthCheckbox.checked = true;
+                });
+            }
+
+            // Prefill documents needed
+            if (patient.documentsNeeded) {
+                patient.documentsNeeded.split(", ").forEach(condition => {
+                    const documentCheckbox = document.querySelector(`input[name="document-needed"][value="${condition.trim()}"]`);
+                    if (documentCheckbox) documentCheckbox.checked = true;
+                });
+            }
+        } else {
+            alert("No patient data found in session.");
+        }
+    })
+    .catch(error => console.error("❌ Error fetching session patient data:", error));
+
+    // ------------------ Tab Navigation ------------------
     function showTab(index) {
         const tabs = document.querySelectorAll(".tab");
         const sections = document.querySelectorAll(".section-progress-fill");
-    
-        // Hide all tabs and reset section colors
-        tabs.forEach((tab, i) => {
-            tab.style.display = i === index ? "block" : "none";
-        });
-    
-        // Update section colors
-        sections.forEach((section, i) => {
-            if (i === index) {
-                section.classList.add("active-section"); // Brighter green for active section
-            } else {
-                section.classList.remove("active-section"); // Light green for other sections
+        
+        if (index >= tabs.length) return; // Prevent overflow
+
+        tabs.forEach((tab, i) => tab.style.display = i === index ? "block" : "none");
+        sections.forEach((section, i) => section.classList.toggle("active-section", i === index));
+        currentTab = index;
+        console.log("📌 Switched to tab:", currentTab);
+    }
+
+    // Next button functionality
+    document.querySelectorAll(".next-button").forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentTab < document.querySelectorAll(".tab").length - 1) {
+                showTab(++currentTab);
             }
         });
-    
-        currentTab = index;
-        console.log("Switched to tab:", currentTab);
-    }
-    
-    showTab(currentTab); // Show the default tab
+    });
 
-    function saveData() {
-        const patientData = {
-            staff: document.getElementById("staff")?.value || "",
-            admissionDate: document.getElementById("admission-date")?.value || "",
-            patientName: document.getElementById("patient-name")?.value || "",
-            patientIc: document.getElementById("patient-ic")?.value || "",
-            sex: document.querySelector('input[name="sex"]:checked')?.value || ""
-        };
-    
-        const physicalData = {
-            ambulation: document.querySelector('input[name="ambulation"]:checked')?.value || "",
-            walkingAids: document.getElementById("walking-aids")?.value || ""
-        };
-    
-        const cognitiveData = {
-            cognitiveConditions: Array.from(document.querySelectorAll('input[name="cognitive"]:checked')).map(c => c.value),
-            mentalHealthConditions: Array.from(document.querySelectorAll('input[name="mental_health"]:checked')).map(m => m.value)
-        };
-    
-        const documentData = {
-            documentsNeeded: [...document.querySelectorAll('input[name="document-needed"]:checked')]
-                .map(d => d.value)
-        };
-    
-        console.log("📤 Saving Data:", { patientData, physicalData, cognitiveData, documentData });
-    
-        return { patientData, physicalData, cognitiveData, documentData };
-    }
-    
-    const patientData = JSON.parse(localStorage.getItem("patientData"));
-	
-    if (patientData) {
-        document.getElementById("staff").value = patientData.staff || "";
-        document.getElementById("admission-date").value = patientData.admissionDate || "";
-        document.getElementById("patient-name").value = patientData.patientName || "";
-        document.getElementById("patient-ic").value = patientData.patientIc || "";
-        document.querySelector(`input[name="sex"][value="${patientData.sex}"]`)?.checked = true;
-    }
+    // Previous button functionality
+    document.querySelectorAll(".prev-button").forEach((btn) => {
+        btn.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (currentTab > 0) {
+                showTab(--currentTab);
+            }
+        });
+    });
 
+    // Section progress bar navigation
+    document.querySelectorAll(".section-link").forEach((link, index) => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            showTab(index);
+        });
+    });
+
+    // ------------------ Update Patient Data ------------------
     document.getElementById("update-button").addEventListener("click", function (e) {
         e.preventDefault();
-
+        
+        // Collect all the form data
         const updatedData = {
             staff: document.getElementById("staff").value,
             admissionDate: document.getElementById("admission-date").value,
             patientName: document.getElementById("patient-name").value,
             patientIc: document.getElementById("patient-ic").value,
-            sex: document.querySelector('input[name="sex"]:checked')?.value || ""
+            sex: document.querySelector('input[name="sex"]:checked')?.value || "",
+            ambulation: document.querySelector('input[name="ambulation"]:checked')?.value || "",
+            walkingAids: document.getElementById("walking-aids").value,
+            cognitiveConditions: getCheckedValues("cognitive"),
+            mentalHealthConditions: getCheckedValues("mental_health"),
+            documentsNeeded: getCheckedValues("document-needed")
         };
-
+        
+        console.log("📤 Sending updated patient data:", updatedData);
+        
+        // Send the data to the server
         fetch("http://localhost:4000/api/update-patient", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -244,89 +206,19 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(error => console.error("❌ Error updating patient:", error));
     });
-
-    function nextTab() {
-        const tabs = document.querySelectorAll(".tab");
-        if (currentTab < tabs.length - 1) {
-            saveData(); // Save before switching
-            currentTab++;
-            showTab(currentTab);
-        }
-        else {
-            console.log("🚫 Already at last tab, cannot go forward");
+    // ------------------ Utility Functions ------------------
+    function fillCheckboxes(groupName, values) {
+        if (values) {
+            values.split(", ").forEach(value => {
+                const checkbox = document.querySelector(`input[name="${groupName}"][value="${value}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
         }
     }
 
-    function prevTab() {
-        if (currentTab > 0) {
-            saveData(); // Save before switching
-            currentTab--;
-            showTab(currentTab);
-        }
-        else {
-            console.log("🚫 Already at first tab, cannot go back");
-        }
+    function getCheckedValues(groupName) {
+        return Array.from(document.querySelectorAll(`input[name="${groupName}"]:checked`))
+            .map(checkbox => checkbox.value)
+            .join(", ");
     }
-
-    console.log("✅ JavaScript Loaded"); // Debugging log
-
-    // Attach event listeners to Next and Previous buttons
-    document.querySelectorAll(".next-button").forEach((btn) => {
-        btn.addEventListener("click", function (e) {
-            e.preventDefault();
-            console.log("➡️ Next button clicked");
-            nextTab();
-        });
-    });
-
-    document.querySelectorAll(".prev-button").forEach((btn) => {
-        btn.addEventListener("click", function (e) {
-            e.preventDefault();
-            console.log("⬅️ Previous button clicked");
-            prevTab();
-        });
-    });
-
-    // Section navigation links
-    document.querySelectorAll(".section-link").forEach((link, index) => {
-        link.addEventListener("click", function (e) {
-            e.preventDefault();
-            saveData(); // Save before switching
-            showTab(index);
-        });
-    });
-
-    const submitButton = document.getElementById("submit-button");
-
-    if (!submitButton) {
-        console.error("❌ Submit button not found! Check your HTML.");
-    }
-    else {
-        console.log("✅ Submit button detected!");
-    }
-
-    submitButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        console.log("✅ Submit button clicked");  // Debugging log
-
-        // Collect all form data
-        const data = saveData();
-        console.log("📤 Data to send:", data);  // Debugging log
-
-        fetch("http://localhost:4000/api/save-patient", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(responseData => {
-            console.log("✅ Server Response:", responseData); // Debugging log
-            alert(responseData.message);
-
-            if (responseData.message.includes("success")) {
-                window.location.href = "nursing_homepage";
-            }
-        })
-        .catch(error => console.error("❌ Fetch Error:", error));
-    });
 });
