@@ -1,7 +1,7 @@
 const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
 const bodyParser = require("./backend/node_modules/body-parser");
-const { insertHospitalData, insertNursingHomeData, validateHospitalLogin,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
+const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
 const cors = require('./backend/node_modules/cors');
 const bcrypt = require("./backend/node_modules/bcryptjs");
