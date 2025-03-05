@@ -36,6 +36,12 @@ function displayPatients(patients) {
       <p><strong>IC:</strong> ${patient.patientIc || "N/A"}</p>
       <p><strong>Staff:</strong> ${patient.staff || "N/A"}</p>
       <p><strong>Admission Date:</strong> ${patient.admissionDate || "N/A"}</p>
+      <p><strong>Sex:</strong> ${patient.sex || "N/A"}</p>
+      <p><strong>Ambulation:</strong> ${patient.ambulation || "N/A"}</p>
+      <p><strong>Walking Aids:</strong> ${patient.WalkingAids || "N/A"}</p>
+      <p><strong>Cognitive Conditions:</strong> ${patient.CognitiveConditions || "N/A"}</p>
+      <p><strong>Mental Health Condition:</strong> ${patient.MentalHealthConditions || "N/A"}</p>
+      <p><strong>Document Needed:</strong> ${patient.DocumentsNeeded|| "N/A"}</p>
       <button class="patient-button" 
         data-id="${patient.patientIc}" 
         data-status="${patient.readyToDischarge ? 'true' : 'false'}">
