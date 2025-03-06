@@ -33,7 +33,7 @@ function displayPatients(patients) {
     
     card.innerHTML = `
       <p><strong>Name:</strong> ${patient.patientName || "N/A"}</p>
-      <p><strong>IC:</strong> ${patient.patientIc || "N/A"}</p>
+      <p><strong>IC:</strong> ${patient.patientIC || "N/A"}</p>
       <p><strong>Staff:</strong> ${patient.staff || "N/A"}</p>
       <p><strong>Admission Date:</strong> ${patient.admissionDate || "N/A"}</p>
       <p><strong>Sex:</strong> ${patient.sex || "N/A"}</p>

@@ -377,12 +377,12 @@ async function insertPatientData(
 }
 
 /*---------------------------------------- GET PATIENT -------------------------------------------- */
-function getPatientData(ic) {
+function getPatientData( ic) {
     const db = connectToDB();
     if (!db) return null;
 
     try {
-        const result = db.classMethodValue("Medilink.Patient", "GetPatientData", ic);
+        const result = db.classMethodValue("Medilink.Patient", "GetPatientData",ic);
         const patient = JSON.parse(result);
         if (patient.error) {
             console.error("Patient retrieval error:", patient.error);
@@ -394,6 +394,7 @@ function getPatientData(ic) {
         return null;
     }
 }
+
 
 /*---------------------------------------- UPDATE PATIENT DATA-------------------------------------------- */
 

@@ -355,7 +355,7 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-    const { ic } = req.query;
+    const {ic } = req.query;
 
     if (!ic) {
         return res.status(400).json({ success: false, error: "Missing parameters" });

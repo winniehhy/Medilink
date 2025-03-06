@@ -15,19 +15,23 @@ Property Sex As %String(MAXLEN = 1000);
 
 Property Ambulation As %String(MAXLEN = 1000);
 
+// Physical capability: Ambulation
+
 Property WalkingAids As %String(MAXLEN = 1000);
+
+// Physical capability: Walking aids
 
 Property CognitiveConditions As %String(MAXLEN = 1000);
 
+// Cognitive conditions
+
 Property MentalHealthConditions As %String(MAXLEN = 1000);
+
+// Mental health conditions
 
 Property DocumentsNeeded As %String(MAXLEN = 1000);
 
-// For Track Progress
-
-Property ReadyToDischarge As %Boolean [ InitialExpression = 0 ];
-
-Property Comments As %String(MAXLEN = 1000);
+// Documents needed
 
 // Define a unique index on PatientID
 
@@ -89,34 +93,58 @@ ClassMethod InsertPatientData(pStaff As %String, pAdmissionDate As %String, pPat
       Quit tSC
 }
 
-ClassMethod GetPatientData(PatientIC As %String) As %String
+/// Retrieve patient data by Name and IC
+ClassMethod GetPatientData(name As %String, ic As %String) As %String
+{
+    Set result = ##class(%DynamicObject).%New()  // ✅ Correct way to create JSON object
+    Try {
+        Set obj = ##class(Medilink.Patient).%OpenId(name _ "_" _ ic)
+        If obj '= "" {
+            Do result.%Set("staff", obj.Staff)
+            Do result.%Set("admissionDate", obj.AdmissionDate)
+            Do result.%Set("patientName", obj.PatientName)
+            Do result.%Set("patientIc", obj.PatientIC)
+            Do result.%Set("sex", obj.Sex)
+            Do result.%Set("ambulation", obj.Ambulation)
+            Do result.%Set("walkingAids", obj.WalkingAids)
+            Do result.%Set("cognitiveConditions", obj.CognitiveConditions)
+            Do result.%Set("mentalHealthConditions", obj.MentalHealthConditions)
+            Do result.%Set("documentsNeeded", obj.DocumentsNeeded)
+        } Else {
+            Do result.%Set("error", "Patient not found")
+        }
+    } Catch ex {
+        Do result.%Set("error", "Error retrieving patient data: "_ex.DisplayString())
+    }
+    
+    Quit result.%ToJSON() // ✅ Returns JSON correctly
+}
+
+ClassMethod GetPatientByIC(ic As %String) As %String
 {
     Set result = ##class(%DynamicObject).%New()
     Try {
-       &sql(SELECT PatientID, Staff, AdmissionDate, PatientName, PatientIC, Sex, Ambulation, 
-                    WalkingAids, CognitiveConditions, MentalHealthConditions, DocumentsNeeded, 
-                    ReadyToDischarge, Comments
-            INTO :patientID, :staff, :admissionDate, :name, :ic, :sex, :ambulation, 
-                    :walkingAids, :cognitiveConditions, :mentalHealthConditions, 
-                    :documentsNeeded, :ReadyToDischarge, :Comments
-            FROM Medilink.Patient
-            WHERE PatientIC = :PatientIC)
-
-
-        If SQLCODE = 0 {
-            Do result.%Set("patientID", patientID)
-            Do result.%Set("staff", staff)
-            Do result.%Set("admissionDate", admissionDate)
-            Do result.%Set("patientName", name)
-            Do result.%Set("patientIc", ic)
-            Do result.%Set("sex", sex)
-            Do result.%Set("ambulation", ambulation)
-            Do result.%Set("walkingAids", walkingAids)
-            Do result.%Set("cognitiveConditions", cognitiveConditions)
-            Do result.%Set("mentalHealthConditions", mentalHealthConditions)
-            Do result.%Set("documentsNeeded", documentsNeeded)
-            Do result.%Set("readyToDischarge", ReadyToDischarge)
-            Do result.%Set("comments", Comments)
+        Set query = "SELECT * FROM Medilink.Patient WHERE PatientIC = ?"
+        Set statement = ##class(%SQL.Statement).%New()
+        Set status = statement.%Prepare(query)
+        
+        If $$$ISERR(status) {
+            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
+        }
+        
+        Set resultSet = statement.%Execute(ic)
+        
+        If resultSet.%Next() {
+            Do result.%Set("staff", resultSet.%Get("Staff"))
+            Do result.%Set("admissionDate", resultSet.%Get("AdmissionDate"))
+            Do result.%Set("patientName", resultSet.%Get("PatientName"))
+            Do result.%Set("patientIc", resultSet.%Get("PatientIC"))
+            Do result.%Set("sex", resultSet.%Get("Sex"))
+            Do result.%Set("ambulation", resultSet.%Get("Ambulation"))
+            Do result.%Set("walkingAids", resultSet.%Get("WalkingAids"))
+            Do result.%Set("cognitiveConditions", resultSet.%Get("CognitiveConditions"))
+            Do result.%Set("mentalHealthConditions", resultSet.%Get("MentalHealthConditions"))
+            Do result.%Set("documentsNeeded", resultSet.%Get("DocumentsNeeded"))
         } Else {
             Do result.%Set("error", "Patient not found")
         }
@@ -127,33 +155,13 @@ ClassMethod GetPatientData(PatientIC As %String) As %String
     Quit result.%ToJSON()
 }
 
-ClassMethod UpdatePatientData(
-    PatientName As %String, 
-    PatientIC As %String, 
-    Staff As %String, 
-    AdmissionDate As %String, 
-    Sex As %String, 
-    Ambulation As %String, 
-    WalkingAids As %String, 
-    CognitiveConditions As %String, 
-    MentalHealthConditions As %String, 
-    DocumentsNeeded As %String
-) As %Status
+/// Update patient information in the database
+ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
 {
-    DO ##class(%SYS.System).WriteToConsoleLog("Starting UpdatePatientData")
-
     Try {
-        // Find the patient by PatientIC
-        Set obj = ""
-        &sql(SELECT %ID INTO :patientID FROM Medilink.Patient WHERE PatientIC = :PatientIC)
+        Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
         
-        If (SQLCODE = 0) {
-            Set obj = ##class(Medilink.Patient).%OpenId(patientID)
-        }
-
-        // Check if the patient was found
         If obj '= "" {
-            // Update patient data
             Set obj.Staff = Staff
             Set obj.AdmissionDate = AdmissionDate
             Set obj.Sex = Sex
@@ -163,53 +171,59 @@ ClassMethod UpdatePatientData(
             Set obj.MentalHealthConditions = MentalHealthConditions
             Set obj.DocumentsNeeded = DocumentsNeeded
 
-            // Save changes
             Set sc = obj.%Save()
             If $$$ISERR(sc) {
                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
             }
-
-            DO ##class(%SYS.System).WriteToConsoleLog("Patient data updated successfully")
-            Return $$$OK  // Success
+            Return $$$OK  // Correct way to return success
         } Else {
-            DO ##class(%SYS.System).WriteToConsoleLog("Patient not found")
-            Return $$$ERROR($$$GeneralError, "Patient not found with IC: "_PatientIC)
+            Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
         }
     } Catch ex {
-        DO ##class(%SYS.System).WriteToConsoleLog("ERROR: "_ex.DisplayString())
-        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())
+        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
     }
 }
 
-ClassMethod UpdatePatientStatus(PatientIC As %String, ReadyToDischarge As %Boolean, Comments As %String) As %Status
+/// Retrieve all patients from the database
+ClassMethod GetAllPatients() As %String
 {
+    Set resultArray = ##class(%DynamicArray).%New()
+    
     Try {
-        // Find the patient using PatientIC
-        Set obj = ""
-        &sql(SELECT %ID INTO :patientID FROM Medilink.Patient WHERE PatientIC = :PatientIC)
-
-        If (SQLCODE = 0) {
-            Set obj = ##class(Medilink.Patient).%OpenId(patientID)
+        Set query = "SELECT * FROM Medilink.Patient"
+        Set statement = ##class(%SQL.Statement).%New()
+        Set status = statement.%Prepare(query)
+        
+        If $$$ISERR(status) {
+            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
         }
-
-        If obj '= "" {
-            // ✅ Update fields
-            Set obj.ReadyToDischarge = ReadyToDischarge
-            Set obj.Comments = Comments
-
-            // ✅ Save changes
-            Set sc = obj.%Save()
-            If $$$ISERR(sc) {
-                Return $$$ERROR($$$GeneralError, "Error saving patient status: "_$System.Status.GetErrorText(sc))
-            }
-
-            Return $$$OK  // Success
-        } Else {
-            Return $$$ERROR($$$GeneralError, "Patient not found with IC: "_PatientIC)
+        
+        Set resultSet = statement.%Execute()
+        
+        While resultSet.%Next() {
+            Set patientObj = ##class(%DynamicObject).%New()
+            
+            Do patientObj.%Set("patientID", resultSet.%Get("PatientID"))
+            Do patientObj.%Set("staff", resultSet.%Get("Staff"))
+            Do patientObj.%Set("admissionDate", resultSet.%Get("AdmissionDate"))
+            Do patientObj.%Set("patientName", resultSet.%Get("PatientName"))
+            Do patientObj.%Set("patientIC", resultSet.%Get("PatientIC"))
+            Do patientObj.%Set("sex", resultSet.%Get("Sex"))
+            Do patientObj.%Set("ambulation", resultSet.%Get("Ambulation"))
+            Do patientObj.%Set("walkingAids", resultSet.%Get("WalkingAids"))
+            Do patientObj.%Set("cognitiveConditions", resultSet.%Get("CognitiveConditions"))
+            Do patientObj.%Set("mentalHealthConditions", resultSet.%Get("MentalHealthConditions"))
+            Do patientObj.%Set("documentsNeeded", resultSet.%Get("DocumentsNeeded"))
+            
+            Do resultArray.%Push(patientObj)
         }
     } Catch ex {
-        Return $$$ERROR($$$GeneralError, "Error updating patient status: "_ex.DisplayString())
+        Set errorObj = ##class(%DynamicObject).%New()
+        Do errorObj.%Set("error", "Error retrieving patients: "_ex.DisplayString())
+        Return errorObj.%ToJSON()
     }
+    
+    Return resultArray.%ToJSON()
 }
 
 Storage Default
