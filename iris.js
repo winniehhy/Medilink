@@ -1,5 +1,7 @@
 const iris = require("./backend/intersystems-iris-native");
 const bcrypt = require('./backend/node_modules/bcrypt');
+const vectorService = require('./backend/services/vectorService');
+
 
 let connection;
 let db;
@@ -367,6 +369,21 @@ async function insertPatientData(
             mentalHealthConditions, 
             documentsNeeded
         );
+
+        // After saving to IRIS, index in vector DB
+        console.log("✅ Saved to IRIS, now indexing for vector search");
+        const patient = {
+            patientName,
+            patientIc,
+            sex,
+            ambulation,
+            walkingAids,
+            cognitiveConditions,
+            mentalHealthConditions,
+            documentsNeeded
+        };
+        
+        await vectorService.indexPatient(patient);
 
         console.log(`✅ Successfully inserted patient: ${patientName}`);
         return true;

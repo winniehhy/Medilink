@@ -6,6 +6,7 @@ const { insertHospitalData, insertNursingHomeData, validatePassword,validateNurs
 const path = require("path");
 const cors = require('./backend/node_modules/cors');
 const bcrypt = require("./backend/node_modules/bcryptjs");
+const vectorService = require('./backend/services/vectorService');
 
 // Initialize Express app and middleware
 const app = express();
@@ -464,6 +465,49 @@ app.get("/api/patients", async (req, res) => {
 });
 
 
+/*--------------------------------------- VECTOR CONNECTION ------------------------------------------------------ */
+
+app.get("/api/semantic-search", async (req, res) => {
+  try {
+    const { query, limit = 10 } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({ 
+        success: false, 
+        error: "Search query is required" 
+      });
+    }
+    
+    console.log(`🔍 Performing semantic search for: "${query}"`);
+    
+    // Get patient ICs from vector search
+    const patientICs = await vectorService.searchSimilarPatients(query, parseInt(limit));
+    
+    // Get full patient details for each IC
+    const patients = [];
+    for (const ic of patientICs) {
+      const patient = await getPatientData(ic);
+      if (patient) {
+        patients.push(patient);
+      }
+    }
+    
+    console.log(`✅ Found ${patients.length} matching patients`);
+    
+    return res.json({
+      success: true,
+      count: patients.length,
+      data: patients
+    });
+  } catch (error) {
+    console.error("❌ Error in semantic search:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Search error: " + error.message 
+    });
+  }
+});
+
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
 // Check Database Connection
@@ -478,4 +522,17 @@ app.get("/api/check-connection", (req, res) => {
 
 // Start Server
 const PORT = 4000;
+
+// Initialize vector search
+(async function() {
+  try {
+    console.log("🔄 Initializing vector search database...");
+    await vectorService.initializeIndex();
+    console.log("✅ Vector search database initialized");
+  } catch (error) {
+    console.error("❌ Failed to initialize vector search:", error);
+  }
+})();
+
+
 app.listen(PORT, () => console.log(`🚀 REST API running on http://localhost:${PORT}`));

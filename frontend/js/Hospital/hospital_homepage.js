@@ -3,6 +3,11 @@ function loadPatients() {
   fetch('http://localhost:4000/api/patients')
     .then(response => response.json())
     .then(data => {
+
+      //debug
+      console.log("API Response:", data);
+      console.log("First patient sample:", data.data ? data.data[0] : null);
+
       if (data.success) {
         displayPatients(data.data);
       } else {
@@ -120,17 +125,84 @@ function markReadyForDischarge(patientIc, readyStatus) {
   });
 }
 
+
+function unifiedSearch() {
+  const searchValue = document.getElementById("unifiedSearchInput").value.trim();
+  
+  if (!searchValue) {
+    // If search is empty, reload all patients
+    loadPatients();
+    return;
+  }
+  
+  // Show loading indicator
+  document.getElementById("patientList").innerHTML = 
+    "<div class='loading'>Searching...</div>";
+  
+  // Detect if this is likely an IC search or a semantic search
+  const isLikelyIC = /^[0-9-]+$/.test(searchValue) || // Only digits and hyphens
+                     searchValue.length <= 16;        // Assuming ICs are typically shorter
+  
+  if (isLikelyIC) {
+    // Perform IC-based search
+    console.log("Detected IC search:", searchValue);
+    
+    fetch(`http://localhost:4000/api/get-patient?ic=${encodeURIComponent(searchValue)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Display the single patient
+          displayPatients([data.patient]);
+        } else {
+          // If not found by IC, fall back to semantic search
+          console.log("Patient not found by IC, trying semantic search");
+          performSemanticSearch(searchValue);
+        }
+      })
+      .catch(error => {
+        console.error("Error searching patient:", error);
+        document.getElementById("patientList").innerHTML = 
+          `<div class="error-message">Search error: ${error.message || "Unknown error"}</div>`;
+      });
+  } else {
+    // Perform semantic search
+    console.log("Detected semantic search:", searchValue);
+    performSemanticSearch(searchValue);
+  }
+}
+
+// Helper function to perform semantic search
+function performSemanticSearch(query) {
+  fetch(`http://localhost:4000/api/semantic-search?query=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        displayPatients(data.data);
+      } else {
+        document.getElementById("patientList").innerHTML = 
+          `<div class='error-message'>${data.error || "Search failed"}</div>`;
+      }
+    })
+    .catch(error => {
+      console.error("Error with semantic search:", error);
+      document.getElementById("patientList").innerHTML = 
+        `<div class="error-message">Search error: ${error.message}</div>`;
+    });
+}
+
+
+
 // Add event listeners when the page loads
 document.addEventListener('DOMContentLoaded', function() {
   // Add event listener for search button
-  document.getElementById("searchButton").addEventListener("click", searchPatient);
+  document.getElementById("unifiedSearchButton").addEventListener("click", unifiedSearch);
   
-  // Add event listener for search input (press Enter)
-  document.getElementById("searchInput").addEventListener("keypress", function(event) {
+  document.getElementById("unifiedSearchInput").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-      searchPatient();
+      unifiedSearch();
     }
   });
+  
   
   // Load initial patient data
   loadPatients();
