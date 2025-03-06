@@ -106,32 +106,32 @@ h2 {
 }
 /* Section progress bar */
 .section-progress {
-	width: 90%;
-	height: 8vh;
-	background-color: #a0d6d6;
-	border-radius: 25px;
-	overflow: hidden;
-	margin-bottom: 30px;
-	display: flex;
-	flex-direction: row;
+    width: 1000px; /* Set a fixed width */
+    height: 70px; /* Set a fixed height */
+    background-color: #a0d6d6;
+    border-radius: 25px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: row;
 }
 
 .section-progress-fill {
-    background-color: #a0d6d6; /* Light green */
-    overflow: hidden;
-    flex-grow: 1;
+    background-color: #a0d6d6;
+    flex: 1; 
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 2vh;
+    font-size: 16px; 
     padding: 0 10px;
     text-align: center;
     transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
     word-wrap: break-word;
 }
+
 
 .section-progress-fill.active-section {
     background-color: #34a69f; /* Brighter green */
