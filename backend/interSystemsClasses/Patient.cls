@@ -33,6 +33,11 @@ Property DocumentsNeeded As %String(MAXLEN = 1000);
 
 // Documents needed
 
+Property ReadyToDischarge As %Boolean [ InitialExpression = 0 ];
+
+/// Comments about discharge status
+Property Comments As %String(MAXLEN = 1000);
+
 // Define a unique index on PatientID
 
 Index PatientIDIndex On PatientID [ Unique ];
@@ -119,6 +124,9 @@ ClassMethod GetPatientData(ic As %String) As %String
             Do result.%Set("cognitiveConditions", resultSet.%Get("CognitiveConditions"))
             Do result.%Set("mentalHealthConditions", resultSet.%Get("MentalHealthConditions"))
             Do result.%Set("documentsNeeded", resultSet.%Get("DocumentsNeeded"))
+
+            Do result.%Set("readyToDischarge", resultSet.%Get("ReadyToDischarge"))
+            Do result.%Set("comments", resultSet.%Get("Comments"))
         } Else {
             Do result.%Set("error", "Patient not found")
         }
@@ -129,7 +137,7 @@ ClassMethod GetPatientData(ic As %String) As %String
     Quit result.%ToJSON()
 }
 
-/// Update patient information in the database
+/// Update patient information in the database 
 ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
 {
     Try {
@@ -188,6 +196,9 @@ ClassMethod GetAllPatients() As %String
             Do patientObj.%Set("cognitiveConditions", resultSet.%Get("CognitiveConditions"))
             Do patientObj.%Set("mentalHealthConditions", resultSet.%Get("MentalHealthConditions"))
             Do patientObj.%Set("documentsNeeded", resultSet.%Get("DocumentsNeeded"))
+
+            Do patientObj.%Set("readyToDischarge", resultSet.%Get("ReadyToDischarge"))
+            Do patientObj.%Set("comments", resultSet.%Get("Comments"))
             
             Do resultArray.%Push(patientObj)
         }
@@ -198,6 +209,53 @@ ClassMethod GetAllPatients() As %String
     }
     
     Return resultArray.%ToJSON()
+}
+
+// for hospital to store patient ready to discharge or not
+
+/// Update patient discharge status
+/// Update patient discharge status
+ClassMethod UpdatePatientStatus(patientIC As %String, readyToDischarge As %Boolean, comments As %String) As %Status
+{
+    Try {
+        // Query to find the patient by IC
+        Set query = "SELECT %ID FROM Medilink.Patient WHERE PatientIC = ?"
+        Set statement = ##class(%SQL.Statement).%New()
+        Set status = statement.%Prepare(query)
+        
+        If $$$ISERR(status) {
+            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
+        }
+        
+        Set resultSet = statement.%Execute(patientIC)
+        
+        If resultSet.%Next() {
+            // Get the ID of the patient
+            Set id = resultSet.%Get("%ID")
+            
+            // Open the patient object
+            Set obj = ##class(Medilink.Patient).%OpenId(id)
+            
+            If obj '= "" {
+                // Update discharge status
+                Set obj.ReadyToDischarge = readyToDischarge
+                Set obj.Comments = comments
+                
+                // Save changes
+                Set sc = obj.%Save()
+                If $$$ISERR(sc) {
+                    Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
+                }
+                Return $$$OK
+            } Else {
+                Return $$$ERROR($$$GeneralError, "Patient object not found")
+            }
+        } Else {
+            Return $$$ERROR($$$GeneralError, "Patient with IC "_patientIC_" not found")
+        }
+    } Catch ex {
+        Return $$$ERROR($$$GeneralError, "Error updating patient status: "_ex.DisplayString())
+    }
 }
 
 Storage Default
@@ -241,6 +299,12 @@ Storage Default
 </Value>
 <Value name="5">
 <Value>DocumentsNeeded</Value>
+</Value>
+<Value name="6">
+<Value>ReadyToDischarge</Value>
+</Value>
+<Value name="7">
+<Value>Comments</Value>
 </Value>
 </Data>
 <DataLocation>^Medilink.PatientD</DataLocation>
