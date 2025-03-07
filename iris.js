@@ -354,6 +354,11 @@ function updatePatientData(patientData) {
 function updatePatientStatus(patientIC, readyToDischarge, comments) {
     return new Promise((resolve, reject) => {
         const db = connectToDB();
+
+        console.log("updatePatientStatus->PatientIC: ", patientIC);
+        console.log("updatePatientStatus->ReadyToDischarge: ", readyToDischarge);
+        console.log("updatePatientStatus->Comments: ", comments);
+
         if (!db) {
             console.error("❌ Database connection failed");
             return reject(new Error("Database connection failed"));
@@ -361,14 +366,27 @@ function updatePatientStatus(patientIC, readyToDischarge, comments) {
 
         try {
             // Convert inputs to proper types
+
+            console.log("updatePatientStatus->PatientIC: ", patientIC);
+            console.log("updatePatientStatus->ReadyToDischarge: ", readyToDischarge);
+            console.log("updatePatientStatus->Comments: ", comments);
             const parsedIC = String(patientIC).trim();
             
             // Make sure readyToDischarge is a proper numeric 1 or 0
-            const dischargeValue = readyToDischarge ? 1 : 0;
+            let dischargeValue = 0
+
+            if (readyToDischarge == true)
+                dischargeValue = 1;
+            else if (readyToDischarge == false)
+                dischargeValue = 0;
+
+            // const dischargeValue = readyToDischarge ? 1 : 0;
             
+            console.log("updatePatientStatus->DischargeValue: ", dischargeValue);
             const commentValue = comments ? String(comments).trim() : "N/A";
             
             console.log(`🔄 Updating status for patient ${parsedIC}:`, {
+                IC : parsedIC,
                 readyToDischarge: dischargeValue,
                 comments: commentValue
             });

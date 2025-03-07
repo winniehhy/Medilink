@@ -413,10 +413,16 @@ app.post("/api/update-patient", async (req, res) => {
 const { updatePatientStatus } = require("./iris");
 
 app.post("/api/update-patient-status", async (req, res) => {
-  const { patientIC, ic, readyToDischarge, comments } = req.body;
+  const { patientIC, readyToDischarge, comments } = req.body;
   
   // Use whichever parameter is provided
-  const patientIdentifier = patientIC || ic;
+  const patientIdentifier = patientIC;
+
+  console.log(req.body);
+  console.log("  patientIdentifier:", patientIdentifier);
+  console.log("  patientIC:", patientIC);
+  console.log("  readyToDischarge:", readyToDischarge);
+  console.log("  comments:", comments);
 
   if (!patientIdentifier) {
       return res.status(400).json({ success: false, error: "Missing patient identifier" });
@@ -426,7 +432,7 @@ app.post("/api/update-patient-status", async (req, res) => {
       const success = await updatePatientStatus(patientIdentifier, readyToDischarge, comments);
       if (success) {
           // If this patient is in the current session, update the session data too
-          if (req.session.patientData && req.session.patientData.patientIc === patientIdentifier) {
+          if (req.session.patientData && req.session.patientData.patientIC === patientIdentifier) {
               console.log("Updating session data with new discharge status");
               req.session.patientData.readyToDischarge = readyToDischarge ? 1 : 0;
               req.session.patientData.comments = comments || "";

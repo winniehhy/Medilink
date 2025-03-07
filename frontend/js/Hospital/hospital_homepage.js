@@ -78,7 +78,7 @@ function displayPatients(patients) {
   
     if (confirm(confirmMessage)) {
     // If confirmed, proceed to the update page
-      window.location.href = `../Hospital/hospital_update_patient.html?ic=${encodeURIComponent(patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
+      window.location.href = `../Hospital/hospital_update_patient.html?ic=${encodeURIComponent(patient.patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
     }
 
     });

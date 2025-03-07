@@ -176,9 +176,9 @@ ClassMethod GetAllPatients() As %String
         Set statement = ##class(%SQL.Statement).%New()
         Set status = statement.%Prepare(query)
         
-        If $$$ISERR(status) {
-            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
-        }
+        #; If $$$ISERR(status) {
+        #;     Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
+        #; }
         
         Set resultSet = statement.%Execute()
         
@@ -222,21 +222,26 @@ ClassMethod UpdatePatientStatus(patientIC As %String, readyToDischarge As %Boole
         Set query = "SELECT %ID FROM Medilink.Patient WHERE PatientIC = ?"
         Set statement = ##class(%SQL.Statement).%New()
         Set status = statement.%Prepare(query)
-        
         If $$$ISERR(status) {
-            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
+            Return $$$ERROR($$$GeneralError, "Error preparing SQL statement: "_$System.Status.GetErrorText(status))
         }
-        
+
+        DO ##class(%SYS.System).WriteToConsoleLog("Searching for PatientIC: "_patientIC)
+
         Set resultSet = statement.%Execute(patientIC)
         
         If resultSet.%Next() {
             // Get the ID of the patient
-            Set id = resultSet.%Get("%ID")
+            Set id = resultSet.%Get("ID")  // Explicitly get the ID column
+            DO ##class(%SYS.System).WriteToConsoleLog("Patient ID Found: "_id)
             
             // Open the patient object
-            Set obj = ##class(Medilink.Patient).%OpenId(id)
-            
-            If obj '= "" {
+            Set obj = ##class(Medilink.Patient).%OpenId(id, 1)  // Open with concurrency control
+            If obj '= $$$NULLOREF {
+                
+                // Begin transaction for safety
+                TSTART
+                
                 // Update discharge status
                 Set obj.ReadyToDischarge = readyToDischarge
                 Set obj.Comments = comments
@@ -244,11 +249,15 @@ ClassMethod UpdatePatientStatus(patientIC As %String, readyToDischarge As %Boole
                 // Save changes
                 Set sc = obj.%Save()
                 If $$$ISERR(sc) {
+                    TROLLBACK
                     Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
                 }
+                
+                // Commit transaction
+                TCOMMIT
                 Return $$$OK
             } Else {
-                Return $$$ERROR($$$GeneralError, "Patient object not found")
+                Return $$$ERROR($$$GeneralError, "Patient object not found for ID "_id)
             }
         } Else {
             Return $$$ERROR($$$GeneralError, "Patient with IC "_patientIC_" not found")
