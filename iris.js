@@ -429,23 +429,62 @@ function updatePatientData(patientData) {
 
 /*---------------------------------------- UPDATE PATIENT STATUS -------------------------------------------- */
 function updatePatientStatus(patientIC, readyToDischarge, comments) {
-    const db = connectToDB();
-    if (!db) return false;
+    return new Promise((resolve, reject) => {
+        const db = connectToDB();
+        if (!db) {
+            console.error("❌ Database connection failed");
+            return reject(new Error("Database connection failed"));
+        }
 
-    try {
-        db.classMethodVoid(
-            "Medilink.Patient", 
-            "UpdatePatientStatus",
-            patientIC,
-            readyToDischarge, // Boolean value (true/false)
-            comments // String
-        );
-        console.log(`✅ Patient status updated for ${patientIC}: Discharge = ${readyToDischarge}, Comments = "${comments}"`);
-        return true;
-    } catch (error) {
-        console.error("❌ Error updating patient status:", error);
-        return false;
-    }
+        try {
+            // Convert inputs to proper types
+            const parsedIC = String(patientIC).trim();
+            
+            // Make sure readyToDischarge is a proper numeric 1 or 0
+            const dischargeValue = readyToDischarge ? 1 : 0;
+            
+            const commentValue = comments ? String(comments).trim() : "N/A";
+            
+            console.log(`🔄 Updating status for patient ${parsedIC}:`, {
+                readyToDischarge: dischargeValue,
+                comments: commentValue
+            });
+            
+            // Add try-catch specifically around the database call
+            try {
+                db.classMethodVoid(
+                    "Medilink.Patient", 
+                    "UpdatePatientStatus",
+                    parsedIC,
+                    dischargeValue,
+                    commentValue
+                );
+                
+                console.log(`✅ Patient status updated for ${parsedIC}: Discharge = ${dischargeValue}, Comments = "${commentValue}"`);
+                
+                // After updating, fetch the patient to verify change
+                const updatedPatient = db.classMethodValue(
+                    "Medilink.Patient",
+                    "GetPatientData",
+                    parsedIC
+                );
+                
+                console.log(`📊 Updated patient data:`, updatedPatient);
+                resolve(true);
+            } catch (dbError) {
+                console.error(`❌ Database error updating patient ${parsedIC}:`, dbError);
+                reject(dbError);
+            }
+        } catch (error) {
+            console.error("❌ Error in updatePatientStatus:", error);
+            reject(error);
+        } finally {
+            // Close the database connection
+            if (db && typeof db.close === 'function') {
+                db.close();
+            }
+        }
+    });
 }
 
 /*------------------------------------- HOSPITAL ----------------------------------------*/

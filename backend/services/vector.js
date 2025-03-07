@@ -2,7 +2,7 @@ const { CohereClient } = require('cohere-ai');
 
 // Initialize with your API key
 const cohere = new CohereClient({
-  token: ''
+  token: 'IHw2zAiJ4OeYSOT0df2ppIWBgaw3UChljvzHMywe'
 });
 
 // Function to generate embeddings for patient data
@@ -10,7 +10,8 @@ async function generatePatientEmbeddings(patients) {
   // Extract relevant text from each patient to create embeddings
   const patientTexts = patients.map(patient => {
     return `Patient name: ${patient.patientName || ''}. 
-            Patient ID: ${patient.patientID || ''}. 
+            Patient ID: ${patient.patientID || ''}.
+            Patient IC: ${patient.patientIC || ''}.
             Ambulation: ${patient.ambulation || ''}. 
             Walking aids: ${patient.walkingAids || ''}. 
             Cognitive conditions: ${patient.cognitiveConditions || ''}. 

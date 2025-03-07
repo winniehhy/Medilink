@@ -52,7 +52,35 @@ function displayPatients(patients) {
     // Add event listener to the button
     const button = card.querySelector('.patient-button');
     button.addEventListener('click', function() {
-      markReadyForDischarge(this.dataset.id, this.dataset.status !== 'true');
+      const patientIC = this.dataset.id;
+      const currentStatus = this.dataset.status === 'true';
+
+      //debug
+     // Log all the patient data when the button is clicked
+    console.log('🏥 Ready to Discharge button clicked');
+    console.log('=== PATIENT DATA ===');
+    console.log('Patient ID:', patient.patientID);
+    console.log('Patient IC:', patient.patientIC);
+    console.log('Patient Name:', patient.patientName);
+    console.log('Staff:', patient.staff);
+    console.log('Admission Date:', patient.admissionDate);
+    console.log('Sex:', patient.sex);
+    console.log('Ambulation:', patient.ambulation);
+    console.log('Walking Aids:', patient.walkingAids);
+    console.log('Cognitive Conditions:', patient.cognitiveConditions);
+    console.log('Mental Health Conditions:', patient.mentalHealthConditions);
+    console.log('Documents Needed:', patient.documentsNeeded);
+    console.log('Current Discharge Status:', currentStatus ? 'Ready for discharge' : 'Not ready for discharge');
+    console.log('==================');
+  
+     // Show confirmation with patient details
+    const confirmMessage = `Update discharge status for patient:\n\nName: ${patient.patientName}\nIC: ${patient.patientIC}`;
+  
+    if (confirm(confirmMessage)) {
+    // If confirmed, proceed to the update page
+      window.location.href = `../Hospital/hospital_update_patient.html?ic=${encodeURIComponent(patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
+    }
+
     });
     
     grid.appendChild(card);

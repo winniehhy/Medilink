@@ -417,22 +417,32 @@ app.post("/api/update-patient", async (req, res) => {
 const { updatePatientStatus } = require("./iris");
 
 app.post("/api/update-patient-status", async (req, res) => {
-    const { ic, readyToDischarge, comments } = req.body;
+  const { patientIC, ic, readyToDischarge, comments } = req.body;
+  
+  // Use whichever parameter is provided
+  const patientIdentifier = patientIC || ic;
 
-    if (!ic) {
-        return res.status(400).json({ success: false, error: "Missing IC" });
-    }
+  if (!patientIdentifier) {
+      return res.status(400).json({ success: false, error: "Missing patient identifier" });
+  }
 
-    try {
-        const success = await updatePatientStatus(ic, readyToDischarge, comments);
-        if (success) {
-            return res.json({ success: true, message: "Patient status updated successfully!" });
-        }
-        res.status(500).json({ success: false, error: "Update failed" });
-    } catch (error) {
-        console.error("❌ Error updating patient status:", error);
-        res.status(500).json({ success: false, error: "Server error" });
-    }
+  try {
+      const success = await updatePatientStatus(patientIdentifier, readyToDischarge, comments);
+      if (success) {
+          // If this patient is in the current session, update the session data too
+          if (req.session.patientData && req.session.patientData.patientIc === patientIdentifier) {
+              console.log("Updating session data with new discharge status");
+              req.session.patientData.readyToDischarge = readyToDischarge ? 1 : 0;
+              req.session.patientData.comments = comments || "";
+          }
+          
+          return res.json({ success: true, message: "Patient status updated successfully!" });
+      }
+      res.status(500).json({ success: false, error: "Update failed" });
+  } catch (error) {
+      console.error("❌ Error updating patient status:", error);
+      res.status(500).json({ success: false, error: error.message || "Server error" });
+  }
 });
 
 
