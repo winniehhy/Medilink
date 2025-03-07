@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (hospitalResponse.ok) {
                 // Successful hospital login
-                window.location.href = 'Pages/Hospital/hospital_homepage.html';
+                window.location.href = 'hospital_homepage';
                 return;
             }
 
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (nursingHomeResponse.ok) {
                 // Successful nursing home login
-                window.location.href = 'Pages/Nursing/nursing_homepage.html';
+                window.location.href = 'nursing_homepage';
                 return;
             }
 
