@@ -59,8 +59,8 @@ function displayPatients(patients) {
   });
 }
 
-// Function to search for a patient using IC
-function searchPatient() {
+/*------- vector-------------- */
+function performVectorSearch() {
   const searchValue = document.getElementById("searchInput").value.trim();
   
   if (!searchValue) {
@@ -71,25 +71,84 @@ function searchPatient() {
   
   // Show loading indicator
   document.getElementById("patientList").innerHTML = 
-    "<div class='loading'>Searching...</div>";
+    "<div class='loading'>Searching for similar patients...</div>";
   
-  // Fetch patient data from backend
-  fetch(`http://localhost:4000/api/get-patient?ic=${encodeURIComponent(searchValue)}`)
+  // Use the vector search endpoint
+  fetch(`http://localhost:4000/api/vector-search?query=${encodeURIComponent(searchValue)}`)
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        // Display the single patient
-        displayPatients([data.patient]);
+        if (data.data && data.data.length > 0) {
+          // Display the semantic search results
+          displayPatients(data.data);
+          
+          // Add a header to indicate these are semantic search results
+          const searchHeader = document.createElement("div");
+          searchHeader.className = "search-results-header";
+          searchHeader.innerHTML = `<h3>Semantic search results for: "${searchValue}"</h3>`;
+          document.getElementById("patientList").prepend(searchHeader);
+        } else {
+          document.getElementById("patientList").innerHTML = 
+            "<div class='no-results'>No similar patients found. Try a different search term.</div>";
+        }
       } else {
         document.getElementById("patientList").innerHTML = 
-          "<div class='no-results'>Patient not found. Please check the IC number.</div>";
+          `<div class="error-message">${data.error || "Search failed"}</div>`;
       }
     })
     .catch(error => {
-      console.error("Error searching patient:", error);
+      console.error("Error during vector search:", error);
       document.getElementById("patientList").innerHTML = 
         `<div class="error-message">Search error: ${error.message || "Unknown error"}</div>`;
     });
+}
+
+
+// Function to search for a patient using IC
+function searchPatient() {
+  const searchValue = document.getElementById("searchInput").value.trim();
+  console.log("Search value:", searchValue);
+  if (!searchValue) {
+    console.log("Empty search, loading all patients");
+    // If search is empty, reload all patients
+    loadPatients();
+    return;
+  }
+  
+  // Check if it looks like an IC number (simple heuristic)
+  const isIC = /^\d{5,12}$/.test(searchValue) || // All digits
+              /^[A-Z]\d{7}[A-Z]$/.test(searchValue);// Format like S1234567Z
+  console.log("Is IC number?", isIC);
+  
+  if (isIC) {
+    console.log("Doing IC search");
+    // Use traditional search for IC numbers
+    // Show loading indicator
+    document.getElementById("patientList").innerHTML = 
+      "<div class='loading'>Searching...</div>";
+    
+    // Fetch patient data from backend
+    fetch(`http://localhost:4000/api/get-patient?ic=${encodeURIComponent(searchValue)}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Display the single patient
+          displayPatients([data.patient]);
+        } else {
+          document.getElementById("patientList").innerHTML = 
+            "<div class='no-results'>Patient not found. Please check the IC number.</div>";
+        }
+      })
+      .catch(error => {
+        console.error("Error searching patient:", error);
+        document.getElementById("patientList").innerHTML = 
+          `<div class="error-message">Search error: ${error.message || "Unknown error"}</div>`;
+      });
+  } else {
+    // Use semantic search for non-IC queries like "walking-stick"
+    console.log("Doing vector search for:", searchValue);
+    performVectorSearch();
+  }
 }
 
 // Function to mark a patient as ready for discharge
@@ -119,6 +178,14 @@ function markReadyForDischarge(patientIc, readyStatus) {
     alert(`Failed to update patient status: ${error.message}`);
   });
 }
+
+
+
+
+
+
+
+
 
 // Add event listeners when the page loads
 document.addEventListener('DOMContentLoaded', function() {

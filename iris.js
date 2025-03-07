@@ -486,6 +486,66 @@ async function GetAllPatients() {
 }
 
 
+/*------------------------------------- Vector Search ----------------------------- */
+const { generatePatientEmbeddings, searchPatients } = require('./backend/services/vector');
+
+// Global cache for patient embeddings
+let patientEmbeddingsCache = [];
+
+// Function to update embeddings cache
+async function updatePatientEmbeddingsCache() {
+  try {
+    const patients = await GetAllPatients();
+    if (!patients || patients.length === 0) {
+      console.error('❌ No patients found to create embeddings');
+      return false;
+    }
+    patientEmbeddingsCache = await generatePatientEmbeddings(patients);
+    console.log(`✅ Updated embeddings cache for ${patients.length} patients`);
+    return true;
+  } catch (error) {
+    console.error('❌ Error updating embeddings cache:', error);
+    return false;
+  }
+}
+
+// Function to perform vector search on patients
+async function vectorSearchPatients(query, limit = 10) {
+  try {
+    // Check if embeddings cache needs to be initialized
+    if (patientEmbeddingsCache.length === 0) {
+      const success = await updatePatientEmbeddingsCache();
+      if (!success) {
+        return [];
+      }
+    }
+    
+    // Search patients based on query
+    const results = await searchPatients(query, patientEmbeddingsCache);
+    
+    // Get full patient data for top results
+    const topResults = results.slice(0, limit);
+    const patientICs = topResults.map(result => result.patientIC);
+    
+    // Get complete patient records
+    const patientRecords = [];
+    for (const ic of patientICs) {
+      const patient = await getPatientData(ic);
+      if (patient) {
+        // Add similarity score to patient record
+        const resultItem = topResults.find(r => r.patientIC === ic);
+        patient.similarityScore = resultItem.similarity;
+        patientRecords.push(patient);
+      }
+    }
+    
+    return patientRecords;
+  } catch (error) {
+    console.error('❌ Error performing vector search:', error);
+    return [];
+  }
+}
+
 
 
 /*---------------------------------------- EXPORTS -------------------------------------------- */
@@ -503,6 +563,8 @@ module.exports = {
     updatePatientData,
     updatePatientStatus,
 
-    GetAllPatients
+    GetAllPatients,
+    vectorSearchPatients,
+    updatePatientEmbeddingsCache
 
 };

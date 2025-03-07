@@ -464,6 +464,80 @@ app.get("/api/patients", async (req, res) => {
 });
 
 
+
+/*--------------------------------------- Vector Search --------------------------------------------- */
+
+const { vectorSearchPatients, updatePatientEmbeddingsCache } = require('./iris');
+
+// Vector search endpoint
+app.get("/api/vector-search", async (req, res) => {
+  const { query } = req.query;
+  
+  if (!query) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Search query is required" 
+    });
+  }
+  
+  try {
+    console.log(`🔍 Performing vector search for: "${query}"`);
+    const patients = await vectorSearchPatients(query);
+    
+    if (!patients || patients.length === 0) {
+      return res.json({ 
+        success: true, 
+        message: "No matching patients found", 
+        data: [] 
+      });
+    }
+    
+    console.log(`✅ Vector search found ${patients.length} matching patients`);
+    res.json({ 
+      success: true, 
+      count: patients.length, 
+      data: patients 
+    });
+  } catch (error) {
+    console.error("❌ Vector search error:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Vector search failed: " + error.message 
+    });
+  }
+});
+
+// Update embeddings cache endpoint (for admin/maintenance)
+app.post("/api/update-embeddings-cache", async (req, res) => {
+  try {
+    const success = await updatePatientEmbeddingsCache();
+    
+    if (success) {
+      res.json({ success: true, message: "Embeddings cache updated successfully" });
+    } else {
+      res.status(500).json({ success: false, error: "Failed to update embeddings cache" });
+    }
+  } catch (error) {
+    console.error("❌ Error updating embeddings cache:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Failed to update embeddings cache: " + error.message 
+    });
+  }
+});
+
+app.post("/api/reset-embeddings-cache", (req, res) => {
+  try {
+    // This will clear the cache, forcing it to be regenerated on next search
+    patientEmbeddingsCache = [];
+    console.log("🧹 Embeddings cache has been reset");
+    res.json({ success: true, message: "Embeddings cache reset successfully" });
+  } catch (error) {
+    console.error("❌ Error resetting cache:", error);
+    res.status(500).json({ success: false, error: "Failed to reset cache" });
+  }
+});
+
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
 // Check Database Connection
