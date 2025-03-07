@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(responseData.message);
     
                 if (responseData.message.includes("success")) {
-                    window.location.href = "nursing_homepage";
+                    window.location.href = "nursing_homepage.html";
                 }
             })
             .catch(error => console.error("❌ Error in fetch:", error));
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert(responseData.message);
 
             if (responseData.message.includes("success")) {
-                window.location.href = "nursing_homepage";
+                window.location.href = "nursing_homepage.html";
             }
         })
         .catch(error => console.error("❌ Fetch Error:", error));
