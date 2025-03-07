@@ -78,36 +78,6 @@ ClassMethod InsertNursingHomeData(pUsername As %String, pPassword As %String, pN
   Quit tSC
 }
 
-// ClassMethod ValidateLogin(pUsername As %String, pPassword As %String) As %Status
-// {
-//     Set tSC = $$$OK
-//     Try {
-//         Set tSQL = "SELECT PasswordHash FROM Medilink.NursingHomeAccount WHERE Username = ?"
-//         Set tStatement = ##class(%SQL.Statement).%New()
-//         Set tSC = tStatement.%Prepare(tSQL)
-//         If $$$ISERR(tSC) Quit
-        
-//         Set tResult = tStatement.%Execute(pUsername)
-        
-//         If 'tResult.%Next() {
-//             Set tSC = $$$ERROR($$$GeneralError, "User not found")
-//             Quit
-//         }
-        
-//         Set tStoredHash = tResult.PasswordHash
-        
-//         If (tStoredHash '= pPassword) {
-//             Set tSC = $$$ERROR($$$GeneralError, "Invalid password")
-//             Quit
-//         }
-        
-//     } Catch ex {
-//         Set tSC = ex.AsStatus()
-//     }
-    
-//     Quit tSC
-// }
-
 ClassMethod GetHashedPasswordByUsername(pUsername As %String) As %String
 {
         Set tStatement = ##class(%SQL.Statement).%New()

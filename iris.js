@@ -59,83 +59,6 @@ function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddr
     });
 }
 
-// async function validatePassword(inputUsername, inputPassword, requestParty) {
-//     const db = connectToDB();
-//     if (!db) {
-//         console.error("Database connection failed during login");
-//         return false;
-//     }
-
-//     try {
-//         let retrievedHash = "";
-
-//         if (requestParty === "hospital") {
-//             retrievedHash = await db.classMethodValue(
-//                 "Medilink.HospitalAccount",
-//                 "GetHashedPasswordByUsername",
-//                 inputUsername
-//             );
-//         }
-
-//         if (!retrievedHash) {
-//             console.error("Invalid username or password");
-//             return false;
-//         }
-
-//         return await bcrypt.compare(inputPassword, retrievedHash);
-//     } catch (error) {
-//         console.error("Error during password validation:", error);
-//         return false;
-//     }
-// }
-
-// function validateHospitalLogin(username, password) {
-//     console.log("Attempting to validate login for:", username); // Add logging
-    
-//     const db = connectToDB();
-//     if (!db) {
-//         console.error("Database connection failed during login"); // Add logging
-//         return { success: false, error: "Database connection failed" };
-//     }
-
-//     try {
-//         // Convert parameters to strings
-//         const args = [
-//             JSON.stringify(username),
-//             JSON.stringify(password)
-//         ];
-
-//         console.log("Calling IRIS GetHashedPasswordByUsername method"); // Add logging
-        
-//         // Call the ValidateLogin method from your IRIS class
-//         const result = db.classMethodValue(
-//             "Medilink.HospitalAccount",
-//             "ValidateLogin",
-//             ...args
-//         );
-
-//         console.log("IRIS ValidateLogin result:", result); // Add logging
-
-//         if (result === "1" || result === 1) {
-//             return { 
-//                 success: true,
-//                 message: "Login successful"
-//             };
-//         } else {
-//             return { 
-//                 success: false,
-//                 error: "Invalid username or password"
-//             };
-//         }
-//     } catch (error) {
-//         console.error("Login validation error:", error); // Add logging
-//         return { 
-//             success: false, 
-//             error: `Login validation failed: ${error.message}`
-//         };
-//     }
-// }
-
 /*---------------------------------------- NURSING HOME-------------------------------------------- */
 
 function insertNursingHomeData(finalData) {
@@ -235,44 +158,6 @@ async function validatePassword(inputUsername, inputPassword, requestParty) {
     }
 }
 
-// function validateNursingHomeLogin(username, password) {
-//     console.log("Attempting to validate login for:", username);
-    
-//     const db = connectToDB();
-//     if (!db) {
-//         console.error("Database connection failed during login");
-//         return { success: false, error: "Database connection failed" };
-//     }
-
-//     try {
-//         // Call the GetNursingHomeAccountByUsername method with the connection
-//         const accountDataJson = db.classMethodValue(
-//             "Medilink.NursingHomeAccount",
-//             "GetNursingHomeAccountByUsername",
-//             username
-//         );
-      
-//         // Parse the JSON response
-//         const accountData = JSON.parse(accountDataJson);
-      
-//         // Check if we got valid data back
-//         if (!accountData || accountData.error) {
-//             return { 
-//                 success: false, 
-//                 error: accountData.error || "User not found" 
-//             };
-//         }
-      
-//         // Return the account data
-//         return { success: true, accountData };
-//     } catch (error) {
-//         console.error("Error validating nursing home login:", error);
-//         return { 
-//             success: false, 
-//             error: "Internal server error" 
-//         };
-//     }
-// }  
 
 /*------------------------------------------GET INFORMATION ------------------------------------- */
 

@@ -220,63 +220,6 @@ app.post("/api/nursinghome-signup", async (req, res) => {
 /*--------------------------------------- LOGIN ROUTES ------------------------------------------------------- */
 
 // Hospital Login Route
-// app.post("/api/hospital-login", async (req, res) => {
-//   console.log("Received login request:", req.body);
-
-//   const { username, password } = req.body;
-  
-//   if (!username || !password) {
-//     console.log("Missing credentials");
-//     return res.status(400).json({ 
-//       error: "Please provide both username and password" 
-//     });
-//   }
-
-//   try {
-//     const isValid = await validatePassword(username, password, "hospital");
-//     if (isValid) {
-//       console.log("Login successful!");
-//       res.json({ message: "Login successful"});
-//     } else {
-//       console.log("Invalid username or password");
-//       res.status(401).json({ error: "Invalid username or password" });
-//     }
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ 
-//       error: "Internal server error. Please try again." 
-//     });
-//   }
-// });
-
-// app.post("/api/nursinghome-login", async (req, res) => {
-//   const { username, password } = req.body;
-  
-//   if (!username || !password) {
-//     console.log("Missing credentials");
-//     return res.status(400).json({ 
-//       error: "Please provide both username and password" 
-//     });
-//   }
-//   console.log("Attempting nursing home login for:", username);
-//   try {
-//     const isValid = await validateNursingHomePassword(username, password);
-//     if (isValid) {
-//       console.log("Login successful!");
-//       res.json({ message: "Login successful"});
-//     } else {
-//       console.log("Invalid username or password");
-//       res.status(401).json({ error: "Invalid username or password" });
-//     }
-//   } catch (error) {
-//     console.error("Login error:", error);
-//     res.status(500).json({ 
-//       error: "Internal server error. Please try again." 
-//     });
-//   }
-// });
-
-// Hospital Login Route
 app.post("/api/hospital-login", async (req, res) => {
   console.log("Received login request:", req.body);
 
