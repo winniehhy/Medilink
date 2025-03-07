@@ -26,11 +26,11 @@ app.use(session({
   cookie: { secure: false, httpOnly: true, maxAge: 86400000 } // 🔑 Ensure cookies persist
 }));
 
-app.use((req, res, next) => {
-  console.log("🔹 Session ID:", req.sessionID);
-  console.log("🔹 Session Data:", req.session);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log("🔹 Session ID:", req.sessionID);
+//   console.log("🔹 Session Data:", req.session);
+//   next();
+// });
 
 
 // Serve static files from "frontend" folder

@@ -107,9 +107,9 @@ ClassMethod GetPatientData(ic As %String) As %String
         Set statement = ##class(%SQL.Statement).%New()
         Set status = statement.%Prepare(query)
         
-        If $$$ISERR(status) {
-            Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
-        }
+        #; If $$$ISERR(status) {
+        #;     Throw ##class(%Exception.SQL).CreateFromSQLCODE(SQLCODE, $get(%msg))
+        #; }
         
         Set resultSet = statement.%Execute(ic)
         
@@ -138,12 +138,33 @@ ClassMethod GetPatientData(ic As %String) As %String
 }
 
 /// Update patient information in the database 
-ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staff As %String, AdmissionDate As %String, Sex As %String, Ambulation As %String, WalkingAids As %String, CognitiveConditions As %String, MentalHealthConditions As %String, DocumentsNeeded As %String) As %Status
+ClassMethod UpdatePatientData(
+    PatientName As %String, 
+    PatientIC As %String, 
+    Staff As %String, 
+    AdmissionDate As %String, 
+    Sex As %String, 
+    Ambulation As %String, 
+    WalkingAids As %String, 
+    CognitiveConditions As %String, 
+    MentalHealthConditions As %String, 
+    DocumentsNeeded As %String
+) As %Status
 {
+    DO ##class(%SYS.System).WriteToConsoleLog("Starting UpdatePatientData")
+
     Try {
-        Set obj = ##class(Medilink.Patient).%OpenId(PatientName _ "_" _ PatientIC)
+        // Find the patient by PatientIC
+        Set obj = ""
+        &sql(SELECT %ID INTO :patientID FROM Medilink.Patient WHERE PatientIC = :PatientIC)
         
+        If (SQLCODE = 0) {
+            Set obj = ##class(Medilink.Patient).%OpenId(patientID)
+        }
+
+        // Check if the patient was found
         If obj '= "" {
+            // Update patient data
             Set obj.Staff = Staff
             Set obj.AdmissionDate = AdmissionDate
             Set obj.Sex = Sex
@@ -153,16 +174,21 @@ ClassMethod UpdatePatientData(PatientName As %String, PatientIC As %String, Staf
             Set obj.MentalHealthConditions = MentalHealthConditions
             Set obj.DocumentsNeeded = DocumentsNeeded
 
+            // Save changes
             Set sc = obj.%Save()
             If $$$ISERR(sc) {
                 Return $$$ERROR($$$GeneralError, "Error saving patient data: "_$System.Status.GetErrorText(sc))
             }
-            Return $$$OK  // Correct way to return success
+
+            DO ##class(%SYS.System).WriteToConsoleLog("Patient data updated successfully")
+            Return $$$OK  // Success
         } Else {
-            Return $$$ERROR($$$GeneralError, "Patient not found")  // Correct way to return an error
+            DO ##class(%SYS.System).WriteToConsoleLog("Patient not found")
+            Return $$$ERROR($$$GeneralError, "Patient not found with IC: "_PatientIC)
         }
     } Catch ex {
-        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())  // Correct error handling
+        DO ##class(%SYS.System).WriteToConsoleLog("ERROR: "_ex.DisplayString())
+        Return $$$ERROR($$$GeneralError, "Error updating patient data: "_ex.DisplayString())
     }
 }
 
