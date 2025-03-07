@@ -23,6 +23,48 @@ Property Treatments As %String;
 
 Property SelectedTreatments As %String;
 
+ClassMethod GetNursingHomeAccounts() As %SQLQuery(CONTAINID=0,ROWSPEC="ID:%Integer, Username:%String, PasswordHash:%String, NursingHomeName:%String, NursingHomeAddress:%String, NursingHomePhone:%String, PartyResponsibility:%String, AvailableDays:%String, TimeSlotFrom:%String, TimeSlotTo:%String, Treatments:%String, SelectedTreatments:%String")
+{
+        RETURN ##class(%SQL.Statement).%ExecDirect(,"SELECT ID, Username, PasswordHash, NursingHomeName, NursingHomeAddress, NursingHomePhone, PartyResponsibility, AvailableDays, TimeSlotFrom, TimeSlotTo, Treatments, SelectedTreatments FROM Medilink.NursingHomeAccount")
+}
+
+ClassMethod GetAllNursing() As %String
+{
+        Set tStatement = ##class(%SQL.Statement).%New()
+        Do tStatement.%Prepare("SELECT ID, Username, PasswordHash, NursingHomeName, NursingHomeAddress, NursingHomePhone, PartyResponsibility, AvailableDays, TimeSlotFrom, TimeSlotTo, Treatments, SelectedTreatments FROM Medilink.NursingHomeAccount")
+        Set tResult = tStatement.%Execute()
+        
+        Set tJSONArray = "["
+
+        While tResult.%Next() {
+            Set tRecord = "{""ID"":"""_tResult.%Get("ID")_""","
+            Set tRecord = tRecord_"""Username"":"""_$$EscapeJSON(tResult.%Get("Username"))_"""}"
+            Set tRecord = tRecord_"""PasswordHash"":"""_$$EscapeJSON(tResult.%Get("PasswordHash"))_""","
+            Set tRecord = tRecord_"""NursingHomeName"":"""_$$EscapeJSON(tResult.%Get("NursingHomeName"))_""","
+            Set tRecord = tRecord_"""NursingHomeAddress"":"""_$$EscapeJSON(tResult.%Get("NursingHomeAddress"))_""","
+            Set tRecord = tRecord_"""NursingHomePhone"":"""_$$EscapeJSON(tResult.%Get("NursingHomePhone"))_""","
+            Set tRecord = tRecord_"""PartyResponsibility"":"""_$$EscapeJSON(tResult.%Get("PartyResponsibility"))_""","
+            Set tRecord = tRecord_"""AvailableDays"":"""_$$EscapeJSON(tResult.%Get("AvailableDays"))_""","
+            Set tRecord = tRecord_"""TimeSlotFrom"":"""_$$EscapeJSON(tResult.%Get("TimeSlotFrom"))_""","
+            Set tRecord = tRecord_"""TimeSlotTo"":"""_$$EscapeJSON(tResult.%Get("TimeSlotTo"))_""","
+            Set tRecord = tRecord_"""Treatments"":"""_$$EscapeJSON(tResult.%Get("Treatments"))_""","
+            Set tRecord = tRecord_"""SelectedTreatments"":"""_$$EscapeJSON(tResult.%Get("SelectedTreatments"))_""","
+            
+            
+            If tJSONArray'="[" Set tJSONArray = tJSONArray_","  // Add comma only after the first record
+            Set tJSONArray = tJSONArray_tRecord
+        }
+        
+        Set tJSONArray = tJSONArray_"]" // Close JSON array
+        Quit tJSONArray
+}
+
+ClassMethod EscapeJSON(value As %String) As %String
+{
+        // Escape double quotes and backslashes for valid JSON
+        Quit $Replace($Replace(value, "\", "\\"), """", "\""")
+}
+
 ClassMethod InsertNursingHomeData(pUsername As %String, pPassword As %String, pNursingHomeName As %String, pNursingHomeAddress As %String, pNursingHomePhone As %String, pPartyResponsibility As %String, pAvailableDays As %String, pTimeSlotFrom As %String, pTimeSlotTo As %String, pTreatments As %String, pSelectedTreatments As %String) As %Status
 {
   Set tSC = $$$OK
@@ -36,34 +78,17 @@ ClassMethod InsertNursingHomeData(pUsername As %String, pPassword As %String, pN
   Quit tSC
 }
 
-ClassMethod ValidateLogin(pUsername As %String, pPassword As %String) As %Status
+ClassMethod GetHashedPasswordByUsername(pUsername As %String) As %String
 {
-    Set tSC = $$$OK
-    Try {
-        Set tSQL = "SELECT PasswordHash FROM Medilink.NursingHomeAccount WHERE Username = ?"
         Set tStatement = ##class(%SQL.Statement).%New()
-        Set tSC = tStatement.%Prepare(tSQL)
-        If $$$ISERR(tSC) Quit
-        
+        Do tStatement.%Prepare("SELECT PasswordHash FROM Medilink.NursingHomeAccount WHERE Username = ?")
         Set tResult = tStatement.%Execute(pUsername)
         
-        If 'tResult.%Next() {
-            Set tSC = $$$ERROR($$$GeneralError, "User not found")
-            Quit
+        If tResult.%Next() {
+            Quit tResult.%Get("PasswordHash")
         }
         
-        Set tStoredHash = tResult.PasswordHash
-        
-        If (tStoredHash '= pPassword) {
-            Set tSC = $$$ERROR($$$GeneralError, "Invalid password")
-            Quit
-        }
-        
-    } Catch ex {
-        Set tSC = ex.AsStatus()
-    }
-    
-    Quit tSC
+        Quit ""
 }
 
 ClassMethod GetUsername(pUsername As %String) As %String

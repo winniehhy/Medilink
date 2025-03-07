@@ -59,83 +59,6 @@ function insertHospitalData(username, hashedPassword, hospitalName, hospitalAddr
     });
 }
 
-async function validatePassword(inputUsername, inputPassword, requestParty) {
-    const db = connectToDB();
-    if (!db) {
-        console.error("Database connection failed during login");
-        return false;
-    }
-
-    try {
-        let retrievedHash = "";
-
-        if (requestParty === "hospital") {
-            retrievedHash = await db.classMethodValue(
-                "Medilink.HospitalAccount",
-                "GetHashedPasswordByUsername",
-                inputUsername
-            );
-        }
-
-        if (!retrievedHash) {
-            console.error("Invalid username or password");
-            return false;
-        }
-
-        return await bcrypt.compare(inputPassword, retrievedHash);
-    } catch (error) {
-        console.error("Error during password validation:", error);
-        return false;
-    }
-}
-
-// function validateHospitalLogin(username, password) {
-//     console.log("Attempting to validate login for:", username); // Add logging
-    
-//     const db = connectToDB();
-//     if (!db) {
-//         console.error("Database connection failed during login"); // Add logging
-//         return { success: false, error: "Database connection failed" };
-//     }
-
-//     try {
-//         // Convert parameters to strings
-//         const args = [
-//             JSON.stringify(username),
-//             JSON.stringify(password)
-//         ];
-
-//         console.log("Calling IRIS GetHashedPasswordByUsername method"); // Add logging
-        
-//         // Call the ValidateLogin method from your IRIS class
-//         const result = db.classMethodValue(
-//             "Medilink.HospitalAccount",
-//             "ValidateLogin",
-//             ...args
-//         );
-
-//         console.log("IRIS ValidateLogin result:", result); // Add logging
-
-//         if (result === "1" || result === 1) {
-//             return { 
-//                 success: true,
-//                 message: "Login successful"
-//             };
-//         } else {
-//             return { 
-//                 success: false,
-//                 error: "Invalid username or password"
-//             };
-//         }
-//     } catch (error) {
-//         console.error("Login validation error:", error); // Add logging
-//         return { 
-//             success: false, 
-//             error: `Login validation failed: ${error.message}`
-//         };
-//     }
-// }
-
 /*---------------------------------------- NURSING HOME-------------------------------------------- */
 
 function insertNursingHomeData(finalData) {
@@ -144,8 +67,8 @@ function insertNursingHomeData(finalData) {
         if (!db) throw new Error("Database connection failed");
 	
         // Log original parameter types and values
-        console.log("Original parameter types:", Object.fromEntries(Object.entries(finalData).map(([key, value]) => [key, typeof value])));
-        console.log("Original parameter values:", finalData);
+        // const args = [username, hashedPassword, nursingHomeName, nursingHomeAddress, nursingHomePhone, party_responsibility, available_days, timeSlotFrom, timeSlotTo, treatments, selectedTreatments];
+        // console.log("Prepared parameters:", args);
 
         // Process selected_treatments
         let filteredTreatments = [];
@@ -197,44 +120,44 @@ function insertNursingHomeData(finalData) {
     });
 }
 
-function validateNursingHomeLogin(username, password) {
-    console.log("Attempting to validate login for:", username);
-    
+
+// Single validation function that works for both hospital and nursing home
+async function validatePassword(inputUsername, inputPassword, requestParty) {
     const db = connectToDB();
     if (!db) {
         console.error("Database connection failed during login");
-        return { success: false, error: "Database connection failed" };
+        return false;
     }
 
     try {
-        // Call the GetNursingHomeAccountByUsername method with the connection
-        const accountDataJson = db.classMethodValue(
-            "Medilink.NursingHomeAccount",
-            "GetNursingHomeAccountByUsername",
-            username
-        );
-      
-        // Parse the JSON response
-        const accountData = JSON.parse(accountDataJson);
-      
-        // Check if we got valid data back
-        if (!accountData || accountData.error) {
-            return { 
-                success: false, 
-                error: accountData.error || "User not found" 
-            };
+        let retrievedHash = "";
+
+        if (requestParty === "hospital") {
+            retrievedHash = db.classMethodValue(
+                "Medilink.HospitalAccount",
+                "GetHashedPasswordByUsername",
+                inputUsername
+            );
+        } else if (requestParty === "nursinghome") {
+            retrievedHash = db.classMethodValue(
+                "Medilink.NursingHomeAccount",
+                "GetHashedPasswordByUsername",
+                inputUsername
+            );
         }
-      
-        // Return the account data
-        return { success: true, accountData };
+
+        if (!retrievedHash) {
+            console.error("Invalid username or password");
+            return false;
+        }
+
+        return await bcrypt.compare(inputPassword, retrievedHash);
     } catch (error) {
-        console.error("Error validating nursing home login:", error);
-        return { 
-            success: false, 
-            error: "Internal server error" 
-        };
+        console.error("Error during password validation:", error);
+        return false;
     }
-}  
+}
+
 
 /*------------------------------------------GET INFORMATION ------------------------------------- */
 
@@ -593,7 +516,6 @@ module.exports = {
     insertHospitalData,
     insertNursingHomeData,
     validatePassword,
-    validateNursingHomeLogin,
     getHospitalAccounts,
     getNursingHomeAccount,
 

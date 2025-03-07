@@ -2,7 +2,7 @@ const express = require("./backend/node_modules/express");
 const session = require("./backend/node_modules/express-session");
 const MemoryStore = require("./backend/node_modules/memorystore")(session);
 const bodyParser = require("./backend/node_modules/body-parser");
-const { insertHospitalData, insertNursingHomeData, validatePassword,validateNursingHomeLogin, getHospitalAccounts, insertPhysicalCapabilityData } = require("./iris");
+const { insertHospitalData, insertNursingHomeData, validatePassword, validateNursingHomePassword, getHospitalAccounts, getNursingHomeAccounts, insertPhysicalCapabilityData } = require("./iris");
 const path = require("path");
 const cors = require('./backend/node_modules/cors');
 const bcrypt = require("./backend/node_modules/bcryptjs");
@@ -233,14 +233,14 @@ app.post("/api/hospital-login", async (req, res) => {
   }
 
   try {
-	const isValid = await validatePassword(username, password, "hospital");
-	if (isValid) {
-		console.log("Login successful!");
-		res.json({ message: "Login successful"});
-	} else {
-		console.log("Invalid username or password");
-		res.status(401).json({ error: loginResult.error || "Invalid username or password"});
-	}
+    const isValid = await validatePassword(username, password, "hospital");
+    if (isValid) {
+      console.log("Login successful!");
+      res.json({ message: "Login successful"});
+    } else {
+      console.log("Invalid username or password");
+      res.status(401).json({ error: "Invalid username or password" });
+    }
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ 
@@ -249,36 +249,32 @@ app.post("/api/hospital-login", async (req, res) => {
   }
 });
 
+// Nursing Home Login Route
 app.post("/api/nursinghome-login", async (req, res) => {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-        return res.status(400).json({ error: "Please provide username and password" });
+  const { username, password } = req.body;
+  
+  if (!username || !password) {
+    console.log("Missing credentials");
+    return res.status(400).json({ 
+      error: "Please provide both username and password" 
+    });
+  }
+  console.log("Attempting nursing home login for:", username);
+  try {
+    const isValid = await validatePassword(username, password, "nursinghome");
+    if (isValid) {
+      console.log("Login successful!");
+      res.json({ message: "Login successful"});
+    } else {
+      console.log("Invalid username or password");
+      res.status(401).json({ error: "Invalid username or password" });
     }
-
-    console.log("Attempting nursing home login for:", username);
-
-    // 1) Fetch the account record (including hashed password)
-    const { success, accountData, error } = validateNursingHomeLogin(username, password);
-    
-    if (!success) {
-        // e.g. user not found
-        return res.status(401).json({ error });
-    }
-
-    // 2) Compare the plain text password with the stored hash
-    try {
-        const isMatch = await bcrypt.compare(password, accountData.passwordHash);
-        if (!isMatch) {
-            return res.status(401).json({ error: "Invalid username or password" });
-        }
-        
-        // 3) If matched, login is successful
-        res.status(200).json({ message: "Login successful" });
-    } catch (err) {
-        console.error("Error comparing password:", err);
-        res.status(500).json({ error: "Internal server error" });
-    }
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ 
+      error: "Internal server error. Please try again." 
+    });
+  }
 });
 
 /*--------------------------------------- DATA ACCESS ROUTES ------------------------------------------------------- */
