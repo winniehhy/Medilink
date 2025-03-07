@@ -351,7 +351,7 @@ app.post("/api/save-patient", async (req, res) => {
 const { getPatientData, updatePatientData } = require("./iris");
 
 app.get("/api/get-patient", async (req, res) => {
-    const { ic } = req.query;
+    const {ic } = req.query;
 
     if (!ic) {
         return res.status(400).json({ success: false, error: "Missing parameters" });
@@ -413,22 +413,32 @@ app.post("/api/update-patient", async (req, res) => {
 const { updatePatientStatus } = require("./iris");
 
 app.post("/api/update-patient-status", async (req, res) => {
-    const { ic, readyToDischarge, comments } = req.body;
+  const { patientIC, ic, readyToDischarge, comments } = req.body;
+  
+  // Use whichever parameter is provided
+  const patientIdentifier = patientIC || ic;
 
-    if (!ic) {
-        return res.status(400).json({ success: false, error: "Missing IC" });
-    }
+  if (!patientIdentifier) {
+      return res.status(400).json({ success: false, error: "Missing patient identifier" });
+  }
 
-    try {
-        const success = await updatePatientStatus(ic, readyToDischarge, comments);
-        if (success) {
-            return res.json({ success: true, message: "Patient status updated successfully!" });
-        }
-        res.status(500).json({ success: false, error: "Update failed" });
-    } catch (error) {
-        console.error("❌ Error updating patient status:", error);
-        res.status(500).json({ success: false, error: "Server error" });
-    }
+  try {
+      const success = await updatePatientStatus(patientIdentifier, readyToDischarge, comments);
+      if (success) {
+          // If this patient is in the current session, update the session data too
+          if (req.session.patientData && req.session.patientData.patientIc === patientIdentifier) {
+              console.log("Updating session data with new discharge status");
+              req.session.patientData.readyToDischarge = readyToDischarge ? 1 : 0;
+              req.session.patientData.comments = comments || "";
+          }
+          
+          return res.json({ success: true, message: "Patient status updated successfully!" });
+      }
+      res.status(500).json({ success: false, error: "Update failed" });
+  } catch (error) {
+      console.error("❌ Error updating patient status:", error);
+      res.status(500).json({ success: false, error: error.message || "Server error" });
+  }
 });
 
 
@@ -459,6 +469,80 @@ app.get("/api/patients", async (req, res) => {
   }
 });
 
+
+
+/*--------------------------------------- Vector Search --------------------------------------------- */
+
+const { vectorSearchPatients, updatePatientEmbeddingsCache } = require('./iris');
+
+// Vector search endpoint
+app.get("/api/vector-search", async (req, res) => {
+  const { query } = req.query;
+  
+  if (!query) {
+    return res.status(400).json({ 
+      success: false, 
+      error: "Search query is required" 
+    });
+  }
+  
+  try {
+    console.log(`🔍 Performing vector search for: "${query}"`);
+    const patients = await vectorSearchPatients(query);
+    
+    if (!patients || patients.length === 0) {
+      return res.json({ 
+        success: true, 
+        message: "No matching patients found", 
+        data: [] 
+      });
+    }
+    
+    console.log(`✅ Vector search found ${patients.length} matching patients`);
+    res.json({ 
+      success: true, 
+      count: patients.length, 
+      data: patients 
+    });
+  } catch (error) {
+    console.error("❌ Vector search error:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Vector search failed: " + error.message 
+    });
+  }
+});
+
+// Update embeddings cache endpoint (for admin/maintenance)
+app.post("/api/update-embeddings-cache", async (req, res) => {
+  try {
+    const success = await updatePatientEmbeddingsCache();
+    
+    if (success) {
+      res.json({ success: true, message: "Embeddings cache updated successfully" });
+    } else {
+      res.status(500).json({ success: false, error: "Failed to update embeddings cache" });
+    }
+  } catch (error) {
+    console.error("❌ Error updating embeddings cache:", error);
+    res.status(500).json({ 
+      success: false, 
+      error: "Failed to update embeddings cache: " + error.message 
+    });
+  }
+});
+
+app.post("/api/reset-embeddings-cache", (req, res) => {
+  try {
+    // This will clear the cache, forcing it to be regenerated on next search
+    patientEmbeddingsCache = [];
+    console.log("🧹 Embeddings cache has been reset");
+    res.json({ success: true, message: "Embeddings cache reset successfully" });
+  } catch (error) {
+    console.error("❌ Error resetting cache:", error);
+    res.status(500).json({ success: false, error: "Failed to reset cache" });
+  }
+});
 
 /*--------------------------------------- UTILITY ROUTES ------------------------------------------------------- */
 
