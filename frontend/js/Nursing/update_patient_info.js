@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(responseData => {
             alert(responseData.message);
             if (responseData.success) {
-                window.location.href = "nursing_homepage.html";
+                window.location.href = "nursing_homepage";
             }
         })
         .catch(error => console.error("❌ Error updating patient:", error));
