@@ -67,7 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (data.success) {
                 alert('Patient status updated successfully!');
-                window.location.href = 'hospital_homepage.html';
+                window.location.href = 'hospital_homepage';
+                // window.location.href = 'hospital_homepage.html';
             } else {
                 throw new Error(data.error || 'Failed to update status');
             }

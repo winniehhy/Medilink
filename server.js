@@ -107,6 +107,27 @@ app.get("/patient_status", (req, res) => {
   res.sendFile(path.join(__dirname, "frontend", "Pages/Nursing/patient_status.html"));
 });
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Hospital Pages~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app.get("/hospital_homepage", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Hospital/hospital_homepage.html"));
+});
+
+app.get("/hospital_search", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Hospital/hospital_search.html"));
+});
+
+app.get("/hospital_patient_record", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Hospital/hospital_patient_record.html"));
+});
+
+app.get("/hospital_patient_record_2", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Hospital/hospital_patient_record_2.html"));
+});
+
+app.get("/hospital_update_patient", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "Pages/Hospital/hospital_update_patient.html"));
+});
+
 /*--------------------------------------- SIGN UP ROUTES ------------------------------------------------------- */
 
 function isValidSGPhoneNumber(phone) {
