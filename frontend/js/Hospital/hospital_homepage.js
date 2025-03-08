@@ -19,6 +19,7 @@ function loadPatients() {
 
 // Function to display patients in the grid
 function displayPatients(patients) {
+  console.log("Patients to display:", patients);
   const grid = document.getElementById("patientList");
   grid.innerHTML = "";
   
@@ -33,7 +34,7 @@ function displayPatients(patients) {
     
     card.innerHTML = `
       <p><strong>Name:</strong> ${patient.patientName || "N/A"}</p>
-      <p><strong>IC:</strong> ${patient.patientIC || "N/A"}</p>
+      <p><strong>IC:</strong> ${patient.patientIC || patient.patientIc || "N/A"}</p>
       <p><strong>Staff:</strong> ${patient.staff || "N/A"}</p>
       <p><strong>Admission Date:</strong> ${patient.admissionDate || "N/A"}</p>
       <p><strong>Sex:</strong> ${patient.sex || "N/A"}</p>
@@ -43,7 +44,8 @@ function displayPatients(patients) {
       <p><strong>Mental Health Condition:</strong> ${patient.mentalHealthConditions || "N/A"}</p>
       <p><strong>Document Needed:</strong> ${patient.documentsNeeded|| "N/A"}</p>
       <button class="patient-button" 
-        data-id="${patient.patientIc}" 
+        style="${patient.readyToDischarge ? 'background-color: green; color: white;' : ''}"
+        data-id="${patient.patientIC}" 
         data-status="${patient.readyToDischarge ? 'true' : 'false'}">
         ${patient.readyToDischarge ? "Marked for Discharge" : "Ready to Discharge"}
       </button>
@@ -79,7 +81,6 @@ function displayPatients(patients) {
     if (confirm(confirmMessage)) {
     // If confirmed, proceed to the update page
       window.location.href = `../hospital_update_patient?ic=${encodeURIComponent(patient.patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
-      // window.location.href = `../Hospital/hospital_update_patient.html?ic=${encodeURIComponent(patient.patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
     }
 
     });
@@ -146,7 +147,7 @@ function searchPatient() {
   
   // Check if it looks like an IC number (simple heuristic)
   const isIC = /^\d{5,12}$/.test(searchValue) || // All digits
-              /^[A-Z]\d{7}[A-Z]$/.test(searchValue);// Format like S1234567Z
+              /^[A-Z]\d{6,7}[A-Z]$/.test(searchValue);// Format like S1234567Z
   console.log("Is IC number?", isIC);
   
   if (isIC) {
@@ -161,6 +162,11 @@ function searchPatient() {
       .then(response => response.json())
       .then(data => {
         if (data.success) {
+          console.log("Search result patient:", data.patient);
+
+          // Check both possible property names
+          console.log("Patient IC (uppercase):", data.patient.patientIC);
+          console.log("Patient IC (lowercase):", data.patient.patientIc);
           // Display the single patient
           displayPatients([data.patient]);
         } else {

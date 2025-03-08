@@ -2,7 +2,7 @@ const { CohereClient } = require('cohere-ai');
 
 // Initialize with your API key
 const cohere = new CohereClient({
-  token: 'IHw2zAiJ4OeYSOT0df2ppIWBgaw3UChljvzHMywe'
+  token: '5B9VHZs50JLAUsS0ppNCDpAyeuCpm5ReoTeYc4P0'
 });
 
 // Function to generate embeddings for patient data
