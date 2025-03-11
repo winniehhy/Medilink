@@ -88,7 +88,11 @@ document.addEventListener("DOMContentLoaded", function() {
 			if (patient.readyToDischarge == 1)
 				document.getElementById("poll-result").textContent = "Yes";
 			else
-				document.getElementById("poll-result").textContent = "No";
+			{
+				const pollResult = document.getElementById("poll-result");
+    			pollResult.textContent = "No";
+    			pollResult.style.color = "red";
+			}
 
 			// Debug: Log comments
 			console.log("📌 Patient comments:", patient.comments);
