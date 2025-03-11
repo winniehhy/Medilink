@@ -101,29 +101,38 @@ document.addEventListener("DOMContentLoaded", function () {
             // Prefill walking aids
             document.getElementById("walking-aids").value = patient.walkingAids || "";
 
+            // // Prefill cognitive conditions
+            // if (patient.cognitiveConditions) {
+            //     patient.cognitiveConditions.split(", ").forEach(condition => {
+            //         const cognitiveCheckbox = document.querySelector(`input[name="cognitive"][value="${condition}"]`);
+            //         if (cognitiveCheckbox) cognitiveCheckbox.checked = true;
+            //     });
+            // }
+
+            // // Prefill mental health conditions
+            // if (patient.mentalHealthConditions) {
+            //     patient.mentalHealthConditions.split(", ").forEach(condition => {
+            //         const mentalHealthCheckbox = document.querySelector(`input[name="mental_health"][value="${condition}"]`);
+            //         if (mentalHealthCheckbox) mentalHealthCheckbox.checked = true;
+            //     });
+            // }
+
+            // // Prefill documents needed
+            // if (patient.documentsNeeded) {
+            //     patient.documentsNeeded.split(", ").forEach(condition => {
+            //         const documentCheckbox = document.querySelector(`input[name="document-needed"][value="${condition.trim()}"]`);
+            //         if (documentCheckbox) documentCheckbox.checked = true;
+            //     });
+            // }
+
             // Prefill cognitive conditions
-            if (patient.cognitiveConditions) {
-                patient.cognitiveConditions.split(", ").forEach(condition => {
-                    const cognitiveCheckbox = document.querySelector(`input[name="cognitive"][value="${condition}"]`);
-                    if (cognitiveCheckbox) cognitiveCheckbox.checked = true;
-                });
-            }
+            fillCheckboxes("cognitive", "cognitive-conditions", patient.cognitiveConditions);
 
             // Prefill mental health conditions
-            if (patient.mentalHealthConditions) {
-                patient.mentalHealthConditions.split(", ").forEach(condition => {
-                    const mentalHealthCheckbox = document.querySelector(`input[name="mental_health"][value="${condition}"]`);
-                    if (mentalHealthCheckbox) mentalHealthCheckbox.checked = true;
-                });
-            }
+            fillCheckboxes("mental_health", "mental_health_conditions", patient.mentalHealthConditions);
 
             // Prefill documents needed
-            if (patient.documentsNeeded) {
-                patient.documentsNeeded.split(", ").forEach(condition => {
-                    const documentCheckbox = document.querySelector(`input[name="document-needed"][value="${condition.trim()}"]`);
-                    if (documentCheckbox) documentCheckbox.checked = true;
-                });
-            }
+            fillCheckboxes("document-needed", "document-list", patient.documentsNeeded);
         } else {
             alert("No patient data found in session.");
         }
@@ -207,13 +216,32 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("❌ Error updating patient:", error));
     });
     // ------------------ Utility Functions ------------------
-    function fillCheckboxes(groupName, values) {
-        if (values) {
-            values.split(", ").forEach(value => {
-                const checkbox = document.querySelector(`input[name="${groupName}"][value="${value}"]`);
-                if (checkbox) checkbox.checked = true;
-            });
-        }
+    /**
+     * Function to fill checkboxes, adding new ones if missing.
+     * @param {string} inputName - The name attribute of the checkboxes.
+     * @param {string} containerId - The ID of the container holding the checkboxes.
+     * @param {string} values - The comma-separated string of selected values.
+     */
+    function fillCheckboxes(inputName, containerId, values) {
+        if (!values) return; // Exit if no values
+
+        const container = document.getElementById(containerId);
+        const valueArray = values.split(", ").map(v => v.trim());
+
+        valueArray.forEach(value => {
+            // Check if the checkbox already exists
+            let checkbox = document.querySelector(`input[name="${inputName}"][value="${value}"]`);
+            
+            if (!checkbox) {
+                // Create a new checkbox if it does not exist
+                const label = document.createElement("label");
+                label.innerHTML = `<input type="checkbox" name="${inputName}" value="${value}" checked> ${value}`;
+                container.appendChild(label);
+            } else {
+                // Check the existing checkbox
+                checkbox.checked = true;
+            }
+        });
     }
 
     function getCheckedValues(groupName) {

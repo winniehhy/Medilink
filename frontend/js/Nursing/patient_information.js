@@ -194,14 +194,23 @@ document.addEventListener("DOMContentLoaded", function () {
             walkingAids: document.getElementById("walking-aids")?.value || ""
         };
     
+        // const cognitiveData = {
+        //     cognitiveConditions: Array.from(document.querySelectorAll('input[name="cognitive"]:checked')).map(c => c.value),
+        //     mentalHealthConditions: Array.from(document.querySelectorAll('input[name="mental_health"]:checked')).map(m => m.value)
+        // };
+    
+        // const documentData = {
+        //     documentsNeeded: [...document.querySelectorAll('input[name="document-needed"]:checked')]
+        //         .map(d => d.value)
+        // };
+    
         const cognitiveData = {
-            cognitiveConditions: Array.from(document.querySelectorAll('input[name="cognitive"]:checked')).map(c => c.value),
-            mentalHealthConditions: Array.from(document.querySelectorAll('input[name="mental_health"]:checked')).map(m => m.value)
+            cognitiveConditions: Array.from(document.querySelectorAll('#cognitive-conditions input[type="checkbox"]:checked')).map(c => c.value),
+            mentalHealthConditions: Array.from(document.querySelectorAll('#mental_health_conditions input[type="checkbox"]:checked')).map(m => m.value)
         };
     
         const documentData = {
-            documentsNeeded: [...document.querySelectorAll('input[name="document-needed"]:checked')]
-                .map(d => d.value)
+            documentsNeeded: Array.from(document.querySelectorAll('#document-list input[type="checkbox"]:checked')).map(d => d.value)
         };
     
         console.log("📤 Saving Data:", { patientData, physicalData, cognitiveData, documentData });
