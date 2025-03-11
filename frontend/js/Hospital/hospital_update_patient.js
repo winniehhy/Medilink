@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({
                 patientIC: patientIC, // Use consistent parameter name
                 readyToDischarge: readyToDischarge,
-                comments: comments || "Marked by hospital staff"
+                comments: comments || "N/A"
             })
         })
         .then(response => {

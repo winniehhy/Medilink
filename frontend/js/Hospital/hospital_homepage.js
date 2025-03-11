@@ -76,7 +76,7 @@ function displayPatients(patients) {
     console.log('==================');
   
      // Show confirmation with patient details
-    const confirmMessage = `Update discharge status for patient:\n\nName: ${patient.patientName}\nIC: ${patient.patientIC}`;
+    const confirmMessage = `Update discharge status for patient:\n\nName: ${patient.patientName}\nIC: ${patient.patientIC || patient.patientIc}`;
   
     if (confirm(confirmMessage)) {
     // If confirmed, proceed to the update page
@@ -196,7 +196,7 @@ function markReadyForDischarge(patientIc, readyStatus) {
     body: JSON.stringify({
       ic: patientIc,
       readyToDischarge: readyStatus,
-      comments: "Marked by hospital staff"
+      comments: "N/A"
     })
   })
   .then(response => response.json())
