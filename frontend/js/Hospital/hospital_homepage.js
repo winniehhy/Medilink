@@ -77,10 +77,12 @@ function displayPatients(patients) {
   
      // Show confirmation with patient details
     const confirmMessage = `Update discharge status for patient:\n\nName: ${patient.patientName}\nIC: ${patient.patientIC || patient.patientIc}`;
+
+    let ic = patient.patientIC || patient.patientIc;
   
     if (confirm(confirmMessage)) {
     // If confirmed, proceed to the update page
-      window.location.href = `../hospital_update_patient?ic=${encodeURIComponent(patient.patientIC)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
+      window.location.href = `../hospital_update_patient?ic=${encodeURIComponent(ic)}&name=${encodeURIComponent(patient.patientName)}&status=${currentStatus}`;
     }
 
     });
