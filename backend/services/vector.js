@@ -1,8 +1,8 @@
 const { CohereClient } = require('cohere-ai');
 
-// Initialize with your API key
+// Cohere API key
 const cohere = new CohereClient({
-  token: '5B9VHZs50JLAUsS0ppNCDpAyeuCpm5ReoTeYc4P0'
+  token: 'u9bSRzTdGb4YygUJ64FgOEkFncNlnKdi1sdM7tV1'
 });
 
 // Function to generate embeddings for patient data
@@ -12,11 +12,16 @@ async function generatePatientEmbeddings(patients) {
     return `Patient name: ${patient.patientName || ''}. 
             Patient ID: ${patient.patientID || ''}.
             Patient IC: ${patient.patientIC || ''}.
+            Sex: ${patient.sex || ''}.
+            Staff: ${patient.staff || ''}.
+            Admission date: ${patient.admissionDate || ''}.
             Ambulation: ${patient.ambulation || ''}. 
             Walking aids: ${patient.walkingAids || ''}. 
             Cognitive conditions: ${patient.cognitiveConditions || ''}. 
             Mental health conditions: ${patient.mentalHealthConditions || ''}.
-            Documents needed: ${patient.documentsNeeded || ''}.`;
+            Documents needed: ${patient.documentsNeeded || ''}.
+            Ready to discharge: ${patient.readyToDischarge ? 'Yes' : 'No'}.
+            Comments: ${patient.comments || ''}.`;
   });
 
   try {
