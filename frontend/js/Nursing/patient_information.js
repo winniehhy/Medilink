@@ -28,123 +28,30 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
-// document.getElementById("submit").addEventListener("click", function() {
-
-// 	const patientData = {
-// 		staff: document.getElementById("staff").value,
-// 		admissionDate: document.getElementById("admission-date").value,
-// 		patientName: document.getElementById("patient-name").value,
-// 		patientIc: document.getElementById("patient-ic").value,
-// 		sex: document.querySelector('input[name="sex"]:checked').value
-// 	};
-
-// 	console.log("📤 Sending patient data:", patientData);
-// 	fetch("http://localhost:4000/api/save-patient", {
-// 		method: "POST",
-// 		headers: { "Content-Type": "application/json" },
-// 		body: JSON.stringify(patientData)
-// 	})
-// 	.then(response => response.json())
-// 	.then(data => {
-// 		alert(data.message);
-// 		// if (data.message.includes("success")) {
-// 		// 	console.log("✅ Navigating to next page...");
-// 		// 	window.location.href = "physical_capability"; // ✅ Correct absolute path
-// 		// }
-// 	})
-// 	.catch(error => console.error("❌ Error:", error));
-// });
-
-// --------------------------------------------------Physical Capability Tab---------------------------------------------------
-// document.getElementById("submitPhysical").addEventListener("click", function(e) {
-// 	e.preventDefault(); // Stop any default button behavior
-  
-// 	// Only collect ambulation and walkingAids
-// 	const physicalData = {
-// 	  ambulation: document.querySelector('input[name="ambulation"]:checked')?.value || "",
-// 	  walkingAids: document.getElementById("walking-aids").value
-// 	};
-  
-// 	console.log("📤 Sending physical capability data:", physicalData);
-  
-// 	// POST to your Node backend
-// 	fetch("http://localhost:4000/api/save-physical-capability", {
-// 	  method: "POST",
-// 	  headers: { "Content-Type": "application/json" },
-// 	  body: JSON.stringify(physicalData)
-// 	})
-// 	  .then(response => response.json())
-// 	  .then(data => {
-// 		alert(data.message);
-// 		// if (data.message.includes("success")) {
-// 		//   // Go to the next page
-// 		//   window.location.href = "";
-// 		// }
-// 	  })
-// 	  .catch(error => console.error("❌ Error:", error));
-//   });
-
 // -----------------------------------------------Cognitive and Mental Health Tab---------------------------------------------
 function addCondition(groupId, inputId) {
 	const conditionInput = document.getElementById(inputId);
 	const conditionValue = conditionInput.value.trim();
 
 	if (conditionValue) {
-		// Create a new checkbox with the input value
 		const newCheckbox = document.createElement("label");
 		newCheckbox.innerHTML = `<input type="checkbox" name="${groupId}" value="${conditionValue}" checked> ${conditionValue}`;
-		// Append to the correct group
 		document.getElementById(groupId).appendChild(newCheckbox);
-
-		// Clear the input field after adding
 		conditionInput.value = "";
 	} else {
 		alert("Please enter a valid condition.");
 	}
 };
 
-// document.getElementById("submit").addEventListener("click", function(e) {
-//     e.preventDefault(); // Stop any default button behavior
-
-//     // Collect cognitive and mental health conditions
-//     const cognitiveData = {
-//         cognitiveConditions: Array.from(document.querySelectorAll('input[name="cognitive-condition"]:checked')).map(checkbox => checkbox.value),
-//         mentalHealthConditions: Array.from(document.querySelectorAll('input[name="mental-health-condition"]:checked')).map(checkbox => checkbox.value)
-//     };
-
-//     console.log("📤 Sending cognitive and mental health data:", cognitiveData);
-
-//     // POST to your Node backend
-//     fetch("http://localhost:4000/api/save-cognitive-mental-health", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(cognitiveData)
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         alert(data.message);
-//         // if (data.message.includes("success")) {
-//         //     // Go to the next page
-//         //     window.location.href = "./Pages/Nursing/documents_needed.html";
-//         // }
-//     })
-//     .catch(error => console.error("❌ Error:", error));
-// });
-
 // -----------------------------------------------Document Needed Tab---------------------------------------------------
 function addDocuments() {
 	const documentInput = document.getElementById("new-document");
-	const documentValue = documentInput.value.trim(); // Use documentValue instead of conditionValue
+	const documentValue = documentInput.value.trim();
 
 	if (documentValue) {
-		// Create a new checkbox with the input value
 		const newCheckbox = document.createElement("label");
-		// Checked the checkbox by default
 		newCheckbox.innerHTML = `<input type="checkbox" name="document-needed" value="${documentValue}" checked> ${documentValue}`;
-		// Append the new checkbox to the document list
 		document.getElementById("document-list").appendChild(newCheckbox);
-
-		// Clear the input field after adding
 		documentInput.value = "";
 	} else {
 		alert("Please enter a valid document name.");
@@ -168,9 +75,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // Update section colors
         sections.forEach((section, i) => {
             if (i === index) {
-                section.classList.add("active-section"); // Brighter green for active section
+                section.classList.add("active-section");
             } else {
-                section.classList.remove("active-section"); // Light green for other sections
+                section.classList.remove("active-section");
             }
         });
     
@@ -228,11 +135,11 @@ document.addEventListener("DOMContentLoaded", function () {
     
         submitButton.addEventListener("click", function (e) {
             e.preventDefault();
-            console.log("✅ Submit button clicked");  // Debugging log
+            console.log("✅ Submit button clicked");
     
             // Collect all form data
             const data = saveData();
-            console.log("📤 Data to send:", data);  // Debugging log
+            console.log("📤 Data to send:", data);
     
             fetch("http://localhost:4000/api/save-patient", {
                 method: "POST",
@@ -241,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .then(response => response.json())
             .then(responseData => {
-                console.log("✅ Response received:", responseData); // Debugging log
+                console.log("✅ Response received:", responseData);
                 alert(responseData.message);
     
                 if (responseData.message.includes("success")) {
@@ -255,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function nextTab() {
         const tabs = document.querySelectorAll(".tab");
         if (currentTab < tabs.length - 1) {
-            saveData(); // Save before switching
+            saveData();
             currentTab++;
             showTab(currentTab);
         }
@@ -266,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function prevTab() {
         if (currentTab > 0) {
-            saveData(); // Save before switching
+            saveData();
             currentTab--;
             showTab(currentTab);
         }
@@ -275,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    console.log("✅ JavaScript Loaded"); // Debugging log
+    console.log("✅ JavaScript Loaded");
 
     // Attach event listeners to Next and Previous buttons
     document.querySelectorAll(".next-button").forEach((btn) => {
@@ -298,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".section-link").forEach((link, index) => {
         link.addEventListener("click", function (e) {
             e.preventDefault();
-            saveData(); // Save before switching
+            saveData();
             showTab(index);
         });
     });
@@ -314,11 +221,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     submitButton.addEventListener("click", function (e) {
         e.preventDefault();
-        console.log("✅ Submit button clicked");  // Debugging log
+        console.log("✅ Submit button clicked");
 
         // Collect all form data
         const data = saveData();
-        console.log("📤 Data to send:", data);  // Debugging log
+        console.log("📤 Data to send:", data);
 
         fetch("http://localhost:4000/api/save-patient", {
             method: "POST",
@@ -327,7 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(responseData => {
-            console.log("✅ Server Response:", responseData); // Debugging log
+            console.log("✅ Server Response:", responseData);
             alert(responseData.message);
 
             if (responseData.message.includes("success")) {

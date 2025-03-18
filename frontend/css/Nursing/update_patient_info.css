@@ -20,7 +20,7 @@ body {
 	align-items: flex-start;
 	justify-content: center;
 	padding: 15px 10px;
-	z-index: 1000; /* Ensure it stays on top */
+	z-index: 1000;
 }
 
 .sidebar:hover {
