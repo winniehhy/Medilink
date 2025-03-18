@@ -36,7 +36,7 @@ node server.js
    7. Password: demo
 
 ## Authors ( 42 Minions)
-- Heng Han Yee
+- Winnie Heng Han Yee
 - Nelson Chok Vui Kian
 - Tay Qi Ter
 - Adya Zahila
