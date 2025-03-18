@@ -15,8 +15,10 @@ Medilink is a centralized platform that seamlessly connects nursing homes and ho
 ```bash
 git clone https://github.com/winniehhy/Medilink.git
 cd Medilink
+npm install
 node server.js
 ```
+** before running node server.js , make sure that docker is running **
 
 ## Connect from VSCode with Intersystem Database
 1. Go to VS Code Extension - search for "ObjectScript"
