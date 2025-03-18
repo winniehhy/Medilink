@@ -34,6 +34,7 @@ node server.js
    5. Namespace: USER
    6. Username: demo
    7. Password: demo
+5. Once connected with the intersystem data management, copy the 3 classes ( backend/ intersytem-classess) in order to store and retrieve patient data
 
 ## Authors ( 42 Minions)
 - Winnie Heng Han Yee
