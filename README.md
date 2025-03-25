@@ -1,7 +1,7 @@
 ![image](https://github.com/user-attachments/assets/cd86fb43-bc96-432e-a877-a40149244757)
 
 
-# Medilink
+# Medilink - NUS Health Hack 2025
 Medilink is a centralized platform that seamlessly connects nursing homes and hospitals. It provides real-time updates on patient discharge readiness, simplifies the retrieval of essential documents for caregivers, and coordinates ambulance assignments. Additionally, its integrated vector search empowers nurses to quickly and effectively locate patient data, ensuring that all records are accurately maintained and shared among healthcare professionals.
 
 ## Technology Stack
